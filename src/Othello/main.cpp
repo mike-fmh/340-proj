@@ -18,12 +18,14 @@
 
 #include "Board.h"
 #include "Tile.hpp"
+#include "Disc.hpp"
 //
 
 using namespace std;
 using namespace othello;
 
 vector<shared_ptr<Tile>> boardTiles;
+vector<shared_ptr<GraphicObject>> allObjects;
 
 //--------------------------------------
 #if 0
@@ -174,7 +176,7 @@ void myDisplayFunc(void)
     glLoadIdentity();
     glPushMatrix();
 
-    for (auto obj : boardTiles) {
+    for (auto obj : allObjects) {
         if (obj != nullptr) {
             obj->draw();
         }
@@ -457,6 +459,7 @@ void displayTextualInfo(const char* infoStr, int textRow)
 
 void applicationInit()
 {
+    TilePoint thisPnt;
     bool blackOrWhite;
     for (int c = 1; c <= 8; c++) {
         // each row starts with alternating black/white tiles
@@ -466,12 +469,30 @@ void applicationInit()
             blackOrWhite = true;
         }
         for (int r = 1; r <= 8; r++) {
-            TilePoint thisPnt = TilePoint{(float)r, (float)c};
+            thisPnt = TilePoint{(float)r, (float)c};
             shared_ptr<Tile> thisTile = make_shared<Tile>(thisPnt, blackOrWhite);
             boardTiles.push_back(thisTile);
+            allObjects.push_back(thisTile);
             blackOrWhite = !blackOrWhite;
         }
     }
+    
+    
+    // 4 starting pieces (discs)
+    shared_ptr<Disc> thisDisc;
+    thisPnt = TilePoint{4.f, 4.f};
+    thisDisc = make_shared<Disc>(thisPnt, true);
+    allObjects.push_back(thisDisc);
+    thisPnt = TilePoint{5.f, 4.f};
+    thisDisc = make_shared<Disc>(thisPnt, false);
+    allObjects.push_back(thisDisc);
+    thisPnt = TilePoint{4.f, 5.f};
+    thisDisc = make_shared<Disc>(thisPnt, false);
+    allObjects.push_back(thisDisc);
+    thisPnt = TilePoint{5.f, 5.f};
+    thisDisc = make_shared<Disc>(thisPnt, true);
+    allObjects.push_back(thisDisc);
+
     //    time really starts now
     startTime = time(nullptr);
 }

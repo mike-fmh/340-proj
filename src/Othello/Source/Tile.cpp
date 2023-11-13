@@ -33,15 +33,8 @@ void Tile::draw() const
     //    apply the radius as a scale
     glScalef(1, 1, 1.f);
     
-    // is the tile black or white?
-    if (color_) {
-        // white
-        glColor3f(1.f, 1.f, 1.f);
-    } else {
-        // black
-        glColor3f(0.f, 0.f, 0.f);
-    }
     
+    glColor3f(0.2f, 1.f, 0.4f);
     glBegin(GL_POLYGON);
         glVertex2f(-0.5f, -0.5f);
         glVertex2f(+0.5f, -0.5f);
@@ -49,7 +42,7 @@ void Tile::draw() const
         glVertex2f(-0.5f, +0.5f);
     glEnd();
     
-    glColor3f(1.f, 1.f, 1.f);
+    glColor3f(0.4f, 0.4f, 0.4f);
     glBegin(GL_LINE_LOOP);
         glVertex2f(-0.5f, -0.5f);
         glVertex2f(+0.5f, -0.5f);
