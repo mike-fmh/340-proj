@@ -91,10 +91,11 @@ void applicationInit();
 //--------------------------------------
 const int INIT_WIN_X = 10, INIT_WIN_Y = 32;
 
-const float Board::X_MIN = -10.f;
-const float Board::X_MAX = +10.f;
-const float Board::Y_MIN = -10.f;
-const float Board::Y_MAX = +10.f;
+// traditional othello board is 8x8 tiles
+const float Board::X_MIN = 1.f;
+const float Board::X_MAX = +8.f;
+const float Board::Y_MIN = 1.f;
+const float Board::Y_MAX = +8.f;
 const float Board::WIDTH = Board::X_MAX - Board::X_MIN;
 const float Board::HEIGHT = Board::Y_MAX - Board::Y_MIN;
 
