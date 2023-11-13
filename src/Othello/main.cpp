@@ -17,10 +17,13 @@
 #include <sstream>
 
 #include "Board.h"
+#include "Tile.hpp"
 //
 
 using namespace std;
 using namespace othello;
+
+vector<shared_ptr<Tile>> boardTiles;
 
 //--------------------------------------
 #if 0
@@ -171,11 +174,12 @@ void myDisplayFunc(void)
     glLoadIdentity();
     glPushMatrix();
 
-    /*for (auto obj : allObjects)
-    {
-        if (obj != nullptr)
+    for (auto obj : boardTiles) {
+        if (obj != nullptr) {
             obj->draw();
-    }*/
+        }
+    }
+
 
     glutSwapBuffers();
 }
@@ -202,7 +206,8 @@ void myResizeFunc(int w, int h)
 
     //    Here I define the dimensions of the "virtual world" that my
     //    window maps to
-    gluOrtho2D(Board::X_MIN, Board::X_MAX, Board::Y_MIN, Board::Y_MAX);
+    //  Display more in the window than space exists on the board
+    gluOrtho2D(Board::X_MIN - 1 , Board::X_MAX + 1, Board::Y_MIN - 1, Board::Y_MAX + 1);
 
     //    When it's done, request a refresh of the display
     glutPostRedisplay();
@@ -452,7 +457,21 @@ void displayTextualInfo(const char* infoStr, int textRow)
 
 void applicationInit()
 {
-    
+    bool blackOrWhite;
+    for (int c = 1; c <= 8; c++) {
+        // each row starts with alternating black/white tiles
+        if (c % 2) {
+            blackOrWhite = false;
+        } else {
+            blackOrWhite = true;
+        }
+        for (int r = 1; r <= 8; r++) {
+            TilePoint thisPnt = TilePoint{(float)r, (float)c};
+            shared_ptr<Tile> thisTile = make_shared<Tile>(thisPnt, blackOrWhite);
+            boardTiles.push_back(thisTile);
+            blackOrWhite = !blackOrWhite;
+        }
+    }
     //    time really starts now
     startTime = time(nullptr);
 }

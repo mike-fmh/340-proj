@@ -20,11 +20,11 @@ AnimatedObject::AnimatedObject(float x, float y, float angle,
 {
 }
 
-AnimatedObject::AnimatedObject(const TilePoint& tile, float angle, const Velocity& vel, float spin)
+AnimatedObject::AnimatedObject(const TilePoint& tile, float angle, float vx, float vy, float spin)
 	:	Object(tile, angle),
 		//
-		vx_(vel.vx),
-		vy_(vel.vy),
+		vx_(vx),
+		vy_(vy),
 		spin_(spin)
 {
 }

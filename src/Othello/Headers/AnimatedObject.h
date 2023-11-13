@@ -21,7 +21,7 @@ namespace othello
 		public:
 
 			AnimatedObject(float x, float y, float angle, float vx, float vy, float spin);
-			AnimatedObject(const TilePoint& tile, float angle, const Velocity& vel, float spin);
+			AnimatedObject(const TilePoint& tile, float angle, float vx, float vy, float spin);
 			
 			//disabled constructors & operators
 			AnimatedObject() = delete;
