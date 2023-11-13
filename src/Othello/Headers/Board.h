@@ -36,10 +36,10 @@ namespace othello {
 
 	};
 
-	WorldPoint pixelToWorld(float ix, float iy);
+	TilePoint pixelToWorld(float ix, float iy);
 	PixelPoint worldToPixel(float wx, float wy);
-	WorldPoint pixelToWorld(const PixelPoint& pt);
-	PixelPoint worldToPixel(const WorldPoint& pt);
+	TilePoint pixelToWorld(const PixelPoint& pt);
+	PixelPoint worldToPixel(const TilePoint& pt);
 
 }
 

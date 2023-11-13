@@ -103,15 +103,15 @@ namespace othello
 //		};
 	
 	
-	/** Struct used to store the coordinates of a point in world space
+	/** Struct used to store the location of a tile on the board
 	 */
-	struct WorldPoint{
+	struct TilePoint{
 		
-		/** The point's horizontal coordinate.
+		/** The tile's horizontal location.
 		 */
 		float x;
 
-		/** The point's vertical coordinate.
+		/** The tile's vertical location.
 		 */
 		float y;
 
@@ -130,6 +130,21 @@ namespace othello
 		float y;
 
 	};
+
+    struct Velocity{
+        
+        /** The point's horizontal coordinate.
+         */
+        float vx;
+
+        /** The point's vertical coordinate.
+         */
+        float vy;
+        
+        static Velocity NULL_VELOCITY;
+
+    };
+
 }
 
 
