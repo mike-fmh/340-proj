@@ -38,6 +38,11 @@ public:
         green_ = color.green;
         blue_ = color.blue;
     }
+    inline void setColor(float red, float green, float blue) {
+        red_ = red;
+        green_ = green;
+        blue_ = blue;
+    }
 };
 
 #endif /* Tile_hpp */

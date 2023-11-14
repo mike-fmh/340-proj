@@ -20,15 +20,15 @@ void Board::setScalingRatios(int& paneWidth, int& paneHeight){
 
 TilePoint othello::pixelToWorld(float ix, float iy)
 {
-	return TilePoint{	(int)(Board::ROWS_MIN + ix*Board::pixelToWorldRatio),
-					(int)(Board::COLS_MAX - iy*Board::pixelToWorldRatio)
+	return TilePoint{	(int)round(Board::ROWS_MIN + ix*Board::pixelToWorldRatio),
+					(int)round(Board::COLS_MAX - iy*Board::pixelToWorldRatio)
 				};
 }
 
 TilePoint othello::pixelToWorld(const PixelPoint& pt)
 {
-	return TilePoint{	(int)(Board::ROWS_MIN + pt.x*Board::pixelToWorldRatio),
-					(int)(Board::COLS_MAX - pt.y*Board::pixelToWorldRatio)
+	return TilePoint{	(int)round(Board::ROWS_MIN + pt.x*Board::pixelToWorldRatio),
+					(int)round(Board::COLS_MAX - pt.y*Board::pixelToWorldRatio)
 				};
 }
 

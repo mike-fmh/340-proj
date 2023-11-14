@@ -94,8 +94,13 @@ void applicationInit();
 /// Returns a tile's neighbors including diagonals
 /// @param tile the original tile to get the neighbors of
 /// @param neighbors the vector to populate with neighboring tiles
-void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* worldTiles);
+/// @param boardTiles the vector of tiles that make up the game board
+void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* boardTiles);
 
+/// Returns the Tile object in worldTiles at the given TilePoint, if any exist
+/// @param at the location of the Tile to return
+/// @param boardTiles the vector of tiles that make up the game board
+shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* boardTiles);
 
 //--------------------------------------
 #if 0
@@ -109,6 +114,8 @@ const int Board::ROWS_MIN = 1;
 const int Board::ROWS_MAX = 8;
 const int Board::COLS_MIN = 1;
 const int Board::COLS_MAX = 8;
+const int Board::PADDING = 0; // we need some extra space on each side of the board
+
 const float Board::WIDTH = Board::ROWS_MAX - Board::ROWS_MIN;
 const float Board::HEIGHT = Board::COLS_MAX - Board::COLS_MIN;
 
@@ -168,11 +175,28 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #pragma mark Callback functions
 #endif
 
+shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* boardTiles) {
+    float row = at.x - 1;
+    float col = at.y - 1;
+    if (row > Board::ROWS_MAX)
+        row = Board::ROWS_MAX;
+    if (row < Board::ROWS_MIN)
+        row = Board::ROWS_MIN;
+    
+    if (col > Board::COLS_MAX)
+        col = Board::COLS_MAX;
+    if (col < Board::COLS_MIN)
+        col = Board::COLS_MIN;
+    return boardTiles->at(col).at(row);
+}
 
-void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* worldTiles) {
+
+void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* boardTiles) {
     // rows & columns are numbered from 1...MAX-1 instead of 0...MAX-1
+    TilePoint tileLoc;
     if (tile.getCol() > 1) { // north
-        neighbors->push_back(worldTiles->at(tile.x - 1).at(tile.y));
+        tileLoc = TilePoint{tile.x - 1, tile.y};
+        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
        /* if (tile.getRow() > 1) { // northwest
             neighbors->push_back(TilePoint{tile.x - 1, tile.y - 1});
         }
@@ -181,13 +205,16 @@ void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<v
         }*/
     }
     if (tile.getCol() < Board::COLS_MAX - 1) { // south
-        neighbors->push_back(worldTiles->at(tile.x + 1).at(tile.y));
+        tileLoc = TilePoint{tile.x + 1, tile.y};
+        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
     if (tile.getRow() > 1) { // west
-        neighbors->push_back(worldTiles->at(tile.x).at(tile.y - 1));
+        tileLoc = TilePoint{tile.x, tile.y - 1};
+        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
     if (tile.getRow() < Board::ROWS_MAX - 1) { // east
-        neighbors->push_back(worldTiles->at(tile.x).at(tile.y + 1));
+        tileLoc = TilePoint{tile.x, tile.y + 1};
+        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
 }
 
@@ -240,7 +267,7 @@ void myResizeFunc(int w, int h)
     //    Here I define the dimensions of the "virtual world" that my
     //    window maps to
     //  Display more in the window than space exists on the board
-    gluOrtho2D(Board::ROWS_MIN - 1 , Board::ROWS_MAX + 1, Board::COLS_MIN - 1, Board::COLS_MAX + 1);
+    gluOrtho2D(Board::ROWS_MIN - Board::PADDING, Board::ROWS_MAX + Board::PADDING, Board::COLS_MIN - Board::PADDING, Board::COLS_MAX + Board::PADDING);
 
     //    When it's done, request a refresh of the display
     glutPostRedisplay();
@@ -359,10 +386,12 @@ void myMouseHandler(int button, int state, int ix, int iy)
                 TilePoint t = TilePoint{pixelToWorld(ix, iy)};
                 cout << t.x << ", " << t.y << endl;
                 vector<shared_ptr<Tile>> neighs;
+                getBoardTile(t, &boardTiles)->setColor(1, 1, 1);
+                cout << getBoardTile(t, &boardTiles)->getX() << ", " << getBoardTile(t, &boardTiles)->getY() << endl;
                 getNeighbors(t, &neighs, &boardTiles);
                 for (int i = 0; i < neighs.size(); i++) {
-                    cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
-                    neighs.at(i)->setColor(RGBColor{0, 0,0});
+                    //cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
+                    //neighs.at(i)->setColor(RGBColor{0, 0,0});
                 }
             }
             else if (state == GLUT_UP)
