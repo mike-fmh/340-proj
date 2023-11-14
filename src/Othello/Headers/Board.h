@@ -16,7 +16,7 @@ namespace othello {
 
 	struct Board {
 
-		static const float X_MIN, X_MAX, Y_MIN, Y_MAX;
+		static const int ROWS_MIN, ROWS_MAX, COLS_MIN, COLS_MAX;
 
 		static const float WIDTH, HEIGHT;
 

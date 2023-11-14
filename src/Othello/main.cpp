@@ -97,12 +97,12 @@ void applicationInit();
 const int INIT_WIN_X = 10, INIT_WIN_Y = 32;
 
 // traditional othello board is 8x8 tiles
-const float Board::X_MIN = 1.f;
-const float Board::X_MAX = +8.f;
-const float Board::Y_MIN = 1.f;
-const float Board::Y_MAX = +8.f;
-const float Board::WIDTH = Board::X_MAX - Board::X_MIN;
-const float Board::HEIGHT = Board::Y_MAX - Board::Y_MIN;
+const int Board::ROWS_MIN = 1;
+const int Board::ROWS_MAX = 8;
+const int Board::COLS_MIN = 1;
+const int Board::COLS_MAX = 8;
+const float Board::WIDTH = Board::ROWS_MAX - Board::ROWS_MIN;
+const float Board::HEIGHT = Board::COLS_MAX - Board::COLS_MIN;
 
 #define SMALL_DISPLAY_FONT    GLUT_BITMAP_HELVETICA_10
 #define MEDIUM_DISPLAY_FONT   GLUT_BITMAP_HELVETICA_12
@@ -209,7 +209,7 @@ void myResizeFunc(int w, int h)
     //    Here I define the dimensions of the "virtual world" that my
     //    window maps to
     //  Display more in the window than space exists on the board
-    gluOrtho2D(Board::X_MIN - 1 , Board::X_MAX + 1, Board::Y_MIN - 1, Board::Y_MAX + 1);
+    gluOrtho2D(Board::ROWS_MIN - 1 , Board::ROWS_MAX + 1, Board::COLS_MIN - 1, Board::COLS_MAX + 1);
 
     //    When it's done, request a refresh of the display
     glutPostRedisplay();
@@ -469,7 +469,7 @@ void applicationInit()
             blackOrWhite = true;
         }
         for (int r = 1; r <= 8; r++) {
-            thisPnt = TilePoint{(float)r, (float)c};
+            thisPnt = TilePoint{r, c};
             shared_ptr<Tile> thisTile = make_shared<Tile>(thisPnt, blackOrWhite);
             boardTiles.push_back(thisTile);
             allObjects.push_back(thisTile);
@@ -480,16 +480,16 @@ void applicationInit()
     
     // 4 starting pieces (discs)
     shared_ptr<Disc> thisDisc;
-    thisPnt = TilePoint{4.f, 4.f};
+    thisPnt = TilePoint{4, 4};
     thisDisc = make_shared<Disc>(thisPnt, true);
     allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{5.f, 4.f};
+    thisPnt = TilePoint{5, 4};
     thisDisc = make_shared<Disc>(thisPnt, false);
     allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{4.f, 5.f};
+    thisPnt = TilePoint{4, 5};
     thisDisc = make_shared<Disc>(thisPnt, false);
     allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{5.f, 5.f};
+    thisPnt = TilePoint{5, 5};
     thisDisc = make_shared<Disc>(thisPnt, true);
     allObjects.push_back(thisDisc);
 

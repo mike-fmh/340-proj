@@ -109,11 +109,11 @@ namespace othello
 		
 		/** The tile's horizontal location.
 		 */
-		float x;
+		int x;
 
 		/** The tile's vertical location.
 		 */
-		float y;
+		int y;
 
 	};
 
