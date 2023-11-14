@@ -9,11 +9,13 @@
 
 using namespace othello;
 
-Tile::Tile(TilePoint& loc, float color)
+Tile::Tile(TilePoint& loc, float red, float blue, float green)
     :   Object(loc, 0),
         GraphicObject(loc, 0),
         AnimatedObject(loc, 0, 0, 0, 0),
-        color_(color)
+        red_(red),
+        blue_(blue),
+        green_(green)
 {
     
 }
@@ -34,7 +36,7 @@ void Tile::draw() const
     glScalef(1, 1, 1.f);
     
     
-    glColor3f(0.2f, 1.f, 0.4f);
+    glColor3f(red_, blue_, green_);
     glBegin(GL_POLYGON);
         glVertex2f(-0.5f, -0.5f);
         glVertex2f(+0.5f, -0.5f);

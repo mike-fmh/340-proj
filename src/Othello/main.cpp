@@ -24,7 +24,7 @@
 using namespace std;
 using namespace othello;
 
-vector<shared_ptr<Tile>> boardTiles;
+vector<vector<shared_ptr<Tile>>> boardTiles;
 vector<shared_ptr<GraphicObject>> allObjects;
 
 //--------------------------------------
@@ -39,6 +39,9 @@ vector<shared_ptr<GraphicObject>> allObjects;
 //    are declared as "enum class NameOfType".  I agree and do so in general, but
 //    here these are meant to be used with my glut interface, and it's really
 //    bothersome to do the casting to int each each time.
+
+
+const RGBColor DEFAULT_TILE_COLOR = RGBColor{0.2f, 1.f, 0.4f};
 
 const char* WIN_TITLE = "Othello";
 
@@ -87,6 +90,11 @@ void mySpecialKeyHandler(int key, int x, int y);
 void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
+
+/// Returns a tile's neighbors including diagonals
+/// @param tile the original tile to get the neighbors of
+/// @param neighbors the vector to populate with neighboring tiles
+void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* worldTiles);
 
 
 //--------------------------------------
@@ -159,6 +167,29 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #pragma mark -
 #pragma mark Callback functions
 #endif
+
+
+void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* worldTiles) {
+    // rows & columns are numbered from 1...MAX-1 instead of 0...MAX-1
+    if (tile.getCol() > 1) { // north
+        neighbors->push_back(worldTiles->at(tile.x - 1).at(tile.y));
+       /* if (tile.getRow() > 1) { // northwest
+            neighbors->push_back(TilePoint{tile.x - 1, tile.y - 1});
+        }
+        if (tile.getRow() < Board::ROWS_MAX - 1) { // northeast
+            neighbors->push_back(TilePoint{tile.x - 1, tile.y + 1});
+        }*/
+    }
+    if (tile.getCol() < Board::COLS_MAX - 1) { // south
+        neighbors->push_back(worldTiles->at(tile.x + 1).at(tile.y));
+    }
+    if (tile.getRow() > 1) { // west
+        neighbors->push_back(worldTiles->at(tile.x).at(tile.y - 1));
+    }
+    if (tile.getRow() < Board::ROWS_MAX - 1) { // east
+        neighbors->push_back(worldTiles->at(tile.x).at(tile.y + 1));
+    }
+}
 
 
 void myDisplayFunc(void)
@@ -316,6 +347,36 @@ void myTimerFunc(int value)
     }
 }
 
+void myMouseHandler(int button, int state, int ix, int iy)
+{
+//    static int clickCount = 0;
+
+    switch (button)
+    {
+        case GLUT_LEFT_BUTTON:
+            if (state == GLUT_DOWN)
+            {
+                TilePoint t = TilePoint{pixelToWorld(ix, iy)};
+                cout << t.x << ", " << t.y << endl;
+                vector<shared_ptr<Tile>> neighs;
+                getNeighbors(t, &neighs, &boardTiles);
+                for (int i = 0; i < neighs.size(); i++) {
+                    cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
+                    neighs.at(i)->setColor(RGBColor{0, 0,0});
+                }
+            }
+            else if (state == GLUT_UP)
+            {
+                
+            }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+
 //--------------------------------------
 #if 0
 #pragma mark -
@@ -460,20 +521,13 @@ void displayTextualInfo(const char* infoStr, int textRow)
 void applicationInit()
 {
     TilePoint thisPnt;
-    bool blackOrWhite;
     for (int c = 1; c <= 8; c++) {
-        // each row starts with alternating black/white tiles
-        if (c % 2) {
-            blackOrWhite = false;
-        } else {
-            blackOrWhite = true;
-        }
+        boardTiles.push_back(vector<shared_ptr<Tile>>());
         for (int r = 1; r <= 8; r++) {
             thisPnt = TilePoint{r, c};
-            shared_ptr<Tile> thisTile = make_shared<Tile>(thisPnt, blackOrWhite);
-            boardTiles.push_back(thisTile);
+            shared_ptr<Tile> thisTile = make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR.red, DEFAULT_TILE_COLOR.blue, DEFAULT_TILE_COLOR.green);
+            boardTiles.at(c-1).push_back(thisTile);
             allObjects.push_back(thisTile);
-            blackOrWhite = !blackOrWhite;
         }
     }
     
@@ -508,6 +562,7 @@ int main(int argc, char * argv[])
     glutCreateWindow(WIN_TITLE);
     
     //    set up the callbacks
+    glutMouseFunc(myMouseHandler);
     glutDisplayFunc(myDisplayFunc);
     glutReshapeFunc(myResizeFunc);
     glutKeyboardFunc(myKeyHandler);

@@ -114,6 +114,13 @@ namespace othello
 		/** The tile's vertical location.
 		 */
 		int y;
+        
+        int getCol() {
+            return x;
+        }
+        int getRow() {
+            return y;
+        }
 
 	};
 
@@ -143,6 +150,12 @@ namespace othello
         
         static Velocity NULL_VELOCITY;
 
+    };
+
+    struct RGBColor {
+        float red;
+        float blue;
+        float green;
     };
 
 }

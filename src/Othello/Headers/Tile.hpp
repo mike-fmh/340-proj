@@ -15,11 +15,11 @@ using namespace othello;
 
 class Tile: public GraphicObject, public AnimatedObject {
 private:
-   
-    bool color_; // false = white, true = black
+    
+    float red_, blue_, green_; // false = white, true = black
     
 public:
-    Tile(TilePoint& loc, float color);
+    Tile(TilePoint& loc, float red, float blue, float green);
     
     void draw() const;
     void update(float dt);
@@ -32,6 +32,11 @@ public:
     }
     inline TilePoint getPos() {
         return TilePoint{getRow(), getCol()};
+    }
+    inline void setColor(RGBColor color) {
+        red_ = color.red;
+        green_ = color.green;
+        blue_ = color.blue;
     }
 };
 
