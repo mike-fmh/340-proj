@@ -198,25 +198,35 @@ shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* b
 void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* boardTiles) {
     // rows & columns are numbered from 1...MAX-1 instead of 0...MAX-1
     TilePoint tileLoc;
-    if (tile.getCol() > 1) { // north
+    if (tile.getCol() > 1) { // west
         tileLoc = TilePoint{tile.x - 1, tile.y};
         neighbors->push_back(getBoardTile(tileLoc, boardTiles));
-       /* if (tile.getRow() > 1) { // northwest
-            neighbors->push_back(TilePoint{tile.x - 1, tile.y - 1});
+        if (tile.getRow() > 1) { // southwest
+            tileLoc = TilePoint{tile.x - 1, tile.y - 1};
+            neighbors->push_back(getBoardTile(tileLoc, boardTiles));
         }
-        if (tile.getRow() < Board::ROWS_MAX - 1) { // northeast
-            neighbors->push_back(TilePoint{tile.x - 1, tile.y + 1});
-        }*/
+        if (tile.getRow() < Board::ROWS_MAX) { // northwest
+            tileLoc = TilePoint{tile.x - 1, tile.y + 1};
+            neighbors->push_back(getBoardTile(tileLoc, boardTiles));
+        }
     }
-    if (tile.getCol() < Board::Y_MAX - 1) { // south
+    if (tile.getCol() < Board::Y_MAX - 1) { // east
         tileLoc = TilePoint{tile.x + 1, tile.y};
         neighbors->push_back(getBoardTile(tileLoc, boardTiles));
+        if (tile.getRow() > 1) { // southeast
+            tileLoc = TilePoint{tile.x + 1, tile.y - 1};
+            neighbors->push_back(getBoardTile(tileLoc, boardTiles));
+        }
+        if (tile.getRow() < Board::ROWS_MAX) { // northeast
+            tileLoc = TilePoint{tile.x + 1, tile.y + 1};
+            neighbors->push_back(getBoardTile(tileLoc, boardTiles));
+        }
     }
-    if (tile.getRow() > 1) { // west
+    if (tile.getRow() > 1) { // south
         tileLoc = TilePoint{tile.x, tile.y - 1};
         neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
-    if (tile.getRow() < Board::X_MAX - 1) { // east
+    if (tile.getRow() < Board::X_MAX - 1) { // north
         tileLoc = TilePoint{tile.x, tile.y + 1};
         neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
@@ -395,7 +405,7 @@ void myMouseHandler(int button, int state, int ix, int iy)
                 getNeighbors(t, &neighs, &allBoardTiles);
                 for (int i = 0; i < neighs.size(); i++) {
                     //cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
-                    //neighs.at(i)->setColor(RGBColor{0, 0,0});
+                    neighs.at(i)->setColor(RGBColor{0, 0,0});
                 }
             }
             else if (state == GLUT_UP)
