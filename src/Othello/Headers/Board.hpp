@@ -13,11 +13,12 @@
 #include <vector>
 #include <memory>
 
-
 namespace othello
 {
-    class Board {
+    class Board
+    {
         private:
+        
             static std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles;
             
             
@@ -30,20 +31,36 @@ namespace othello
             static float pixelToWorldRatio;
             static float worldToPixelRatio;
             static float drawInPixelScale;
-        
+
         public:
-            Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor);
+        
+            Board(float x, float y, float angle);
+            Board(const TilePoint& tile, float angle);
             
+            //    The rule of thumb is:  If your class contains at least one virtual
+            //    method (which indicates that it may be used polymorphically), then
+            //    its destructor should be virtual
+            virtual ~Board() = default;
+            
+            //disabled constructors & operators
+            Board() = delete;
+            Board(const Board& obj) = delete;    // copy
+            Board(Board&& obj) = delete;        // move
+            Board& operator = (const Board& obj) = delete;    // copy operator
+            Board& operator = (Board&& obj) = delete;        // move operator
+
+            Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor);
+        
             /** Function called through the initialization of a global variable in the
-             *	main program.  Although the user specifies dimensions for the rendering pane,
-             *	the function may set different values that agree better with the world
-             *	aspect ratio.
-             * @param paneWidth		user-set width of the redering pane
-             * @param paneHeight	user-set height of the redering pane
+             *    main program.  Although the user specifies dimensions for the rendering pane,
+             *    the function may set different values that agree better with the world
+             *    aspect ratio.
+             * @param paneWidth        user-set width of the redering pane
+             * @param paneHeight    user-set height of the redering pane
              */
             void setScalingRatios(int& paneWidth, int& paneHeight);
             
-            /// Returns the Tile object in worldTiles at the given TilePoint, if any exist
+            /// Returns the Tile Board in worldTiles at the given TilePoint, if any exist
             /// @param at the location of the Tile to return
             std::shared_ptr<Tile> getBoardTile(TilePoint& at);
             
@@ -69,9 +86,9 @@ namespace othello
             inline int getYmax() {
                 return Y_MAX_;
             }
+
     };
 }
-
 
 
 #endif  //  BOARD_HPP
