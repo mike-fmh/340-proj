@@ -196,7 +196,6 @@ shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* b
 
 
 void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* boardTiles) {
-    // rows & columns are numbered from 1...MAX instead of 0...MAX-1
     TilePoint tileLoc;
     if (tile.getCol() > 1) { // west
         tileLoc = TilePoint{tile.x - 1, tile.y};
