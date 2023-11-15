@@ -24,7 +24,7 @@
 using namespace std;
 using namespace othello;
 
-vector<vector<shared_ptr<Tile>>> boardTiles;
+vector<vector<shared_ptr<Tile>>> allBoardTiles;
 vector<shared_ptr<GraphicObject>> allObjects;
 
 //--------------------------------------
@@ -386,9 +386,9 @@ void myMouseHandler(int button, int state, int ix, int iy)
                 TilePoint t = TilePoint{pixelToWorld(ix, iy)};
                 cout << t.x << ", " << t.y << endl;
                 vector<shared_ptr<Tile>> neighs;
-                getBoardTile(t, &boardTiles)->setColor(1, 1, 1);
-                cout << getBoardTile(t, &boardTiles)->getX() << ", " << getBoardTile(t, &boardTiles)->getY() << endl;
-                getNeighbors(t, &neighs, &boardTiles);
+                getBoardTile(t, &allBoardTiles)->setColor(1, 1, 1);
+                cout << getBoardTile(t, &allBoardTiles)->getX() << ", " << getBoardTile(t, &allBoardTiles)->getY() << endl;
+                getNeighbors(t, &neighs, &allBoardTiles);
                 for (int i = 0; i < neighs.size(); i++) {
                     //cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
                     //neighs.at(i)->setColor(RGBColor{0, 0,0});
@@ -551,11 +551,11 @@ void applicationInit()
 {
     TilePoint thisPnt;
     for (int c = 1; c <= 8; c++) {
-        boardTiles.push_back(vector<shared_ptr<Tile>>());
+        allBoardTiles.push_back(vector<shared_ptr<Tile>>());
         for (int r = 1; r <= 8; r++) {
             thisPnt = TilePoint{r, c};
             shared_ptr<Tile> thisTile = make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR.red, DEFAULT_TILE_COLOR.blue, DEFAULT_TILE_COLOR.green);
-            boardTiles.at(c-1).push_back(thisTile);
+            allBoardTiles.at(c-1).push_back(thisTile);
             allObjects.push_back(thisTile);
         }
     }
