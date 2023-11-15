@@ -11,20 +11,20 @@
 #include "GraphicObject.h"
 #include "AnimatedObject.h"
 
-using namespace othello;
-
-class Disc: public GraphicObject, public AnimatedObject {
-private:
-    static float** _circlePoints;
-    static const int _numCirPoints;
-    bool color_; // false = white, true = black
-    float size_; // how large should the disc be?
-    
-public:
-    Disc(TilePoint& loc, float color);
-    
-    void draw() const;
-    void update(float dt);
-};
+namespace othello {
+    class Disc: public GraphicObject, public AnimatedObject {
+        private:
+            static float** _circlePoints;
+            static const int _numCirPoints;
+            bool color_; // false = white, true = black
+            float size_; // how large should the disc be?
+        
+        public:
+            Disc(TilePoint& loc, float color);
+            
+            void draw() const;
+            void update(float dt);
+    };
+}
 
 #endif /* Disc_hpp */
