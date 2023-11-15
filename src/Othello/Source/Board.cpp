@@ -20,28 +20,28 @@ void Board::setScalingRatios(int& paneWidth, int& paneHeight){
 
 TilePoint othello::pixelToWorld(float ix, float iy)
 {
-	return TilePoint{	(int)round(Board::ROWS_MIN + ix*Board::pixelToWorldRatio),
-					(int)round(Board::COLS_MAX - iy*Board::pixelToWorldRatio)
+	return TilePoint{	(int)round(Board::X_MIN + ix*Board::pixelToWorldRatio),
+					(int)round(Board::Y_MAX - iy*Board::pixelToWorldRatio)
 				};
 }
 
 TilePoint othello::pixelToWorld(const PixelPoint& pt)
 {
-	return TilePoint{	(int)round(Board::ROWS_MIN + pt.x*Board::pixelToWorldRatio),
-					(int)round(Board::COLS_MAX - pt.y*Board::pixelToWorldRatio)
+	return TilePoint{	(int)round(Board::X_MIN + pt.x*Board::pixelToWorldRatio),
+					(int)round(Board::Y_MAX - pt.y*Board::pixelToWorldRatio)
 				};
 }
 
 PixelPoint othello::worldToPixel(float wx, float wy)
 {
-	return PixelPoint{(wx - Board::ROWS_MIN)*Board::worldToPixelRatio,
-				 (Board::COLS_MAX - wy)*Board::worldToPixelRatio};
+	return PixelPoint{(wx - Board::X_MIN)*Board::worldToPixelRatio,
+				 (Board::Y_MAX - wy)*Board::worldToPixelRatio};
 
 }
 
 PixelPoint othello::worldToPixel(const TilePoint& pt)
 {
-	return PixelPoint{(pt.x - Board::ROWS_MIN)*Board::worldToPixelRatio,
-				 (Board::COLS_MAX - pt.y)*Board::worldToPixelRatio};
+	return PixelPoint{(pt.x - Board::X_MIN)*Board::worldToPixelRatio,
+				 (Board::Y_MAX - pt.y)*Board::worldToPixelRatio};
 
 }

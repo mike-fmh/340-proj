@@ -114,10 +114,16 @@ const int Board::ROWS_MIN = 1;
 const int Board::ROWS_MAX = 8;
 const int Board::COLS_MIN = 1;
 const int Board::COLS_MAX = 8;
-const int Board::PADDING = 0; // we need some extra space on each side of the board
 
-const float Board::WIDTH = Board::ROWS_MAX - Board::ROWS_MIN;
-const float Board::HEIGHT = Board::COLS_MAX - Board::COLS_MIN;
+// the actual "world" to render should larger than the game board
+const int Board::PADDING = 1;
+const int Board::X_MIN = Board::ROWS_MIN - Board::PADDING;
+const int Board::X_MAX = Board::ROWS_MAX + Board::PADDING;
+const int Board::Y_MIN = Board::COLS_MIN - Board::PADDING;
+const int Board::Y_MAX = Board::COLS_MAX + Board::PADDING;
+
+const float Board::WIDTH = Board::X_MAX - Board::X_MIN;
+const float Board::HEIGHT = Board::Y_MAX - Board::Y_MIN;
 
 #define SMALL_DISPLAY_FONT    GLUT_BITMAP_HELVETICA_10
 #define MEDIUM_DISPLAY_FONT   GLUT_BITMAP_HELVETICA_12
@@ -176,17 +182,17 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #endif
 
 shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* boardTiles) {
-    float row = at.x - 1;
-    float col = at.y - 1;
+    float row = at.x;
+    float col = at.y;
     if (row > Board::ROWS_MAX)
         row = Board::ROWS_MAX;
-    if (row < Board::ROWS_MIN)
-        row = Board::ROWS_MIN;
-    
     if (col > Board::COLS_MAX)
         col = Board::COLS_MAX;
-    if (col < Board::COLS_MIN)
-        col = Board::COLS_MIN;
+    
+    // TilePoint coords go from 1-8, while boardTile->at() will range from 0-7
+    // so in the boardTiles vector, all tile locations are -1 compared to them represented by TilePoints
+    row--;
+    col--;
     return boardTiles->at(col).at(row);
 }
 
@@ -204,7 +210,7 @@ void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<v
             neighbors->push_back(TilePoint{tile.x - 1, tile.y + 1});
         }*/
     }
-    if (tile.getCol() < Board::COLS_MAX - 1) { // south
+    if (tile.getCol() < Board::Y_MAX - 1) { // south
         tileLoc = TilePoint{tile.x + 1, tile.y};
         neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
@@ -212,7 +218,7 @@ void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<v
         tileLoc = TilePoint{tile.x, tile.y - 1};
         neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
-    if (tile.getRow() < Board::ROWS_MAX - 1) { // east
+    if (tile.getRow() < Board::X_MAX - 1) { // east
         tileLoc = TilePoint{tile.x, tile.y + 1};
         neighbors->push_back(getBoardTile(tileLoc, boardTiles));
     }
@@ -267,7 +273,7 @@ void myResizeFunc(int w, int h)
     //    Here I define the dimensions of the "virtual world" that my
     //    window maps to
     //  Display more in the window than space exists on the board
-    gluOrtho2D(Board::ROWS_MIN - Board::PADDING, Board::ROWS_MAX + Board::PADDING, Board::COLS_MIN - Board::PADDING, Board::COLS_MAX + Board::PADDING);
+    gluOrtho2D(Board::X_MIN, Board::X_MAX, Board::Y_MIN, Board::Y_MAX);
 
     //    When it's done, request a refresh of the display
     glutPostRedisplay();
