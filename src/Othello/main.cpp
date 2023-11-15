@@ -191,9 +191,7 @@ shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* b
     
     // TilePoint coords go from 1-8, while boardTile->at() will range from 0-7
     // so in the boardTiles vector, all tile locations are -1 compared to them represented by TilePoints
-    row--;
-    col--;
-    return boardTiles->at(col).at(row);
+    return boardTiles->at(col - 1).at(row - 1);
 }
 
 
