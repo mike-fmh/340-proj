@@ -7,7 +7,7 @@
 #ifndef GRAPHIC_OBJECT_H
 #define GRAPHIC_OBJECT_H
 
-#include "Board.h"
+#include "Board.hpp"
 #include "Object.h"
 
 namespace othello

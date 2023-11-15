@@ -8,7 +8,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "Board.h"
+#include "Board.hpp"
 
 namespace othello
 {
