@@ -336,6 +336,8 @@ void myMouseHandler(int button, int state, int ix, int iy)
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_DOWN)
             {
+                
+                /*
                 TilePoint t = TilePoint{gameBoard->pixelToWorld(ix, iy)};
                 cout << t.x << ", " << t.y << endl;
                 vector<shared_ptr<Tile>> neighs;
@@ -345,6 +347,7 @@ void myMouseHandler(int button, int state, int ix, int iy)
                     //cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
                     neighs.at(i)->setColor(RGBColor{0, 0,0});
                 }
+                */
             }
             else if (state == GLUT_UP)
             {
