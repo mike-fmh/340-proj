@@ -16,11 +16,11 @@ namespace othello {
         private:
             static float** _circlePoints;
             static const int _numCirPoints;
-            bool color_; // false = white, true = black
+            RGBColor color_; // false = white, true = black
             float size_; // how large should the disc be?
         
         public:
-            Disc(TilePoint& loc, float color);
+            Disc(TilePoint& loc, RGBColor color);
             
             void draw() const;
             void update(float dt);

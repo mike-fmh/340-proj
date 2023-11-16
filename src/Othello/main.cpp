@@ -19,6 +19,7 @@
 #include "Board.hpp"
 #include "Tile.hpp"
 #include "Disc.hpp"
+#include "TurnLogic.hpp"
 //
 
 using namespace std;
@@ -27,6 +28,9 @@ using namespace othello;
 
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
+
+shared_ptr<Player> playerWhite;
+shared_ptr<Player> playerBlack;
 
 //--------------------------------------
 #if 0
@@ -508,19 +512,28 @@ void applicationInit()
     allObjects.push_back(gameBoard);
     
     TilePoint thisPnt;
-    // 4 starting pieces (discs)
     shared_ptr<Disc> thisDisc;
+    playerWhite = make_shared<Player>(RGBColor{1, 1, 1});
+    playerBlack = make_shared<Player>(RGBColor{0, 0, 0});
+    
+    // 4 starting pieces (discs)
     thisPnt = TilePoint{4, 4};
-    thisDisc = make_shared<Disc>(thisPnt, true);
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{5, 4};
-    thisDisc = make_shared<Disc>(thisPnt, false);
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{4, 5};
-    thisDisc = make_shared<Disc>(thisPnt, false);
+    thisDisc = make_shared<Disc>(thisPnt, playerBlack->getMyColor());
+    playerBlack->addPiece(thisDisc);
     allObjects.push_back(thisDisc);
     thisPnt = TilePoint{5, 5};
-    thisDisc = make_shared<Disc>(thisPnt, true);
+    thisDisc = make_shared<Disc>(thisPnt, playerBlack->getMyColor());
+    playerBlack->addPiece(thisDisc);
+    allObjects.push_back(thisDisc);
+    
+    allObjects.push_back(thisDisc);
+    thisPnt = TilePoint{5, 4};
+    thisDisc = make_shared<Disc>(thisPnt, playerWhite->getMyColor());
+    playerWhite->addPiece(thisDisc);
+    allObjects.push_back(thisDisc);
+    thisPnt = TilePoint{4, 5};
+    thisDisc = make_shared<Disc>(thisPnt, playerWhite->getMyColor());
+    playerWhite->addPiece(thisDisc);
     allObjects.push_back(thisDisc);
 
     //    time really starts now

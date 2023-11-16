@@ -12,7 +12,7 @@ using namespace othello;
 const int Disc::_numCirPoints = 18;
 float** Disc::_circlePoints;
 
-Disc::Disc(TilePoint& loc, float color)
+Disc::Disc(TilePoint& loc, RGBColor color)
     :   Object(loc, 0),
         GraphicObject(loc, 0),
         AnimatedObject(loc, 0, 0, 0, 0),
@@ -47,14 +47,7 @@ void Disc::draw() const
     //    apply the radius as a scale
     glScalef(1, 1, 1.f);
     
-    // is the Disc black or white?
-    if (color_) {
-        // black
-        glColor3f(0.f, 0.f, 0.f);
-    } else {
-        // white
-        glColor3f(1.f, 1.f, 1.f);
-    }
+    glColor3f(color_.red, color_.green, color_.blue);
     
     glBegin(GL_POLYGON);
     for (int i = 0; i < _numCirPoints; i++) {
