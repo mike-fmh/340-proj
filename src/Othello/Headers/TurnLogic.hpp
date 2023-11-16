@@ -12,7 +12,7 @@
 
 #include <vector>
 #include <memory>
-#include "Tile.hpp"
+#include "Board.hpp"
 #include "Player.hpp"
 
 
@@ -21,6 +21,8 @@ namespace othello {
     private:
         /// number of players in the game
         static const int NUM_GAME_PLAYERS;
+        
+        std::shared_ptr<Board> board_;
         
         /// player whose turn it is when the game starts
         std::shared_ptr<Player> startingPlayer_;
@@ -32,7 +34,7 @@ namespace othello {
         std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_;
         
     public:
-        TurnLogic(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::vector<std::vector<std::shared_ptr<Tile>>>* board);
+        TurnLogic(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<Board> board);
         
         //disabled constructors & operators
         TurnLogic() = delete;
@@ -41,6 +43,12 @@ namespace othello {
         TurnLogic& operator = (const TurnLogic& obj) = delete;    // copy operator
         TurnLogic& operator = (TurnLogic&& obj) = delete;        // move operator
         
+        /// populates the vector referenced by moveableTiles with possible moves for the forWho player
+        void getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>* movableTiles);
+        
+        inline std::shared_ptr<Player> getCurrentPlayer() {
+            return currentPlayerTurn_;
+        }
     };
 }
 

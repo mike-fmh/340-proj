@@ -8,6 +8,8 @@
 #include "commonTypes.h"
 #include "glPlatform.h"
 #include "Tile.hpp"
+#include <algorithm>
+#include <cmath>
 #include <vector>
 #include <memory>
 
@@ -59,7 +61,7 @@ namespace othello
             /// @param tile the original tile to get the neighbors of
             /// @param neighbors the vector to populate with neighboring tiles
             void getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>* neighbors);
-            
+        
             TilePoint pixelToWorld(float ix, float iy);
             PixelPoint worldToPixel(float wx, float wy);
             TilePoint pixelToWorld(const PixelPoint& pt);

@@ -538,7 +538,7 @@ void applicationInit()
     playerWhite->addPiece(thisDisc);
     allObjects.push_back(thisDisc);
 
-    gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard->getTiles());
+    gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard);
     
     //    time really starts now
     startTime = time(nullptr);
