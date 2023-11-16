@@ -13,6 +13,7 @@
 #include <vector>
 #include <memory>
 #include "Tile.hpp"
+#include "Player.hpp"
 
 
 namespace othello {
