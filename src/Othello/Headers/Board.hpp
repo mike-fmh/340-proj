@@ -31,12 +31,6 @@ namespace othello
             static float drawInPixelScale;
 
         public:
-            
-            //    The rule of thumb is:  If your class contains at least one virtual
-            //    method (which indicates that it may be used polymorphically), then
-            //    its destructor should be virtual
-            virtual ~Board() = default;
-            
             //disabled constructors & operators
             Board() = delete;
             Board(const Board& obj) = delete;    // copy
