@@ -29,10 +29,10 @@ namespace othello {
         std::shared_ptr<Player> currentPlayerTurn_;
         
         /// pointer reference to the game board
-        std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> boardTiles_;
+        std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_;
         
     public:
-        TurnLogic(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> board);
+        TurnLogic(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::vector<std::vector<std::shared_ptr<Tile>>>* board);
         
         //disabled constructors & operators
         TurnLogic() = delete;

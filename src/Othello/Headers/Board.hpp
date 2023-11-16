@@ -66,8 +66,8 @@ namespace othello
             PixelPoint worldToPixel(const TilePoint& pt);
             
         
-            inline std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> getTiles() {
-                return std::make_shared<std::vector<std::vector<std::shared_ptr<Tile>>>>(allBoardTiles);
+            inline std::vector<std::vector<std::shared_ptr<Tile>>>* getTiles() {
+                return &allBoardTiles;
             }
             inline int getXmin() {
                 return X_MIN_;
