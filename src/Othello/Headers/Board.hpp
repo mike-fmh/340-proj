@@ -5,8 +5,6 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
-#include <random>
-#include <cmath>
 #include "commonTypes.h"
 #include "glPlatform.h"
 #include "Tile.hpp"
@@ -15,7 +13,7 @@
 
 namespace othello
 {
-    class Board
+    class Board: public GraphicObject
     {
         private:
         
@@ -33,9 +31,6 @@ namespace othello
             static float drawInPixelScale;
 
         public:
-        
-            Board(float x, float y, float angle);
-            Board(const TilePoint& tile, float angle);
             
             //    The rule of thumb is:  If your class contains at least one virtual
             //    method (which indicates that it may be used polymorphically), then
@@ -51,6 +46,8 @@ namespace othello
 
             Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor);
         
+            void draw() const;
+        
             /** Function called through the initialization of a global variable in the
              *    main program.  Although the user specifies dimensions for the rendering pane,
              *    the function may set different values that agree better with the world
@@ -60,7 +57,7 @@ namespace othello
              */
             void setScalingRatios(int& paneWidth, int& paneHeight);
             
-            /// Returns the Tile Board in worldTiles at the given TilePoint, if any exist
+            /// Returns the Tile object in worldTiles at the given TilePoint, if any exist
             /// @param at the location of the Tile to return
             std::shared_ptr<Tile> getBoardTile(TilePoint& at);
             

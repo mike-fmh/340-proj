@@ -501,7 +501,8 @@ void displayTextualInfo(const char* infoStr, int textRow)
 
 void applicationInit()
 {
-   gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR);
+    gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR);
+    allObjects.push_back(gameBoard);
     
     TilePoint thisPnt;
     // 4 starting pieces (discs)

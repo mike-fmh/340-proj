@@ -9,7 +9,9 @@ std::vector<std::vector<std::shared_ptr<Tile>>> Board::allBoardTiles;
 
 
 Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor)
-    :   Y_MIN_(boardMinHeight - boardPadding),
+    :   Object(0, 0, 0),
+        GraphicObject(0, 0, 0),
+        Y_MIN_(boardMinHeight - boardPadding),
         Y_MAX_(boardMaxHeight + boardPadding),
         X_MIN_(boardMinWidth - boardPadding),
         X_MAX_(boardMaxWidth + boardPadding),
@@ -120,5 +122,16 @@ void Board::getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>* ne
     if (tile.getRow() < Board::X_MAX_ - 1) { // north
         tileLoc = TilePoint{tile.x, tile.y + 1};
         neighbors->push_back(getBoardTile(tileLoc));
+    }
+}
+
+void Board::draw() const {
+    // draw all constituent tiles
+    for (int i = 0; i < allBoardTiles.size(); i++) {
+        for (auto tile : allBoardTiles.at(i)) {
+            if (tile != nullptr) {
+                tile->draw();
+            }
+        }
     }
 }
