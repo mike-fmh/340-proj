@@ -16,7 +16,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "Board.h"
+#include "Board.hpp"
 #include "Tile.hpp"
 #include "Disc.hpp"
 //
@@ -24,7 +24,8 @@
 using namespace std;
 using namespace othello;
 
-vector<vector<shared_ptr<Tile>>> allBoardTiles;
+
+shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
 
 //--------------------------------------
@@ -91,17 +92,6 @@ void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
 
-/// Returns a tile's neighbors including diagonals
-/// @param tile the original tile to get the neighbors of
-/// @param neighbors the vector to populate with neighboring tiles
-/// @param boardTiles the vector of tiles that make up the game board
-void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* boardTiles);
-
-/// Returns the Tile object in worldTiles at the given TilePoint, if any exist
-/// @param at the location of the Tile to return
-/// @param boardTiles the vector of tiles that make up the game board
-shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* boardTiles);
-
 //--------------------------------------
 #if 0
 #pragma mark Constants
@@ -110,20 +100,20 @@ shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* b
 const int INIT_WIN_X = 10, INIT_WIN_Y = 32;
 
 // traditional othello board is 8x8 tiles
-const int Board::ROWS_MIN = 1;
-const int Board::ROWS_MAX = 8;
-const int Board::COLS_MIN = 1;
-const int Board::COLS_MAX = 8;
+const int BOARD_ROWS_MIN = 1;
+const int BOARD_ROWS_MAX = 8;
+const int BOARD_COLS_MIN = 1;
+const int BOARD_COLS_MAX = 8;
 
 // the actual "world" to render should larger than the game board
-const int Board::PADDING = 1;
-const int Board::X_MIN = Board::ROWS_MIN - Board::PADDING;
-const int Board::X_MAX = Board::ROWS_MAX + Board::PADDING;
-const int Board::Y_MIN = Board::COLS_MIN - Board::PADDING;
-const int Board::Y_MAX = Board::COLS_MAX + Board::PADDING;
+const int BOARD_PADDING = 1;
+//const int BOARD_X_MIN = Board::ROWS_MIN - Board::PADDING;
+//const int BOARD_X_MAX = Board::ROWS_MAX + Board::PADDING;
+//const int BOARD_Y_MIN = Board::COLS_MIN - Board::PADDING;
+//const int BOARD_Y_MAX = Board::COLS_MAX + Board::PADDING;
 
-const float Board::WIDTH = Board::X_MAX - Board::X_MIN;
-const float Board::HEIGHT = Board::Y_MAX - Board::Y_MIN;
+//const float Board::WIDTH = Board::X_MAX - Board::X_MIN;
+//const float Board::HEIGHT = Board::Y_MAX - Board::Y_MIN;
 
 #define SMALL_DISPLAY_FONT    GLUT_BITMAP_HELVETICA_10
 #define MEDIUM_DISPLAY_FONT   GLUT_BITMAP_HELVETICA_12
@@ -181,47 +171,6 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #pragma mark Callback functions
 #endif
 
-shared_ptr<Tile> getBoardTile(TilePoint& at, vector<vector<shared_ptr<Tile>>>* boardTiles) {
-    float row = at.x;
-    float col = at.y;
-    if (row > Board::ROWS_MAX)
-        row = Board::ROWS_MAX;
-    if (col > Board::COLS_MAX)
-        col = Board::COLS_MAX;
-    
-    // TilePoint coords go from 1-8, while boardTile->at() will range from 0-7
-    // so in the boardTiles vector, all tile locations are -1 compared to them represented by TilePoints
-    return boardTiles->at(col - 1).at(row - 1);
-}
-
-
-void getNeighbors(TilePoint& tile, vector<shared_ptr<Tile>>* neighbors, vector<vector<shared_ptr<Tile>>>* boardTiles) {
-    // rows & columns are numbered from 1...MAX-1 instead of 0...MAX-1
-    TilePoint tileLoc;
-    if (tile.getCol() > 1) { // north
-        tileLoc = TilePoint{tile.x - 1, tile.y};
-        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
-       /* if (tile.getRow() > 1) { // northwest
-            neighbors->push_back(TilePoint{tile.x - 1, tile.y - 1});
-        }
-        if (tile.getRow() < Board::ROWS_MAX - 1) { // northeast
-            neighbors->push_back(TilePoint{tile.x - 1, tile.y + 1});
-        }*/
-    }
-    if (tile.getCol() < Board::Y_MAX - 1) { // south
-        tileLoc = TilePoint{tile.x + 1, tile.y};
-        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
-    }
-    if (tile.getRow() > 1) { // west
-        tileLoc = TilePoint{tile.x, tile.y - 1};
-        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
-    }
-    if (tile.getRow() < Board::X_MAX - 1) { // east
-        tileLoc = TilePoint{tile.x, tile.y + 1};
-        neighbors->push_back(getBoardTile(tileLoc, boardTiles));
-    }
-}
-
 
 void myDisplayFunc(void)
 {
@@ -253,7 +202,7 @@ void myResizeFunc(int w, int h)
     winWidth = w;
     winHeight = h;
     
-    Board::setScalingRatios(winWidth, winHeight);
+    gameBoard->setScalingRatios(winWidth, winHeight);
     if (winWidth != w || winHeight != h)
     {
         glutReshapeWindow(winWidth, winHeight);
@@ -271,7 +220,7 @@ void myResizeFunc(int w, int h)
     //    Here I define the dimensions of the "virtual world" that my
     //    window maps to
     //  Display more in the window than space exists on the board
-    gluOrtho2D(Board::X_MIN, Board::X_MAX, Board::Y_MIN, Board::Y_MAX);
+    gluOrtho2D(gameBoard->getXmin(), gameBoard->getXmax(), gameBoard->getYmin(), gameBoard->getYmax());
 
     //    When it's done, request a refresh of the display
     glutPostRedisplay();
@@ -387,15 +336,14 @@ void myMouseHandler(int button, int state, int ix, int iy)
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_DOWN)
             {
-                TilePoint t = TilePoint{pixelToWorld(ix, iy)};
+                TilePoint t = TilePoint{gameBoard->pixelToWorld(ix, iy)};
                 cout << t.x << ", " << t.y << endl;
                 vector<shared_ptr<Tile>> neighs;
-                getBoardTile(t, &allBoardTiles)->setColor(1, 1, 1);
-                cout << getBoardTile(t, &allBoardTiles)->getX() << ", " << getBoardTile(t, &allBoardTiles)->getY() << endl;
-                getNeighbors(t, &neighs, &allBoardTiles);
+                gameBoard->getBoardTile(t)->setColor(1, 1, 1);
+                gameBoard->getNeighbors(t, &neighs);
                 for (int i = 0; i < neighs.size(); i++) {
                     //cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
-                    //neighs.at(i)->setColor(RGBColor{0, 0,0});
+                    neighs.at(i)->setColor(RGBColor{0, 0,0});
                 }
             }
             else if (state == GLUT_UP)
@@ -553,18 +501,10 @@ void displayTextualInfo(const char* infoStr, int textRow)
 
 void applicationInit()
 {
+    gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR);
+    allObjects.push_back(gameBoard);
+    
     TilePoint thisPnt;
-    for (int c = 1; c <= 8; c++) {
-        allBoardTiles.push_back(vector<shared_ptr<Tile>>());
-        for (int r = 1; r <= 8; r++) {
-            thisPnt = TilePoint{r, c};
-            shared_ptr<Tile> thisTile = make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR.red, DEFAULT_TILE_COLOR.blue, DEFAULT_TILE_COLOR.green);
-            allBoardTiles.at(c-1).push_back(thisTile);
-            allObjects.push_back(thisTile);
-        }
-    }
-    
-    
     // 4 starting pieces (discs)
     shared_ptr<Disc> thisDisc;
     thisPnt = TilePoint{4, 4};

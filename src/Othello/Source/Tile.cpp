@@ -58,5 +58,5 @@ void Tile::draw() const
 }
 
 void Tile::update(float dt) {
-    // asteroids use a different update fn
+    
 }

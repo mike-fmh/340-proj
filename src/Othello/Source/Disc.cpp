@@ -7,6 +7,8 @@
 
 #include "Disc.hpp"
 
+using namespace othello;
+
 const int Disc::_numCirPoints = 18;
 float** Disc::_circlePoints;
 
