@@ -11,10 +11,13 @@ using namespace std;
 using namespace othello;
 
 
-TurnLogic::TurnLogic(int numPlayers, int startingPlayer, shared_ptr<vector<vector<shared_ptr<Tile>>>> board)
-    :   NUM_GAME_PLAYERS(numPlayers),
-        startingPlayer_(startingPlayer),
-        currentPlayerTurn_(startingPlayer),
+// othello will always have 2 players
+const int TurnLogic::NUM_GAME_PLAYERS = 2;
+
+
+TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<vector<vector<shared_ptr<Tile>>>> board)
+    :   startingPlayer_(playerWhite), // white always starts in othello
+        currentPlayerTurn_(playerWhite),
         boardTiles_(board)
 {
     

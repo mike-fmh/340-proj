@@ -20,18 +20,19 @@ namespace othello {
     class TurnLogic {
     private:
         /// number of players in the game
-        const int NUM_GAME_PLAYERS;
+        static const int NUM_GAME_PLAYERS;
         
         /// player whose turn it is when the game starts
-        int startingPlayer_;
+        std::shared_ptr<Player> startingPlayer_;
         
         /// player whose turn it currently is
-        int currentPlayerTurn_;
+        std::shared_ptr<Player> currentPlayerTurn_;
         
+        /// pointer reference to the game board
         std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> boardTiles_;
         
     public:
-        TurnLogic(int numPlayers, int startingPlayer, std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> board);
+        TurnLogic(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> board);
         
         //disabled constructors & operators
         TurnLogic() = delete;

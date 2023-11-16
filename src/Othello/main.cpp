@@ -32,6 +32,8 @@ vector<shared_ptr<GraphicObject>> allObjects;
 shared_ptr<Player> playerWhite;
 shared_ptr<Player> playerBlack;
 
+shared_ptr<TurnLogic> gameState;
+
 //--------------------------------------
 #if 0
 #pragma mark Custom data types
@@ -536,6 +538,8 @@ void applicationInit()
     playerWhite->addPiece(thisDisc);
     allObjects.push_back(thisDisc);
 
+    gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard->getTiles());
+    
     //    time really starts now
     startTime = time(nullptr);
 }
