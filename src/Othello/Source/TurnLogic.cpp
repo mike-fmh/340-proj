@@ -25,7 +25,7 @@ TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBl
 }
 
 
-void TurnLogic::getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>* movableTiles) {
+void TurnLogic::getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     for (int c = 0; c < boardTiles_->size(); c++) {
         for (int r = 0; r < boardTiles_->at(c).size(); r++) {
             TilePoint thisTileLoc = boardTiles_->at(c).at(r)->getPos();

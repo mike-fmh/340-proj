@@ -87,55 +87,55 @@ std::shared_ptr<Tile> Board::getBoardTile(TilePoint& at) {
     return allBoardTiles.at(col - 1).at(row - 1);
 }
 
-void Board::getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>* neighbors) {
+void Board::getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>& neighbors) {
     TilePoint tileLoc;
     if (tile.getCol() > 1) { // west
         tileLoc = TilePoint{tile.x - 1, tile.y};
         std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-        if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-            neighbors->push_back(curTile);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
         if (tile.getRow() > 1) { // southwest
             tileLoc = TilePoint{tile.x - 1, tile.y - 1};
             std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-            if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-                neighbors->push_back(curTile);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
         if (tile.getRow() < Board::ROWS_MAX_) { // northwest
             tileLoc = TilePoint{tile.x - 1, tile.y + 1};
             std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-            if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-                neighbors->push_back(curTile);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
     }
     if (tile.getCol() < Board::Y_MAX_  - 1) { // east
         tileLoc = TilePoint{tile.x + 1, tile.y};
         std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-        if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-            neighbors->push_back(curTile);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
         if (tile.getRow() > 1) { // southeast
             tileLoc = TilePoint{tile.x + 1, tile.y - 1};
             std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-            if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-                neighbors->push_back(curTile);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
         if (tile.getRow() < Board::ROWS_MAX_) { // northeast
             tileLoc = TilePoint{tile.x + 1, tile.y + 1};
             std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-            if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-                neighbors->push_back(curTile);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
     }
     if (tile.getRow() > 1) { // south
         tileLoc = TilePoint{tile.x, tile.y - 1};
         std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-        if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-            neighbors->push_back(curTile);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
     }
     if (tile.getRow() < Board::X_MAX_ - 1) { // north
         tileLoc = TilePoint{tile.x, tile.y + 1};
         std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
-        if (std::find(neighbors->begin(), neighbors->end(), curTile) == neighbors->end()) // if this location isn't already in the 'neighbors' vector
-            neighbors->push_back(curTile);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
     }
 }
 

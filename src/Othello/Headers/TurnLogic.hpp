@@ -44,7 +44,7 @@ namespace othello {
         TurnLogic& operator = (TurnLogic&& obj) = delete;        // move operator
         
         /// populates the vector referenced by moveableTiles with possible moves for the forWho player
-        void getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>* movableTiles);
+        void getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>& movableTiles);
         
         inline std::shared_ptr<Player> getCurrentPlayer() {
             return currentPlayerTurn_;
