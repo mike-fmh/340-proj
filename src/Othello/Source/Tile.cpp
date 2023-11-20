@@ -9,13 +9,14 @@
 
 using namespace othello;
 
-Tile::Tile(TilePoint& loc, float red, float blue, float green)
+Tile::Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<Player> owner)
     :   Object(loc, 0),
         GraphicObject(loc, 0),
         AnimatedObject(loc, 0, 0, 0, 0),
         red_(red),
         blue_(blue),
-        green_(green)
+        green_(green),
+        owner_(owner)
 {
     
 }

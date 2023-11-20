@@ -29,6 +29,7 @@ using namespace othello;
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
 
+shared_ptr<Player> playerNull;
 shared_ptr<Player> playerWhite;
 shared_ptr<Player> playerBlack;
 
@@ -291,7 +292,14 @@ void myKeyHandler(unsigned char c, int x, int y)
         case 27:
             exit(0);
             break;
-        
+        case 'c': {
+            vector<shared_ptr<Tile>> mov;
+            gameState->getPlayableTiles(playerWhite, mov);
+            for (auto tile : mov) {
+                tile->setColor(RGBColor{0.8, 1, 1});
+            }
+            break;
+        }
         default:
             break;
     }
@@ -510,32 +518,35 @@ void displayTextualInfo(const char* infoStr, int textRow)
 
 void applicationInit()
 {
-    gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR);
+    gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, playerNull);
     allObjects.push_back(gameBoard);
     
     TilePoint thisPnt;
     shared_ptr<Disc> thisDisc;
+    
+    playerNull = make_shared<Player>(RGBColor{-1,-1,-1}); // owns tiles with nothing placed on them
+    
     playerWhite = make_shared<Player>(RGBColor{1, 1, 1});
     playerBlack = make_shared<Player>(RGBColor{0, 0, 0});
     
     // 4 starting pieces (discs)
     thisPnt = TilePoint{4, 4};
     thisDisc = make_shared<Disc>(thisPnt, playerBlack->getMyColor());
-    playerBlack->addPiece(thisDisc);
+    gameBoard->addPiece(playerBlack, thisDisc);
     allObjects.push_back(thisDisc);
     thisPnt = TilePoint{5, 5};
     thisDisc = make_shared<Disc>(thisPnt, playerBlack->getMyColor());
-    playerBlack->addPiece(thisDisc);
+    gameBoard->addPiece(playerBlack, thisDisc);
     allObjects.push_back(thisDisc);
     
     allObjects.push_back(thisDisc);
     thisPnt = TilePoint{5, 4};
     thisDisc = make_shared<Disc>(thisPnt, playerWhite->getMyColor());
-    playerWhite->addPiece(thisDisc);
+    gameBoard->addPiece(playerWhite, thisDisc);
     allObjects.push_back(thisDisc);
     thisPnt = TilePoint{4, 5};
     thisDisc = make_shared<Disc>(thisPnt, playerWhite->getMyColor());
-    playerWhite->addPiece(thisDisc);
+    gameBoard->addPiece(playerWhite, thisDisc);
     allObjects.push_back(thisDisc);
 
     gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard);

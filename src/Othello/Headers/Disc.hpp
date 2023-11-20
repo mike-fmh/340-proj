@@ -24,6 +24,17 @@ namespace othello {
             
             void draw() const;
             void update(float dt);
+        
+            
+            inline int getRow() {
+                return (int)getX();
+            }
+            inline int getCol() {
+                return (int)getY();
+            }
+            inline TilePoint getPos() {
+                return TilePoint{getRow(), getCol()};
+            }
     };
 }
 

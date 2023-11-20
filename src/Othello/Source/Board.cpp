@@ -6,7 +6,7 @@ using namespace othello;
 std::vector<std::vector<std::shared_ptr<Tile>>> Board::allBoardTiles;
 
 
-Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor)
+Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef)
     :   Object(0, 0, 0),
         GraphicObject(0, 0, 0),
         Y_MIN_(boardMinHeight - boardPadding),
@@ -27,8 +27,25 @@ Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int board
         allBoardTiles.push_back(std::vector<std::shared_ptr<Tile>>());
         for (int r = 1; r <= 8; r++) {
             thisPnt = TilePoint{r, c};
-            std::shared_ptr<Tile> thisTile = std::make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR_.red, DEFAULT_TILE_COLOR_.blue, DEFAULT_TILE_COLOR_.green);
+            std::shared_ptr<Tile> thisTile = std::make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR_.red, DEFAULT_TILE_COLOR_.blue, DEFAULT_TILE_COLOR_.green, nullplayerRef);
             allBoardTiles.at(c-1).push_back(thisTile);
+        }
+    }
+}
+
+void Board::addPiece(std::shared_ptr<Player> forWho, std::shared_ptr<Disc> piece) {
+    forWho->addPiece(piece);
+    // now we need to give this player ownership of the tile where we placed the new piece
+    
+    // find this piece's Tile location
+    for (int c = 0; c < allBoardTiles.size(); c++) {
+        for (int r = 0; r < allBoardTiles.at(c).size(); r++) {
+            TilePoint tilePos = allBoardTiles.at(c).at(r)->getPos();
+            TilePoint piecePos = piece->getPos();
+            if ((tilePos.x == piecePos.x) & (tilePos.y == piecePos.y)) { // is this board tile at the location we're placing the new piece?
+                allBoardTiles.at(c).at(r)->setOwner(forWho);
+                return;
+            }
         }
     }
 }

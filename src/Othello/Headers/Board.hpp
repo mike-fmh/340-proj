@@ -5,6 +5,7 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
+#include "Player.hpp"
 #include "commonTypes.h"
 #include "glPlatform.h"
 #include "Tile.hpp"
@@ -40,10 +41,12 @@ namespace othello
             Board& operator = (const Board& obj) = delete;    // copy operator
             Board& operator = (Board&& obj) = delete;        // move operator
 
-            Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor);
+            Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef);
         
             void draw() const;
         
+            void addPiece(std::shared_ptr<Player> forWho, std::shared_ptr<Disc> piece);
+            
             /** Function called through the initialization of a global variable in the
              *    main program.  Although the user specifies dimensions for the rendering pane,
              *    the function may set different values that agree better with the world
