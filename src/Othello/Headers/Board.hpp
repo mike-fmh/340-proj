@@ -73,6 +73,9 @@ namespace othello
             TilePoint pixelToWorld(const PixelPoint& pt);
             PixelPoint worldToPixel(const TilePoint& pt);
             
+            inline bool isValidPosition(TilePoint& at) {
+                return ((at.x >= X_MIN_) & (at.x <= X_MAX_) & (at.y >= Y_MIN_) & (at.y <= Y_MAX_));
+            }
         
             inline std::vector<std::vector<std::shared_ptr<Tile>>>* getTiles() {
                 return &allBoardTiles;
