@@ -24,6 +24,21 @@ TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBl
     
 }
 
+bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::vector<std::shared_ptr<Tile>>& movableTiles) {
+    // our goal is to trim movable tiles
+
+//    if (tile->getPieceOwner() == board_->getNullPlayer()) {
+//        return false;
+//    }
+    
+    for (auto neigh : movableTiles) {
+        if (neigh->getPieceOwner() != tile->getPieceOwner()) { // if any of the neighbors are not owned by the original tile's owner, we can continue
+            
+        }
+    }
+    return false; // all of the neighbor tiles are owned by the original tile's player
+}
+
 
 void TurnLogic::getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     for (int c = 0; c < boardTiles_->size(); c++) {
