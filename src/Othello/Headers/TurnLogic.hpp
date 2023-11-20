@@ -48,7 +48,9 @@ namespace othello {
         
         /// Given a tile, returns if the disc placed on it is flanked by another disc of the same color
         /// 'flanked' means that there's at least one disc between it and another similar disc of the opposing color in either direction (including diagonals)
-        bool TileIsFlanked(std::shared_ptr<Tile> tile);
+        /// @param tile the tile to check is flanked by one of the current turn player's tiles
+        /// @param curPlayer the player whose placing a piece (whose turn it is)
+        bool TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer);
         
         inline std::shared_ptr<Player> getCurrentPlayer() {
             return currentPlayerTurn_;
