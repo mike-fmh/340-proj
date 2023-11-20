@@ -25,6 +25,9 @@
 using namespace std;
 using namespace othello;
 
+bool showingWhiteMoves = false;
+bool showingBlackMoves = false;
+
 
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
@@ -98,6 +101,8 @@ void mySpecialKeyHandler(int key, int x, int y);
 void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
+
+void addGamePiece(TilePoint location, shared_ptr<Player> whose);
 
 //--------------------------------------
 #if 0
@@ -178,6 +183,12 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #pragma mark Callback functions
 #endif
 
+
+void addGamePiece(TilePoint location, shared_ptr<Player> whose) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    gameBoard->addPiece(whose, thisDisc);
+    allObjects.push_back(thisDisc);
+}
 
 void myDisplayFunc(void)
 {
@@ -292,12 +303,30 @@ void myKeyHandler(unsigned char c, int x, int y)
         case 27:
             exit(0);
             break;
-        case 'c': {
+        case 'w': {
             vector<shared_ptr<Tile>> mov;
             gameState->getPlayableTiles(playerWhite, mov);
             for (auto tile : mov) {
-                tile->setColor(RGBColor{0.8, 1, 1});
+                if (!showingWhiteMoves) {
+                    tile->setColor(RGBColor{0.8, 1, 1});
+                } else {
+                    tile->setColor(DEFAULT_TILE_COLOR);
+                }
             }
+            showingWhiteMoves = !showingWhiteMoves;
+            break;
+        }
+        case 'b': {
+            vector<shared_ptr<Tile>> mov;
+            gameState->getPlayableTiles(playerBlack, mov);
+            for (auto tile : mov) {
+                if (!showingBlackMoves) {
+                    tile->setColor(RGBColor{0.8, 1, 1});
+                } else {
+                    tile->setColor(DEFAULT_TILE_COLOR);
+                }
+            }
+            showingBlackMoves = !showingBlackMoves;
             break;
         }
         default:
@@ -523,33 +552,24 @@ void applicationInit()
     gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, playerNull);
     allObjects.push_back(gameBoard);
     
-    TilePoint thisPnt;
-    shared_ptr<Disc> thisDisc;
     
     playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
     playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
     
     // 4 starting pieces (discs)
-    thisPnt = TilePoint{4, 4};
-    thisDisc = make_shared<Disc>(thisPnt, playerBlack->getMyColor());
-    gameBoard->addPiece(playerBlack, thisDisc);
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{5, 5};
-    thisDisc = make_shared<Disc>(thisPnt, playerBlack->getMyColor());
-    gameBoard->addPiece(playerBlack, thisDisc);
-    allObjects.push_back(thisDisc);
+    addGamePiece(TilePoint{4, 4}, playerBlack);
+    addGamePiece(TilePoint{5, 5}, playerBlack);
     
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{5, 4};
-    thisDisc = make_shared<Disc>(thisPnt, playerWhite->getMyColor());
-    gameBoard->addPiece(playerWhite, thisDisc);
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{4, 5};
-    thisDisc = make_shared<Disc>(thisPnt, playerWhite->getMyColor());
-    gameBoard->addPiece(playerWhite, thisDisc);
-    allObjects.push_back(thisDisc);
+    addGamePiece(TilePoint{5, 4}, playerWhite);
+    addGamePiece(TilePoint{4, 5}, playerWhite);
 
     gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard);
+  
+/*
+    thisPnt = TilePoint{5, 6};
+    gameBoard->getBoardTile(thisPnt)->setColor(1, 1, 0.3);
+    gameState->TileIsFlanked(gameBoard->getBoardTile(thisPnt), playerWhite);
+*/
     
     //    time really starts now
     startTime = time(nullptr);
