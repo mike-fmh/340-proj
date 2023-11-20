@@ -518,16 +518,16 @@ void displayTextualInfo(const char* infoStr, int textRow)
 
 void applicationInit()
 {
+    playerNull = make_shared<Player>(RGBColor{1, 1, 1}); // owns tiles with nothing placed on them
+    
     gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, playerNull);
     allObjects.push_back(gameBoard);
     
     TilePoint thisPnt;
     shared_ptr<Disc> thisDisc;
     
-    playerNull = make_shared<Player>(RGBColor{-1,-1,-1}); // owns tiles with nothing placed on them
-    
-    playerWhite = make_shared<Player>(RGBColor{1, 1, 1});
-    playerBlack = make_shared<Player>(RGBColor{0, 0, 0});
+    playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
+    playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
     
     // 4 starting pieces (discs)
     thisPnt = TilePoint{4, 4};
