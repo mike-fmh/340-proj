@@ -11,6 +11,7 @@
 #include <vector>
 #include <memory>
 #include "Disc.hpp"
+#include <string>
 
 
 namespace othello {
@@ -18,12 +19,14 @@ namespace othello {
     private:
         /// color of this player's discs (pieces)
         const RGBColor DiscColor_;
+        const std::string name_;
         
         /// all pieces under this player's control
         std::vector<std::shared_ptr<Disc>> myPieces_;
     public:
         
         Player(RGBColor myColor);
+        Player(RGBColor myColor, std::string name);
         
         //disabled constructors & operators
         Player() = delete;
@@ -38,6 +41,10 @@ namespace othello {
         
         inline RGBColor getMyColor() {
             return DiscColor_;
+        }
+        
+        inline std::string getName() {
+            return name_;
         }
         
         /// returns a reference to a vector of all pieces under my control
