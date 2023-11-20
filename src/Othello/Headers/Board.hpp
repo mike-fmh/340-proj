@@ -22,7 +22,7 @@ namespace othello
         
             static std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles;
             
-            
+            const std::shared_ptr<Player> nullplayerRef_;
             const int X_MIN_, X_MAX_, Y_MIN_, Y_MAX_;
             const int COLS_MIN_, COLS_MAX_, ROWS_MIN_, ROWS_MAX_, PADDING_;
             const float WIDTH_, HEIGHT_;
@@ -59,6 +59,9 @@ namespace othello
             /// Returns the Tile object in worldTiles at the given TilePoint, if any exist
             /// @param at the location of the Tile to return
             std::shared_ptr<Tile> getBoardTile(TilePoint& at);
+        
+            /// If there's a disc placed at the given point, return its owner
+            std::shared_ptr<Player> getTileOwner(TilePoint& at);
             
             /// Returns a tile's neighbors including diagonals
             /// @param tile the original tile to get the neighbors of
@@ -85,6 +88,9 @@ namespace othello
             }
             inline int getYmax() {
                 return Y_MAX_;
+            }
+            inline std::shared_ptr<Player> getNullPlayer() {
+                return nullplayerRef_;
             }
 
     };

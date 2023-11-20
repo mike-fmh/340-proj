@@ -20,7 +20,8 @@ Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int board
         ROWS_MIN_(1),
         ROWS_MAX_(boardMaxHeight),
         PADDING_(boardPadding),
-        DEFAULT_TILE_COLOR_(tileColor)
+        DEFAULT_TILE_COLOR_(tileColor),
+        nullplayerRef_(nullplayerRef)
 {
     TilePoint thisPnt;
     for (int c = 1; c <= 8; c++) {
@@ -103,6 +104,12 @@ std::shared_ptr<Tile> Board::getBoardTile(TilePoint& at) {
     // so in the boardTiles vector, all tile locations are -1 compared to them represented by TilePoints
     return allBoardTiles.at(col - 1).at(row - 1);
 }
+
+
+std::shared_ptr<Player> Board::getTileOwner(TilePoint& at) {
+    return getBoardTile(at)->getPieceOwner();
+}
+
 
 void Board::getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>& neighbors) {
     TilePoint tileLoc;
