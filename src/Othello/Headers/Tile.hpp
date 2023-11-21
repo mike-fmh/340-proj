@@ -30,7 +30,7 @@ namespace othello {
             void draw() const;
             void update(float dt);
             
-            inline void setOwner(std::shared_ptr<Player> player) {
+            inline void setOwner(std::shared_ptr<Player>& player) {
                 owner_ = player;
             }
         
@@ -49,7 +49,7 @@ namespace othello {
         
             /// Returns if this tile is equal to another tile reference
             /// @param other reference to the other tile object to check equality with
-            inline bool posIsEqual(std::shared_ptr<Tile> other) {
+            inline bool posIsEqual(std::shared_ptr<Tile>& other) {
                 return ((other->getRow() == getRow()) && (other->getCol() == getCol()));
             }
             inline int getRow() {

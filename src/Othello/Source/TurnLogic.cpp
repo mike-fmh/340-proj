@@ -26,7 +26,7 @@ TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBl
     
 }
 
-void TurnLogic::getFlankingTiles(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
+void TurnLogic::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
     /// Checks each direction around a tile for discs starting with the opponent's color and ending with the player's color
     
     // coordinates of 1 unit in each direction
@@ -86,7 +86,7 @@ void TurnLogic::getFlankingTiles(std::shared_ptr<Tile> tile, std::shared_ptr<Pla
 }
 
 
-bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer) {
+bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer) {
     std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
     getFlankingTiles(tile, curPlayer, flankedTiles);
     for (int o = 0; o < flankedTiles.size(); o++) {
@@ -101,7 +101,7 @@ bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player
 
 
 
-void TurnLogic::getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
+void TurnLogic::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
     for (int c = 0; c < boardTiles_->size(); c++) {
         for (int r = 0; r < boardTiles_->at(c).size(); r++) {
@@ -129,8 +129,8 @@ void TurnLogic::getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std
     
     // Remove all tiles that aren't flanked by the current player from the movable tiles
     movableTiles.erase(std::remove_if(movableTiles.begin(), movableTiles.end(),
-                        [this, &forWho](const std::shared_ptr<Tile>& tile) {
-                            return !TileIsFlanked(tile, forWho);
+                        [this, &forWho](std::shared_ptr<Tile>& tile) {
+                            return !tileIsFlanked(tile, forWho);
                         }),
                         movableTiles.end());
 }
@@ -152,7 +152,7 @@ std::shared_ptr<Tile> TurnLogic::computeTileClicked(float ix, float iy, std::vec
 }
 
 
-std::shared_ptr<Disc> TurnLogic::placePiece(std::shared_ptr<Player> forWho, std::shared_ptr<Tile> on) {
+std::shared_ptr<Disc> TurnLogic::placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on) {
     TilePoint tileLoc = on->getPos();
     std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho->getMyColor());
     board_->addPiece(forWho, thisDisc);

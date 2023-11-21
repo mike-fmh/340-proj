@@ -34,7 +34,7 @@ Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int board
     }
 }
 
-void Board::addPiece(std::shared_ptr<Player> forWho, std::shared_ptr<Disc> piece) {
+void Board::addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece) {
     forWho->addPiece(piece);
     // now we need to give this player ownership of the tile where we placed the new piece
     
