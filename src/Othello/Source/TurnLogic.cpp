@@ -24,7 +24,7 @@ TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBl
     
 }
 
-bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer) {
+void TurnLogic::getFlankingTiles(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
     /// Checks each direction around a tile for discs starting with the opponent's color and ending with the player's color
     
     // coordinates of 1 unit in each direction
@@ -33,13 +33,18 @@ bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player
     };
     
     TilePoint thisPos = tile->getPos();
-    for (auto dir : nextDir) {
+    for (int d = 0; d < nextDir.size(); d++) {
+        // this will store all tiles flanked in each direction (if any)
+        // this is the subvector, and there will be one subvector per direction
+        flankedTiles.push_back(std::vector<shared_ptr<Tile>>());
+        
+        TilePoint dir = nextDir.at(d);
         // move 1 tile in the current direction
         TilePoint thisDir = TilePoint{thisPos.x + dir.x, thisPos.y + dir.y};
         bool foundOpp = false;
         
         while (board_->isValidPosition(thisDir)) {
-            auto nextTile = board_->getBoardTile(thisDir);
+            std::shared_ptr<Tile> nextTile = board_->getBoardTile(thisDir);
         
             // if the current tile is owned by null player, it's a tile with no disc on it
             // sequences of the opponent's tiles ending with a blank tile aren't flanked
@@ -48,21 +53,44 @@ bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player
             }
 
             // if the current tile is owned by the opponent
-            if ((nextTile->getPieceOwner() != curPlayer) & (nextTile->getPieceOwner() != board_->getNullPlayer())) {
+            if ((nextTile->getPieceOwner() != curPlayer) && (nextTile->getPieceOwner() != board_->getNullPlayer())) {
+                flankedTiles.at(d).push_back(nextTile);
                 foundOpp = true;
+                
+                // this is an opponent's tile, but the next tile in this direction is null or invalid
+                TilePoint finalPos = TilePoint{thisDir.x + dir.x, thisDir.y + dir.y};
+                if (!board_->isValidPosition(finalPos) || board_->getBoardTile(finalPos)->getPieceOwner() == board_->getNullPlayer()) {
+                    // clear flanked tiles as it's not a valid flank
+                    flankedTiles.at(d).clear();
+                    break;
+                }
             }
             // if the current tile is owned by the current player, and the previous tile(s) were owned by the opponent
-            else if ((foundOpp) & (nextTile->getPieceOwner() == curPlayer)) {
+            else if ((foundOpp) && (nextTile->getPieceOwner() == curPlayer)) {
                 // we've found a line of opponent tiles ending with a player tile = 'flank'
-                return true;
+                // so keep the tiles we've added to the flanking tiles subvector
+                break;
             }
-            // this should never happen since we've already checked for null tiles
             else {
+                // clear the flanking tiles subvector
+                flankedTiles.at(d).clear();
                 break;
             }
 
             // move 1 more tile in the current direction until one of the above conditions is met
             thisDir = TilePoint{thisDir.x + dir.x, thisDir.y + dir.y};
+        }
+    }
+}
+
+bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer) {
+    std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
+    getFlankingTiles(tile, curPlayer, flankedTiles);
+    for (int o = 0; o < flankedTiles.size(); o++) {
+        // each subvector represents one direction around this tile
+        if (flankedTiles.at(o).size() > 0) {
+            // tile is flanked in some direction
+            return true;
         }
     }
     return false;
@@ -77,7 +105,7 @@ void TurnLogic::getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std
             std::shared_ptr<Tile> currentTile = boardTiles_->at(c).at(r);
             
             // check if the tile is owned by the opposing player (if it has an opponent's piece on it)
-            if ((currentTile->getPieceOwner() != forWho) & (currentTile->getPieceOwner() != board_->getNullPlayer() ))
+            if ((currentTile->getPieceOwner() != forWho) && (currentTile->getPieceOwner() != board_->getNullPlayer() ))
                 // A player's playable tiles need to be adjacent to their opponent's tiles (not owned by the current player and not owned by null player).
             {
                 TilePoint thisTileLoc = currentTile->getPos();

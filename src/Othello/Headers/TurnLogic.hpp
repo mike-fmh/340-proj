@@ -46,6 +46,9 @@ namespace othello {
         /// populates the vector referenced by moveableTiles with possible moves for the forWho player
         void getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>& movableTiles);
         
+        
+        void getFlankingTiles(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles);
+        
         /// Given a tile, returns if the disc placed on it is flanked by another disc of the same color
         /// 'flanked' means that there's at least one disc between it and another similar disc of the opposing color in either direction (including diagonals)
         /// @param tile the tile to check is flanked by one of the current turn player's tiles
