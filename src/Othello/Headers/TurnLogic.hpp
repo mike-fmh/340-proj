@@ -47,16 +47,16 @@ namespace othello {
         TurnLogic& operator = (TurnLogic&& obj) = delete;        // move operator
         
         /// populates the vector referenced by moveableTiles with possible moves for the forWho player
-        void getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std::shared_ptr<Tile>>& movableTiles);
+        void getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles);
         
         
-        void getFlankingTiles(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles);
+        void getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles);
         
         /// Given a tile, returns if the disc placed on it is flanked by another disc of the same color
         /// 'flanked' means that there's at least one disc between it and another similar disc of the opposing color in either direction (including diagonals)
         /// @param tile the tile to check is flanked by one of the current turn player's tiles
         /// @param curPlayer the player whose placing a piece (whose turn it is)
-        bool TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer);
+        bool tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
         
         /// GIven a screen x and y coord, translates it into a Board Tile
         /// @param ix the screen x coord
@@ -67,7 +67,7 @@ namespace othello {
         /// Place a new piece (disc) on the given tile
         /// @param forWho which player should own the new piece
         /// @param on the tile to place the new piece
-        std::shared_ptr<Disc> placePiece(std::shared_ptr<Player> forWho, std::shared_ptr<Tile> on);
+        std::shared_ptr<Disc> placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on);
         
         inline std::shared_ptr<Player> getCurrentPlayer() {
             return currentPlayerTurn_;
