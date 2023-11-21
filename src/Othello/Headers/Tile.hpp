@@ -18,6 +18,10 @@ namespace othello {
         private:
             /// if this tile has a disc on it, which player controls this disc?
             std::shared_ptr<Player> owner_;
+            
+            /// reference to the disc (piece) that's been placed on this tile
+            std::shared_ptr<Disc> disc_;
+        
             float red_, blue_, green_; // false = white, true = black
             
         public:
@@ -34,7 +38,20 @@ namespace othello {
             inline std::shared_ptr<Player> getPieceOwner() {
                 return owner_;
             }
+            
+            inline std::shared_ptr<Disc> getPiece() {
+                return disc_;
+            }
         
+            inline void setPiece(std::shared_ptr<Disc>& piece) {
+                disc_ = piece;
+            }
+        
+            /// Returns if this tile is equal to another tile reference
+            /// @param other reference to the other tile object to check equality with
+            inline bool posIsEqual(std::shared_ptr<Tile> other) {
+                return ((other->getRow() == getRow()) && (other->getCol() == getCol()));
+            }
             inline int getRow() {
                 return (int)getX();
             }
