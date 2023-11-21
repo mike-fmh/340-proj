@@ -8,21 +8,33 @@
 #ifndef Tile_hpp
 #define Tile_hpp
 
+#include <memory>
+#include "Player.hpp"
 #include "GraphicObject.h"
 #include "AnimatedObject.h"
 
 namespace othello {
     class Tile: public GraphicObject, public AnimatedObject {
         private:
-            
+            /// if this tile has a disc on it, which player controls this disc?
+            std::shared_ptr<Player> owner_;
             float red_, blue_, green_; // false = white, true = black
             
         public:
-            Tile(TilePoint& loc, float red, float blue, float green);
+            Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<Player> owner);
             
             void draw() const;
             void update(float dt);
             
+            inline void setOwner(std::shared_ptr<Player> player) {
+                owner_ = player;
+            }
+        
+            /// Returns the owner (player) that owns the disc placed at this board tile. If no pieces are placed here, return nullplayer
+            inline std::shared_ptr<Player> getPieceOwner() {
+                return owner_;
+            }
+        
             inline int getRow() {
                 return (int)getX();
             }

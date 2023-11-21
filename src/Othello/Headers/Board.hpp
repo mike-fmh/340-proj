@@ -5,9 +5,12 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
+#include "Player.hpp"
 #include "commonTypes.h"
 #include "glPlatform.h"
 #include "Tile.hpp"
+#include <algorithm>
+#include <cmath>
 #include <vector>
 #include <memory>
 
@@ -19,7 +22,7 @@ namespace othello
         
             static std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles;
             
-            
+            const std::shared_ptr<Player> nullplayerRef_;
             const int X_MIN_, X_MAX_, Y_MIN_, Y_MAX_;
             const int COLS_MIN_, COLS_MAX_, ROWS_MIN_, ROWS_MAX_, PADDING_;
             const float WIDTH_, HEIGHT_;
@@ -31,12 +34,6 @@ namespace othello
             static float drawInPixelScale;
 
         public:
-            
-            //    The rule of thumb is:  If your class contains at least one virtual
-            //    method (which indicates that it may be used polymorphically), then
-            //    its destructor should be virtual
-            virtual ~Board() = default;
-            
             //disabled constructors & operators
             Board() = delete;
             Board(const Board& obj) = delete;    // copy
@@ -44,10 +41,12 @@ namespace othello
             Board& operator = (const Board& obj) = delete;    // copy operator
             Board& operator = (Board&& obj) = delete;        // move operator
 
-            Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor);
+            Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef);
         
             void draw() const;
         
+            void addPiece(std::shared_ptr<Player> forWho, std::shared_ptr<Disc> piece);
+            
             /** Function called through the initialization of a global variable in the
              *    main program.  Although the user specifies dimensions for the rendering pane,
              *    the function may set different values that agree better with the world
@@ -60,17 +59,27 @@ namespace othello
             /// Returns the Tile object in worldTiles at the given TilePoint, if any exist
             /// @param at the location of the Tile to return
             std::shared_ptr<Tile> getBoardTile(TilePoint& at);
+        
+            /// If there's a disc placed at the given point, return its owner
+            std::shared_ptr<Player> getTileOwner(TilePoint& at);
             
             /// Returns a tile's neighbors including diagonals
             /// @param tile the original tile to get the neighbors of
             /// @param neighbors the vector to populate with neighboring tiles
-            void getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>* neighbors);
-            
+            void getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>& neighbors);
+        
             TilePoint pixelToWorld(float ix, float iy);
             PixelPoint worldToPixel(float wx, float wy);
             TilePoint pixelToWorld(const PixelPoint& pt);
             PixelPoint worldToPixel(const TilePoint& pt);
             
+            inline bool isValidPosition(TilePoint& at) {
+                return ((at.x >= ROWS_MIN_) & (at.x <= ROWS_MAX_) & (at.y >= COLS_MIN_) & (at.y <= COLS_MAX_));
+            }
+        
+            inline std::vector<std::vector<std::shared_ptr<Tile>>>* getTiles() {
+                return &allBoardTiles;
+            }
             inline int getXmin() {
                 return X_MIN_;
             }
@@ -82,6 +91,9 @@ namespace othello
             }
             inline int getYmax() {
                 return Y_MAX_;
+            }
+            inline std::shared_ptr<Player> getNullPlayer() {
+                return nullplayerRef_;
             }
 
     };

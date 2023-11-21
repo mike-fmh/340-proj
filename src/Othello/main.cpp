@@ -19,14 +19,24 @@
 #include "Board.hpp"
 #include "Tile.hpp"
 #include "Disc.hpp"
+#include "TurnLogic.hpp"
 //
 
 using namespace std;
 using namespace othello;
 
+bool showingWhiteMoves = false;
+bool showingBlackMoves = false;
+
 
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
+
+shared_ptr<Player> playerNull;
+shared_ptr<Player> playerWhite;
+shared_ptr<Player> playerBlack;
+
+shared_ptr<TurnLogic> gameState;
 
 //--------------------------------------
 #if 0
@@ -91,6 +101,8 @@ void mySpecialKeyHandler(int key, int x, int y);
 void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
+
+void addGamePiece(TilePoint location, shared_ptr<Player> whose);
 
 //--------------------------------------
 #if 0
@@ -171,6 +183,12 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #pragma mark Callback functions
 #endif
 
+
+void addGamePiece(TilePoint location, shared_ptr<Player> whose) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    gameBoard->addPiece(whose, thisDisc);
+    allObjects.push_back(thisDisc);
+}
 
 void myDisplayFunc(void)
 {
@@ -285,7 +303,32 @@ void myKeyHandler(unsigned char c, int x, int y)
         case 27:
             exit(0);
             break;
-        
+        case 'w': {
+            vector<shared_ptr<Tile>> mov;
+            gameState->getPlayableTiles(playerWhite, mov);
+            for (auto tile : mov) {
+                if (!showingWhiteMoves) {
+                    tile->setColor(RGBColor{0.8, 1, 1});
+                } else {
+                    tile->setColor(DEFAULT_TILE_COLOR);
+                }
+            }
+            showingWhiteMoves = !showingWhiteMoves;
+            break;
+        }
+        case 'b': {
+            vector<shared_ptr<Tile>> mov;
+            gameState->getPlayableTiles(playerBlack, mov);
+            for (auto tile : mov) {
+                if (!showingBlackMoves) {
+                    tile->setColor(RGBColor{0.8, 1, 1});
+                } else {
+                    tile->setColor(DEFAULT_TILE_COLOR);
+                }
+            }
+            showingBlackMoves = !showingBlackMoves;
+            break;
+        }
         default:
             break;
     }
@@ -336,6 +379,8 @@ void myMouseHandler(int button, int state, int ix, int iy)
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_DOWN)
             {
+                
+                /*
                 TilePoint t = TilePoint{gameBoard->pixelToWorld(ix, iy)};
                 cout << t.x << ", " << t.y << endl;
                 vector<shared_ptr<Tile>> neighs;
@@ -345,6 +390,7 @@ void myMouseHandler(int button, int state, int ix, int iy)
                     //cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
                     neighs.at(i)->setColor(RGBColor{0, 0,0});
                 }
+                */
             }
             else if (state == GLUT_UP)
             {
@@ -501,25 +547,30 @@ void displayTextualInfo(const char* infoStr, int textRow)
 
 void applicationInit()
 {
-    gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR);
+    playerNull = make_shared<Player>(RGBColor{1, 1, 1}); // owns tiles with nothing placed on them
+    
+    gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, playerNull);
     allObjects.push_back(gameBoard);
     
-    TilePoint thisPnt;
+    
+    playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
+    playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
+    
     // 4 starting pieces (discs)
-    shared_ptr<Disc> thisDisc;
-    thisPnt = TilePoint{4, 4};
-    thisDisc = make_shared<Disc>(thisPnt, true);
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{5, 4};
-    thisDisc = make_shared<Disc>(thisPnt, false);
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{4, 5};
-    thisDisc = make_shared<Disc>(thisPnt, false);
-    allObjects.push_back(thisDisc);
-    thisPnt = TilePoint{5, 5};
-    thisDisc = make_shared<Disc>(thisPnt, true);
-    allObjects.push_back(thisDisc);
+    addGamePiece(TilePoint{4, 4}, playerBlack);
+    addGamePiece(TilePoint{5, 5}, playerBlack);
+    
+    addGamePiece(TilePoint{5, 4}, playerWhite);
+    addGamePiece(TilePoint{4, 5}, playerWhite);
 
+    gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard);
+  
+/*
+    thisPnt = TilePoint{5, 6};
+    gameBoard->getBoardTile(thisPnt)->setColor(1, 1, 0.3);
+    gameState->TileIsFlanked(gameBoard->getBoardTile(thisPnt), playerWhite);
+*/
+    
     //    time really starts now
     startTime = time(nullptr);
 }

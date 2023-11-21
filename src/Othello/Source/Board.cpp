@@ -1,5 +1,3 @@
-
-#include <cmath>
 #include "Board.hpp"
 
 using namespace othello;
@@ -8,7 +6,7 @@ using namespace othello;
 std::vector<std::vector<std::shared_ptr<Tile>>> Board::allBoardTiles;
 
 
-Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor)
+Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef)
     :   Object(0, 0, 0),
         GraphicObject(0, 0, 0),
         Y_MIN_(boardMinHeight - boardPadding),
@@ -22,15 +20,33 @@ Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int board
         ROWS_MIN_(1),
         ROWS_MAX_(boardMaxHeight),
         PADDING_(boardPadding),
-        DEFAULT_TILE_COLOR_(tileColor)
+        DEFAULT_TILE_COLOR_(tileColor),
+        nullplayerRef_(nullplayerRef)
 {
     TilePoint thisPnt;
     for (int c = 1; c <= 8; c++) {
         allBoardTiles.push_back(std::vector<std::shared_ptr<Tile>>());
         for (int r = 1; r <= 8; r++) {
             thisPnt = TilePoint{r, c};
-            std::shared_ptr<Tile> thisTile = std::make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR_.red, DEFAULT_TILE_COLOR_.blue, DEFAULT_TILE_COLOR_.green);
+            std::shared_ptr<Tile> thisTile = std::make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR_.red, DEFAULT_TILE_COLOR_.blue, DEFAULT_TILE_COLOR_.green, nullplayerRef);
             allBoardTiles.at(c-1).push_back(thisTile);
+        }
+    }
+}
+
+void Board::addPiece(std::shared_ptr<Player> forWho, std::shared_ptr<Disc> piece) {
+    forWho->addPiece(piece);
+    // now we need to give this player ownership of the tile where we placed the new piece
+    
+    // find this piece's Tile location
+    for (int c = 0; c < allBoardTiles.size(); c++) {
+        for (int r = 0; r < allBoardTiles.at(c).size(); r++) {
+            TilePoint tilePos = allBoardTiles.at(c).at(r)->getPos();
+            TilePoint piecePos = piece->getPos();
+            if ((tilePos.x == piecePos.x) & (tilePos.y == piecePos.y)) { // is this board tile at the location we're placing the new piece?
+                allBoardTiles.at(c).at(r)->setOwner(forWho);
+                return;
+            }
         }
     }
 }
@@ -89,39 +105,61 @@ std::shared_ptr<Tile> Board::getBoardTile(TilePoint& at) {
     return allBoardTiles.at(col - 1).at(row - 1);
 }
 
-void Board::getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>* neighbors) {
+
+std::shared_ptr<Player> Board::getTileOwner(TilePoint& at) {
+    return getBoardTile(at)->getPieceOwner();
+}
+
+
+void Board::getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>& neighbors) {
     TilePoint tileLoc;
     if (tile.getCol() > 1) { // west
         tileLoc = TilePoint{tile.x - 1, tile.y};
-        neighbors->push_back(getBoardTile(tileLoc));
+        std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
         if (tile.getRow() > 1) { // southwest
             tileLoc = TilePoint{tile.x - 1, tile.y - 1};
-            neighbors->push_back(getBoardTile(tileLoc));
+            std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
         if (tile.getRow() < Board::ROWS_MAX_) { // northwest
             tileLoc = TilePoint{tile.x - 1, tile.y + 1};
-            neighbors->push_back(getBoardTile(tileLoc));
+            std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
     }
     if (tile.getCol() < Board::Y_MAX_  - 1) { // east
         tileLoc = TilePoint{tile.x + 1, tile.y};
-        neighbors->push_back(getBoardTile(tileLoc));
+        std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
         if (tile.getRow() > 1) { // southeast
             tileLoc = TilePoint{tile.x + 1, tile.y - 1};
-            neighbors->push_back(getBoardTile(tileLoc));
+            std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
         if (tile.getRow() < Board::ROWS_MAX_) { // northeast
             tileLoc = TilePoint{tile.x + 1, tile.y + 1};
-            neighbors->push_back(getBoardTile(tileLoc));
+            std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+            if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+                neighbors.push_back(curTile);
         }
     }
     if (tile.getRow() > 1) { // south
         tileLoc = TilePoint{tile.x, tile.y - 1};
-        neighbors->push_back(getBoardTile(tileLoc));
+        std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
     }
     if (tile.getRow() < Board::X_MAX_ - 1) { // north
         tileLoc = TilePoint{tile.x, tile.y + 1};
-        neighbors->push_back(getBoardTile(tileLoc));
+        std::shared_ptr<Tile> curTile = getBoardTile(tileLoc);
+        if (std::find(neighbors.begin(), neighbors.end(), curTile) == neighbors.end()) // if this location isn't already in the 'neighbors' vector
+            neighbors.push_back(curTile);
     }
 }
 
