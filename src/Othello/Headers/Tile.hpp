@@ -38,7 +38,7 @@ namespace othello {
             /// Returns if this tile is equal to another tile reference
             /// @param other reference to the other tile object to check equality with
             inline bool posIsEqual(std::shared_ptr<Tile> other) {
-                return ((other->getRow() == getRow()) & (other->getCol() == getCol()));
+                return ((other->getRow() == getRow()) && (other->getCol() == getCol()));
             }
             inline int getRow() {
                 return (int)getX();
