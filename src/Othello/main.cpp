@@ -38,6 +38,12 @@ shared_ptr<Player> playerBlack;
 
 shared_ptr<TurnLogic> gameState;
 
+bool currentTurn = 1; // 1 = white, 0 = black
+
+// during each player's turn, these vectors will store the tiles they can place pieces on
+vector<shared_ptr<Tile>> whitePlayableTiles;
+vector<shared_ptr<Tile>> blackPlayableTiles;
+
 //--------------------------------------
 #if 0
 #pragma mark Custom data types
@@ -303,6 +309,7 @@ void myKeyHandler(unsigned char c, int x, int y)
         case 27:
             exit(0);
             break;
+        /*
         case 'w': {
             vector<shared_ptr<Tile>> mov;
             gameState->getPlayableTiles(playerWhite, mov);
@@ -329,6 +336,7 @@ void myKeyHandler(unsigned char c, int x, int y)
             showingBlackMoves = !showingBlackMoves;
             break;
         }
+        */
         default:
             break;
     }
@@ -360,6 +368,45 @@ void myTimerFunc(int value)
 
     // do stuff
     
+    if (currentTurn) { // white's turn
+        // it's not black's turn, so clear their moves
+        if (blackPlayableTiles.size() > 0) {
+            for (auto tile: blackPlayableTiles) {
+                tile->setColor(DEFAULT_TILE_COLOR);
+            }
+            blackPlayableTiles.clear();
+        }
+        
+        // populate white's moves if not already done
+        if (whitePlayableTiles.size() == 0)
+            gameState->getPlayableTiles(playerWhite, whitePlayableTiles);
+        
+        
+        // display current possible moves
+        for (auto tile: whitePlayableTiles) {
+            tile->setColor(0.8, 1, 1);
+        }
+        
+    } else {
+        // it's not white's turn, so clear their moves
+        if (whitePlayableTiles.size() > 0) {
+            for (auto tile: whitePlayableTiles) {
+                tile->setColor(DEFAULT_TILE_COLOR);
+            }
+            whitePlayableTiles.clear();
+        }
+        
+        // populate black's moves if not already done
+        if (blackPlayableTiles.size() == 0)
+            gameState->getPlayableTiles(playerBlack, blackPlayableTiles);
+        
+        
+        // display current possible moves
+        for (auto tile: blackPlayableTiles) {
+            tile->setColor(0.8, 1, 1);
+        }
+    }
+    
     lastTime = currentTime;
 
     
@@ -379,18 +426,25 @@ void myMouseHandler(int button, int state, int ix, int iy)
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_DOWN)
             {
-                
-                /*
-                TilePoint t = TilePoint{gameBoard->pixelToWorld(ix, iy)};
-                cout << t.x << ", " << t.y << endl;
-                vector<shared_ptr<Tile>> neighs;
-                gameBoard->getBoardTile(t)->setColor(1, 1, 1);
-                gameBoard->getNeighbors(t, &neighs);
-                for (int i = 0; i < neighs.size(); i++) {
-                    //cout << "{" << neighs.at(i)->getCol() << ", " << neighs.at(i)->getRow() << "}" << endl;
-                    neighs.at(i)->setColor(RGBColor{0, 0,0});
+                if (currentTurn) {
+                    // white's turn
+                    shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, whitePlayableTiles);
+                    if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
+                        shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, clickedTile);
+                        allObjects.push_back(newPiece);
+                        currentTurn = 0;
+                    }
+                    
+                } else {
+                    // black's turn
+                    shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, blackPlayableTiles);
+                    if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
+                        shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, clickedTile);
+                        allObjects.push_back(newPiece);
+                        currentTurn = 1;
+                    }
                 }
-                */
+                
             }
             else if (state == GLUT_UP)
             {

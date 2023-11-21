@@ -103,3 +103,27 @@ void TurnLogic::getPlayableTiles(std::shared_ptr<Player> forWho, std::vector<std
                         }),
                         movableTiles.end());
 }
+
+
+std::shared_ptr<Tile> TurnLogic::computeTileClicked(float ix, float iy, std::vector<std::shared_ptr<Tile>>& movableTiles) {
+    // here is the tile the player clicked on
+    TilePoint posClicked = board_->pixelToWorld(ix, iy);
+    shared_ptr<Tile> tileClicked = board_->getBoardTile(posClicked);
+    
+    // find this tile in the playable tiles
+    for (auto tile : movableTiles) {
+        if (tile->posIsEqual(tileClicked)) {
+            // they clicked on this one!
+            return tile;
+        }
+    }
+    return nullptr;
+}
+
+
+std::shared_ptr<Disc> TurnLogic::placePiece(std::shared_ptr<Player> forWho, std::shared_ptr<Tile> on) {
+    TilePoint tileLoc = on->getPos();
+    std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho->getMyColor());
+    board_->addPiece(forWho, thisDisc);
+    return thisDisc;
+}

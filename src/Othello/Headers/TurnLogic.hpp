@@ -52,10 +52,22 @@ namespace othello {
         /// @param curPlayer the player whose placing a piece (whose turn it is)
         bool TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer);
         
+        /// GIven a screen x and y coord, translates it into a Board Tile
+        /// @param ix the screen x coord
+        /// @param iy the screen y coord
+        /// @param movableTiles instead of searching on ALL board tiles, narrow down the tiles that are allowed to be clicked on to this vector
+        std::shared_ptr<Tile> computeTileClicked(float ix, float iy, std::vector<std::shared_ptr<Tile>>& movableTiles);
+        
+        /// Place a new piece (disc) on the given tile
+        /// @param forWho which player should own the new piece
+        /// @param on the tile to place the new piece
+        std::shared_ptr<Disc> placePiece(std::shared_ptr<Player> forWho, std::shared_ptr<Tile> on);
+        
         inline std::shared_ptr<Player> getCurrentPlayer() {
             return currentPlayerTurn_;
         }
     };
 }
+
 
 #endif /* TurnLogic_hpp */
