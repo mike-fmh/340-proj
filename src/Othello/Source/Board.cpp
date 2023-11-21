@@ -45,6 +45,7 @@ void Board::addPiece(std::shared_ptr<Player> forWho, std::shared_ptr<Disc> piece
             TilePoint piecePos = piece->getPos();
             if ((tilePos.x == piecePos.x) && (tilePos.y == piecePos.y)) { // is this board tile at the location we're placing the new piece?
                 allBoardTiles.at(c).at(r)->setOwner(forWho);
+                allBoardTiles.at(c).at(r)->setPiece(piece);
                 return;
             }
         }

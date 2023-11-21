@@ -18,6 +18,8 @@ const int TurnLogic::NUM_GAME_PLAYERS = 2;
 TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
     :   startingPlayer_(playerWhite), // white always starts in othello
         currentPlayerTurn_(playerWhite),
+        playerBlack_(playerBlack),
+        playerWhite_(playerWhite),
         board_(board),
         boardTiles_(board->getTiles())
 {
@@ -82,6 +84,7 @@ void TurnLogic::getFlankingTiles(std::shared_ptr<Tile> tile, std::shared_ptr<Pla
         }
     }
 }
+
 
 bool TurnLogic::TileIsFlanked(std::shared_ptr<Tile> tile, std::shared_ptr<Player> curPlayer) {
     std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
@@ -153,5 +156,22 @@ std::shared_ptr<Disc> TurnLogic::placePiece(std::shared_ptr<Player> forWho, std:
     TilePoint tileLoc = on->getPos();
     std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho->getMyColor());
     board_->addPiece(forWho, thisDisc);
+    
+    std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
+    // retreive which tiles are flanked by this new one
+    getFlankingTiles(on, forWho, flankedTiles);
+    
+    // flip all flanked tiles
+    for (auto dir: flankedTiles) {
+        for (auto tile: dir) {
+            if (forWho == playerBlack_) {
+                tile->setOwner(playerBlack_);
+                tile->getPiece()->setColor(0, 0, 0);
+            } else {
+                tile->setOwner(playerWhite_);
+                tile->getPiece()->setColor(1, 1, 1);
+            }
+        }
+    }
     return thisDisc;
 }

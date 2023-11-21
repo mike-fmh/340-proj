@@ -16,7 +16,8 @@ Tile::Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<P
         red_(red),
         blue_(blue),
         green_(green),
-        owner_(owner)
+        owner_(owner),
+        disc_(nullptr) // tiles cannot be initialized with discs on them, discs must be placed afterwards
 {
     
 }

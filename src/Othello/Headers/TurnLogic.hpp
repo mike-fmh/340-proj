@@ -24,6 +24,9 @@ namespace othello {
         
         std::shared_ptr<Board> board_;
         
+        std::shared_ptr<Player> playerBlack_;
+        std::shared_ptr<Player> playerWhite_;
+        
         /// player whose turn it is when the game starts
         std::shared_ptr<Player> startingPlayer_;
         
