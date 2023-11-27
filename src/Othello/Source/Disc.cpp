@@ -61,5 +61,5 @@ void Disc::draw() const
 }
 
 void Disc::update(float dt) {
-    // asteroids use a different update fn
+    
 }
