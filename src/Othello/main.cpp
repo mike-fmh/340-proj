@@ -364,8 +364,15 @@ void myTimerFunc(int value)
     glutTimerFunc(1, myTimerFunc, value);
     
     chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
+ 
+    /*
     float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
-
+    
+    /// TODO: update all Discs
+    /// TODO: update all Tiles
+    */
+    
+    
     // do stuff
     
     if (currentTurn) { // white's turn
