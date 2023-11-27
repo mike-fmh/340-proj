@@ -35,9 +35,11 @@ namespace othello {
         Player& operator = (const Player& obj) = delete;    // copy operator
         Player& operator = (Player&& obj) = delete;        // move operator
         
+        /*
         /// remove pieces from this player's control
         /// @param pieces the vector of pieces to remove from my control
-      //  void rmPieces(std::vector<std::shared_ptr<Disc>> pieces);
+        void rmPieces(std::vector<std::shared_ptr<Disc>> pieces);
+        */
         
         inline RGBColor getMyColor() {
             return DiscColor_;
