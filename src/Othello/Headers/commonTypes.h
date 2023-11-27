@@ -156,6 +156,10 @@ namespace othello
         float red;
         float blue;
         float green;
+        
+        bool isEqualTo(RGBColor& other) {
+            return ((other.red == red) && (other.blue == blue) && (other.green == green));
+        }
     };
 
 }
