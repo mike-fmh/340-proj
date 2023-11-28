@@ -44,7 +44,7 @@ public:
     
     /// Calculate the AI player's 'positional score' based on various factors regarding their current pieces and where they're placed.
     /// This gamestate positional score is not based on any fixed metric, but it supposed to give a sense of how strong their board presence is.
-    void evalGamestateScore(std::shared_ptr<TurnLogic> currentGamestate);
+    GamestateScore evalGamestateScore(std::shared_ptr<TurnLogic> currentGamestate);
     
     //disabled constructors & operators
     AiPlayer() = delete;

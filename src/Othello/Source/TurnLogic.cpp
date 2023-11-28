@@ -21,7 +21,7 @@ TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBl
         playerBlack_(playerBlack),
         playerWhite_(playerWhite),
         board_(board),
-        boardTiles_(board->getTiles())
+        boardTiles_(board->getBoardTiles())
 {
     
 }
@@ -145,6 +145,22 @@ void TurnLogic::getFlankingTiles(std::shared_ptr<Tile>& tile, Player& curPlayer,
     }
 }
 
+void TurnLogic::getPlayerTiles(Player& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
+    bool tilesExistsInRow;
+    RGBColor playerColor = whose.getMyColor();
+    std::vector<std::vector<std::shared_ptr<Tile>>>* allTiles = board_->getBoardTiles();
+    for (unsigned int r = 0; r < allTiles->size(); r++) {
+        playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
+        tilesExistsInRow = false;
+        for (unsigned int c = 0; c < allTiles->at(r).size(); c++) {
+            std::shared_ptr<Tile> thisTile = allTiles->at(r)[c];
+            if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
+                playerTiles[r].push_back(thisTile);
+                tilesExistsInRow = true;
+            }
+        }
+    }
+}
 
 bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer) {
     std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
@@ -173,6 +189,26 @@ bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, Player& curPlayer) {
     return false;
 }
 
+
+bool TurnLogic::discIsStable(std::shared_ptr<Tile>& tile, Player& curPlayer) {
+    // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
+    RGBColor whiteColor = playerWhite_->getMyColor();
+    std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white
+    if (curPlayer.getMyColor().isEqualTo(whiteColor)) { // is it white's turn?
+        opponent = playerBlack_; // then opponent is black
+    }
+    
+    TilePoint tileLoc = tile->getPos();
+    std::vector<std::shared_ptr<Tile>> neighborTiles;
+    board_->getNeighbors(tileLoc, neighborTiles);
+    
+    for (std::shared_ptr<Tile> n : neighborTiles) {
+        if (tileIsFlanked(n, opponent)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 
 void TurnLogic::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
@@ -285,4 +321,12 @@ std::shared_ptr<Disc> TurnLogic::placePiece(std::shared_ptr<Player>& forWho, std
         }
     }
     return thisDisc;
+}
+
+bool TurnLogic::isCornerTile(std::shared_ptr<Tile>& tile) {
+    bool topRight = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMin();
+    bool topLeft = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMax();
+    bool bottomRight = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMin();
+    bool bottomLeft = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMax();
+    return topRight || topLeft || bottomLeft || bottomRight;
 }

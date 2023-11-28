@@ -77,7 +77,7 @@ namespace othello
                 return ((at.x >= ROWS_MIN_) & (at.x <= ROWS_MAX_) & (at.y >= COLS_MIN_) & (at.y <= COLS_MAX_));
             }
         
-            inline std::vector<std::vector<std::shared_ptr<Tile>>>* getTiles() {
+            inline std::vector<std::vector<std::shared_ptr<Tile>>>* getBoardTiles() {
                 return &allBoardTiles;
             }
             inline int getXmin() {
@@ -92,6 +92,19 @@ namespace othello
             inline int getYmax() {
                 return Y_MAX_;
             }
+            inline int getColsMin() {
+                return COLS_MIN_;
+            }
+            inline int getColsMax() {
+                return COLS_MAX_;
+            }
+            inline int getRowsMin() {
+                return ROWS_MIN_;
+            }
+            inline int getRowsMax() {
+                return ROWS_MAX_;
+            }
+        
             inline std::shared_ptr<Player> getNullPlayer() {
                 return nullplayerRef_;
             }
