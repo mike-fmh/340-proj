@@ -34,12 +34,3 @@ Player::Player(const Player& obj)
 {
     
 }
-
-
-Player::Player(std::shared_ptr<Player> obj)
-    :   DiscColor_(obj->DiscColor_),
-        myPieces_(vector<shared_ptr<Disc>>()),
-        name_(obj->name_)
-{
-    
-}

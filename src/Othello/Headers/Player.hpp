@@ -28,7 +28,6 @@ namespace othello {
         Player(RGBColor myColor);
         Player(RGBColor myColor, std::string name);
         Player(const Player& obj);    // copy
-        Player(std::shared_ptr<Player> obj);    // shared_ptr copy
         
         //disabled constructors & operators
         Player(Player&& obj) = delete;        // move
