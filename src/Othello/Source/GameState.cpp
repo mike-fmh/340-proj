@@ -41,8 +41,6 @@ GameState::GameState(const GameState& obj)
         boardTiles_.push_back(vector<shared_ptr<Tile>>());
         for (unsigned int c = 0; c < sourceTiles[r].size(); ++c) {
             // use tile's copy constructor to create a new shared ptr
-            // the only attribute of Tile that needs a deep copy (new reference) would be owner_
-            // but I don't plan on editing or addressing owner_ at all in copied gamestate objects, so we can ignore it
             boardTiles_[r].push_back(std::make_shared<Tile>(*sourceTiles[r][c]));
         }
     }
