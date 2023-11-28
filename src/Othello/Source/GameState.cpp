@@ -32,7 +32,7 @@ GameState::GameState(const GameState& obj)
         currentPlayerTurn_(obj.currentPlayerTurn_),
         playerBlack_(obj.playerBlack_),
         playerWhite_(obj.playerWhite_),
-        board_(obj.board_),
+        board_(std::make_shared<Board>(*obj.board_)),
         boardTiles_(vector<vector<shared_ptr<Tile>>>())
 {
     // deep copy of board tiles, so editing the board in copied gamestate objects will not change the board in the original

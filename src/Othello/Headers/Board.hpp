@@ -36,12 +36,12 @@ namespace othello
         public:
             //disabled constructors & operators
             Board() = delete;
-            Board(const Board& obj) = delete;    // copy
             Board(Board&& obj) = delete;        // move
             Board& operator = (const Board& obj) = delete;    // copy operator
             Board& operator = (Board&& obj) = delete;        // move operator
 
             Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef);
+            Board(const Board& obj);   // copy
         
             void draw() const;
         
