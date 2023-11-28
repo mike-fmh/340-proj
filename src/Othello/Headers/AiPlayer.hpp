@@ -50,7 +50,7 @@ public:
     
     /// Calculate the AI player's 'positional score' based on various factors regarding their current pieces and where they're placed.
     /// This gamestate positional score is not based on any fixed metric, but it supposed to give a sense of how strong their board presence is.
-    GamestateScore evalGamestateScore(std::shared_ptr<GameState>& currentGamestate);
+    unsigned int evalGamestateScore(std::shared_ptr<GameState>& currentGamestate);
     
     /// Runs the AI's heuristic algorithm and returns a Tile point for the best possible move out of all valid ones.
     /// @param currentGamestate the game board state (where pieces are placed) before making any hypothetical moves.

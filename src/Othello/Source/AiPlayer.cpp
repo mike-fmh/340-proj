@@ -29,19 +29,25 @@ AiPlayer::AiPlayer(RGBColor color, std::string name)
 
 TilePoint AiPlayer::findBestMove(shared_ptr<GameState>& currentGamestate) {
     TilePoint bestMove;
-    
+    unsigned int highestMovescore, curMovescore;
+    highestMovescore = 0;
     vector<shared_ptr<Tile>> possibleMoves;
     currentGamestate->getPlayableTiles(*this, possibleMoves);
     
     for (shared_ptr<Tile> thisMove : possibleMoves) {
-        GameState hypotheticalGamestate = GameState(*currentGamestate);
-        hypotheticalGamestate.placePiece(*this, thisMove);
+        shared_ptr<GameState> hypotheticalGamestate = make_shared<GameState>(*currentGamestate);
+        hypotheticalGamestate->placePiece(*this, thisMove);
+        curMovescore = evalGamestateScore(hypotheticalGamestate);
+        if (curMovescore > highestMovescore) {
+            highestMovescore = curMovescore;
+            bestMove = thisMove->getPos();
+        }
     }
     
     return bestMove;
 }
 
-GamestateScore AiPlayer::evalGamestateScore(shared_ptr<GameState>& currentGamestate) {
+unsigned int AiPlayer::evalGamestateScore(shared_ptr<GameState>& currentGamestate) {
     int mobility, pseudostability, stability, cornerPieces;
     GamestateScore curScore;
     
@@ -72,5 +78,5 @@ GamestateScore AiPlayer::evalGamestateScore(shared_ptr<GameState>& currentGamest
     curScore.pseudostabilityScore = pseudostability * STABILITY_WEIGHT_;
     curScore.stabilityScore = stability * STABILITY_WEIGHT_;
     curScore.totalScore = curScore.sum();
-    return curScore; // totalScore represents the overall positional score for the AI for currentGamestate
+    return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
 }
