@@ -468,12 +468,12 @@ void myTimerFunc(int value)
         if (blackPlayableTiles.size() == 0)
             gameState->getPlayableTiles(playerBlack, blackPlayableTiles);
         
-        /*
+        
          // display current possible moves
          for (auto tile: blackPlayableTiles) {
-         tile->setColor(0.8, 1, 1);
+         tile->setColor(1, 0.8, 1);
          }
-         */
+         
         
         if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
             // compute black's best move and play it
