@@ -20,6 +20,8 @@
 #include "Tile.hpp"
 #include "Disc.hpp"
 #include "GameState.hpp"
+#include "Player.hpp"
+#include "AiPlayer.hpp"
 //
 
 using namespace std;
@@ -35,6 +37,7 @@ vector<shared_ptr<GraphicObject>> allObjects;
 shared_ptr<Player> playerNull;
 shared_ptr<Player> playerWhite;
 shared_ptr<Player> playerBlack;
+shared_ptr<AiPlayer> AI_MIND;
 
 shared_ptr<GameState> gameState;
 
@@ -109,6 +112,7 @@ void myTimerFunc(int val);
 void applicationInit();
 
 void addGamePiece(TilePoint location, shared_ptr<Player> whose);
+TilePoint computeBestMove(shared_ptr<Player> AIplayer, shared_ptr<AiPlayer> AImind, vector<shared_ptr<Tile>> possibleMoves);
 
 //--------------------------------------
 #if 0
@@ -194,6 +198,29 @@ void addGamePiece(TilePoint location, shared_ptr<Player> whose) {
     shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
     gameBoard->addPiece(whose, thisDisc);
     allObjects.push_back(thisDisc);
+}
+
+TilePoint computeBestMove(shared_ptr<Player> AIplayer, shared_ptr<AiPlayer> AImind, vector<shared_ptr<Tile>> possibleMoves) {
+    TilePoint bestMove;
+    unsigned int highestMovescore, curMovescore;
+    highestMovescore = 0;
+
+    for (auto tile : possibleMoves) {
+        cout << "possible move: " << tile->getRow() << ", " << tile->getCol() << endl;
+    }
+    cout << endl;
+    
+    for (shared_ptr<Tile> thisMove : possibleMoves) {
+        shared_ptr<GameState> hypotheticalGamestate = make_shared<GameState>(*gameState);
+        hypotheticalGamestate->placePiece(AIplayer, thisMove);
+        curMovescore = AImind->evalGamestateScore(hypotheticalGamestate);
+        if (curMovescore > highestMovescore) {
+            highestMovescore = curMovescore;
+            bestMove = thisMove->getPos();
+        }
+    }
+    cout << bestMove.x << ", " << bestMove.y << endl;
+    return bestMove;
 }
 
 void myDisplayFunc(void)
@@ -403,15 +430,29 @@ void myTimerFunc(int value)
             whitePlayableTiles.clear();
         }
         
+        // compute black's best move and play it
+
+        
         // populate black's moves if not already done
         if (blackPlayableTiles.size() == 0)
             gameState->getPlayableTiles(playerBlack, blackPlayableTiles);
         
-        
+        /*
         // display current possible moves
         for (auto tile: blackPlayableTiles) {
             tile->setColor(0.8, 1, 1);
         }
+        */
+        
+        //TilePoint bestMoveLoc = AI_MIND->findBestMove(gameState, blackPlayableTiles);
+        TilePoint bestMoveLoc = computeBestMove(playerBlack, AI_MIND, blackPlayableTiles);
+        shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+        cout << bestMove->getCol() << ", " << bestMove->getRow() << endl;
+        shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
+        allObjects.push_back(newPiece);
+        currentTurn = 1;
+        gameState->passTurn(playerWhite);
+        
     }
     
     lastTime = currentTime;
@@ -446,6 +487,8 @@ void myMouseHandler(int button, int state, int ix, int iy)
                     
                 } else {
                     // black's turn
+                    
+                    /*
                     shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, blackPlayableTiles);
                     if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
                         shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, clickedTile);
@@ -454,6 +497,7 @@ void myMouseHandler(int button, int state, int ix, int iy)
                         currentTurn = 1;
                         gameState->passTurn(playerWhite);
                     }
+                    */
                 }
                 
             }
@@ -620,6 +664,7 @@ void applicationInit()
     
     playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
     playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
+    AI_MIND = make_shared<AiPlayer>(playerBlack);
     
     // 4 starting pieces (discs)
     addGamePiece(TilePoint{4, 4}, playerBlack);
