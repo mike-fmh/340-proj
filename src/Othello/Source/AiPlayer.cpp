@@ -30,6 +30,13 @@ AiPlayer::AiPlayer(RGBColor color, std::string name)
 TilePoint AiPlayer::findBestMove(shared_ptr<GameState>& currentGamestate) {
     TilePoint bestMove;
     
+    vector<shared_ptr<Tile>> possibleMoves;
+    currentGamestate->getPlayableTiles(*this, possibleMoves);
+    
+    for (shared_ptr<Tile> thisMove : possibleMoves) {
+        GameState hypotheticalGamestate = GameState(*currentGamestate);
+    }
+    
     return bestMove;
 }
 
@@ -37,12 +44,13 @@ GamestateScore AiPlayer::evalGamestateScore(shared_ptr<GameState>& currentGamest
     int mobility, pseudostability, stability, cornerPieces;
     GamestateScore curScore;
     
-    // tiles where I currently have pieces placed
-    std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;
-    // tiles where I can place pieces
-    std::vector<std::shared_ptr<Tile>> possibleMoveTiles;
+    /// Find mobility (number of possible moves)
+    std::vector<std::shared_ptr<Tile>> possibleMoves;
+    currentGamestate->getPlayableTiles(*this, possibleMoves);
+    mobility = (int)possibleMoves.size();
     
     /// Calculate stability and count corner pieces
+    std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;  // tiles where I currently have pieces placed
     currentGamestate->getPlayerTiles(*this, allMyPieces); // populate my tiles
     cornerPieces = 0;
     pseudostability = 0;
@@ -56,16 +64,12 @@ GamestateScore AiPlayer::evalGamestateScore(shared_ptr<GameState>& currentGamest
                 pseudostability++;
         }
     }
+    
+    /// Multiply by weights and sum products together
+    curScore.mobilityScore = mobility * MOBILITY_WEIGHT_;
     curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT_;
     curScore.pseudostabilityScore = pseudostability * STABILITY_WEIGHT_;
     curScore.stabilityScore = stability * STABILITY_WEIGHT_;
-    
-    /// Find mobility (number of possible moves)
-    currentGamestate->getPlayableTiles(*this, possibleMoveTiles); // populate possible moves
-    
-    mobility = (int)possibleMoveTiles.size();
-    curScore.mobilityScore = mobility * MOBILITY_WEIGHT_;
-    
     curScore.totalScore = curScore.sum();
-    return curScore;
+    return curScore; // totalScore represents the overall positional score for the AI for currentGamestate
 }

@@ -34,16 +34,15 @@ namespace othello {
         std::shared_ptr<Player> currentPlayerTurn_;
         
         /// pointer reference to the game board
-        std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_;
+        std::vector<std::vector<std::shared_ptr<Tile>>> boardTiles_;
         
     public:
         GameState(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<Board> board);
+        GameState(const GameState& obj);   // copy
         
         //disabled constructors & operators
         GameState() = delete;
-        GameState(const GameState& obj) = delete;    // copy
         GameState(GameState&& obj) = delete;        // move
-        GameState& operator = (const GameState& obj) = delete;    // copy operator
         GameState& operator = (GameState&& obj) = delete;        // move operator
         
         /// populates the vector referenced by moveableTiles with possible moves for the forWho player

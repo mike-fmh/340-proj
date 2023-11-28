@@ -26,6 +26,28 @@ GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBl
     
 }
 
+
+GameState::GameState(const GameState& obj)
+    :   startingPlayer_(obj.startingPlayer_), // white always starts in othello
+        currentPlayerTurn_(obj.currentPlayerTurn_),
+        playerBlack_(obj.playerBlack_),
+        playerWhite_(obj.playerWhite_),
+        board_(obj.board_),
+        boardTiles_(vector<vector<shared_ptr<Tile>>>())
+{
+    // deep copy of board tiles, so editing the board in copied gamestate objects will not change the board in the original
+    const vector<vector<shared_ptr<Tile>>>& sourceTiles = obj.board_->getBoardTiles();
+    for (unsigned int r = 0; r < sourceTiles.size(); ++r) {
+        boardTiles_.push_back(vector<shared_ptr<Tile>>());
+        for (unsigned int c = 0; c < sourceTiles[r].size(); ++c) {
+            // use tile's copy constructor to create a new shared ptr
+            // the only attribute of Tile that needs a deep copy (new reference) would be owner_
+            // but I don't plan on editing or addressing owner_ at all in copied gamestate objects, so we can ignore it
+            boardTiles_[r].push_back(std::make_shared<Tile>(*sourceTiles[r][c]));
+        }
+    }
+}
+
 void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
     /// Checks each direction around a tile for discs starting with the opponent's color and ending with the player's color
     
@@ -148,12 +170,11 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, Player& curPlayer,
 void GameState::getPlayerTiles(Player& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
     bool tilesExistsInRow;
     RGBColor playerColor = whose.getMyColor();
-    std::vector<std::vector<std::shared_ptr<Tile>>>* allTiles = board_->getBoardTiles();
-    for (unsigned int r = 0; r < allTiles->size(); r++) {
+    for (unsigned int r = 0; r < boardTiles_.size(); r++) {
         playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
         tilesExistsInRow = false;
-        for (unsigned int c = 0; c < allTiles->at(r).size(); c++) {
-            std::shared_ptr<Tile> thisTile = allTiles->at(r)[c];
+        for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
+            std::shared_ptr<Tile> thisTile = boardTiles_[r][c];
             if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
                 playerTiles[r].push_back(thisTile);
                 tilesExistsInRow = true;
@@ -213,9 +234,9 @@ bool GameState::discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlaye
 
 void GameState::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
-    for (int c = 0; c < boardTiles_->size(); c++) {
-        for (int r = 0; r < boardTiles_->at(c).size(); r++) {
-            std::shared_ptr<Tile> currentTile = boardTiles_->at(c).at(r);
+    for (int c = 0; c < boardTiles_.size(); c++) {
+        for (int r = 0; r < boardTiles_[c].size(); r++) {
+            std::shared_ptr<Tile> currentTile = boardTiles_[c][r];
             
             // check if the tile is owned by the opposing player (if it has an opponent's piece on it)
             if ((currentTile->getPieceOwner() != forWho) && (currentTile->getPieceOwner() != board_->getNullPlayer() ))
@@ -250,9 +271,9 @@ void GameState::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<st
 void GameState::getPlayableTiles(Player& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
     RGBColor myColor  = forWho.getMyColor();
-    for (int c = 0; c < boardTiles_->size(); c++) {
-        for (int r = 0; r < boardTiles_->at(c).size(); r++) {
-            std::shared_ptr<Tile> currentTile = boardTiles_->at(c).at(r);
+    for (int c = 0; c < boardTiles_.size(); c++) {
+        for (int r = 0; r < boardTiles_[c].size(); r++) {
+            std::shared_ptr<Tile> currentTile = boardTiles_[c][r];
             
             // check if the tile is owned by the opposing player (if it has an opponent's piece on it)
             if ((!currentTile->getPieceOwner()->getMyColor().isEqualTo(myColor)) && (currentTile->getPieceOwner() != board_->getNullPlayer() ))
