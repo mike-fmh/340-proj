@@ -63,6 +63,7 @@ namespace othello {
         /// Given a tile with a disc on it, returns if that disc can be flipped (currently) by the opponent of curPlayer
         /// @param tile the tile in question
         /// @param curPlayer the player whose turn it currently is
+        bool discIsPseudostable(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
         bool discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlayer);
         
         /// GIven a screen x and y coord, translates it into a Board Tile
@@ -77,6 +78,7 @@ namespace othello {
         std::shared_ptr<Disc> placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on);
         std::shared_ptr<Disc> placePiece(Player& forWho, std::shared_ptr<Tile>& on);
         
+        void getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
         void getPlayerTiles(Player& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
         
         /// Given a tile, returns whether or not it's on a board corner

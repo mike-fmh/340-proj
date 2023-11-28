@@ -112,7 +112,8 @@ void myTimerFunc(int val);
 void applicationInit();
 
 void addGamePiece(TilePoint location, shared_ptr<Player> whose);
-TilePoint computeBestMove(shared_ptr<Player> AIplayer, shared_ptr<AiPlayer> AImind, vector<shared_ptr<Tile>> possibleMoves);
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, shared_ptr<GameState>& hypotheticalGamestate);
+TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, vector<shared_ptr<Tile>> possibleMoves);
 
 //--------------------------------------
 #if 0
@@ -200,26 +201,57 @@ void addGamePiece(TilePoint location, shared_ptr<Player> whose) {
     allObjects.push_back(thisDisc);
 }
 
-TilePoint computeBestMove(shared_ptr<Player> AIplayer, shared_ptr<AiPlayer> AImind, vector<shared_ptr<Tile>> possibleMoves) {
+
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, shared_ptr<GameState>& hypotheticalGamestate) {
+    int mobility, pseudostability, stability, cornerPieces;
+    GamestateScore curScore;
+    
+    /// Find mobility (number of possible moves)
+    std::vector<std::shared_ptr<Tile>> possibleMoves;
+    hypotheticalGamestate->getPlayableTiles(AIplayer, possibleMoves);
+    mobility = (int)possibleMoves.size();
+    
+    /// Calculate stability and count corner pieces
+    std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;  // tiles where I currently have pieces placed
+    hypotheticalGamestate->getPlayerTiles(AIplayer, allMyPieces); // populate my tiles
+    cornerPieces = 0;
+    pseudostability = 0;
+    stability = 0;
+    for (unsigned int r = 0; r < allMyPieces.size(); r++) {
+        for (unsigned int c = 0; c < allMyPieces[r].size(); c++) {
+            std::shared_ptr<Tile> thisTile = allMyPieces[r][c];
+            if (hypotheticalGamestate->isCornerTile(thisTile)) // if the tile is a corner piece
+                cornerPieces++;
+            if (hypotheticalGamestate->discIsPseudostable(thisTile, AIplayer)) // if the tile isn't flankable by the opponent
+                pseudostability++;
+        }
+    }
+    
+    /// Multiply by weights and sum products together
+    curScore.mobilityScore = mobility * AImind->getMobilityWeight();
+    curScore.cornerControlScore = cornerPieces * AImind->getCornerWeight();
+    curScore.pseudostabilityScore = pseudostability * AImind->getPseudostabilityWeight();
+    curScore.stabilityScore = stability * AImind->getStabilityWeight();
+    curScore.totalScore = curScore.sum();
+    
+    return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
+}
+
+
+TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, vector<shared_ptr<Tile>> possibleMoves) {
     TilePoint bestMove;
     unsigned int highestMovescore, curMovescore;
     highestMovescore = 0;
-
-    for (auto tile : possibleMoves) {
-        cout << "possible move: " << tile->getRow() << ", " << tile->getCol() << endl;
-    }
-    cout << endl;
     
     for (shared_ptr<Tile> thisMove : possibleMoves) {
         shared_ptr<GameState> hypotheticalGamestate = make_shared<GameState>(*gameState);
         hypotheticalGamestate->placePiece(AIplayer, thisMove);
-        curMovescore = AImind->evalGamestateScore(hypotheticalGamestate);
+        curMovescore = evalGamestateScore(AIplayer, AImind, hypotheticalGamestate);
         if (curMovescore > highestMovescore) {
             highestMovescore = curMovescore;
             bestMove = thisMove->getPos();
         }
     }
-    cout << bestMove.x << ", " << bestMove.y << endl;
     return bestMove;
 }
 
@@ -447,7 +479,6 @@ void myTimerFunc(int value)
         //TilePoint bestMoveLoc = AI_MIND->findBestMove(gameState, blackPlayableTiles);
         TilePoint bestMoveLoc = computeBestMove(playerBlack, AI_MIND, blackPlayableTiles);
         shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
-        cout << bestMove->getCol() << ", " << bestMove->getRow() << endl;
         shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
         allObjects.push_back(newPiece);
         currentTurn = 1;

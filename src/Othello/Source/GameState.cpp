@@ -165,6 +165,22 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, Player& curPlayer,
     }
 }
 
+void GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
+    bool tilesExistsInRow;
+    RGBColor playerColor = whose->getMyColor();
+    for (unsigned int r = 0; r < boardTiles_.size(); r++) {
+        playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
+        tilesExistsInRow = false;
+        for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
+            std::shared_ptr<Tile> thisTile = boardTiles_[r][c];
+            if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
+                playerTiles[r].push_back(thisTile);
+                tilesExistsInRow = true;
+            }
+        }
+    }
+}
+
 void GameState::getPlayerTiles(Player& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
     bool tilesExistsInRow;
     RGBColor playerColor = whose.getMyColor();
@@ -208,6 +224,26 @@ bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, Player& curPlayer) {
     return false;
 }
 
+
+bool GameState::discIsPseudostable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
+    // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
+    RGBColor whiteColor = playerWhite_->getMyColor();
+    std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white
+    if (curPlayer->getMyColor().isEqualTo(whiteColor)) { // is it white's turn?
+        opponent = playerBlack_; // then opponent is black
+    }
+    
+    TilePoint tileLoc = tile->getPos();
+    std::vector<std::shared_ptr<Tile>> neighborTiles;
+    board_->getNeighbors(tileLoc, neighborTiles);
+    
+    for (std::shared_ptr<Tile> n : neighborTiles) {
+        if (tileIsFlanked(n, opponent)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 bool GameState::discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlayer) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it

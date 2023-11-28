@@ -63,6 +63,23 @@ public:
     AiPlayer(AiPlayer&& obj) = delete;        // move
     AiPlayer& operator = (const AiPlayer& obj) = delete;    // copy operator
     AiPlayer& operator = (AiPlayer&& obj) = delete;        // move operator
+    
+    
+    inline unsigned int getMobilityWeight() const {
+        return MOBILITY_WEIGHT_;
+    }
+    
+    inline unsigned int getCornerWeight() const {
+        return CORNER_WEIGHT_;
+    }
+    
+    inline unsigned int getPseudostabilityWeight() const {
+        return STABILITY_WEIGHT_;
+    }
+    
+    inline unsigned int getStabilityWeight() const {
+        return STABILITY_WEIGHT_;
+    }
 };
 
 }
