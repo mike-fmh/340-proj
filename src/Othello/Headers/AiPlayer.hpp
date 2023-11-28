@@ -55,7 +55,7 @@ public:
     
     /// Runs the AI's heuristic algorithm and returns a Tile point for the best possible move out of all valid ones.
     /// @param currentGamestate the game board state (where pieces are placed) before making any hypothetical moves.
-    std::shared_ptr<Tile> findBestMove(std::shared_ptr<GameState>& currentGamestate);
+    TilePoint findBestMove(std::shared_ptr<GameState>& currentGamestate, std::vector<std::shared_ptr<Tile>> possibleMoves);
     
     //disabled constructors & operators
     AiPlayer() = delete;
