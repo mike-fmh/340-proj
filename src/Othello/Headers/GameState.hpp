@@ -86,6 +86,11 @@ namespace othello {
             currentPlayerTurn_ = toWho;
         }
         
+        /// Get a Tile on the board from its position
+        inline std::shared_ptr<Tile> getBoardTile(TilePoint& at) const {
+            return board_->getBoardTile(at);
+        }
+        
         inline std::shared_ptr<Player> getCurrentPlayer() {
             return currentPlayerTurn_;
         }
