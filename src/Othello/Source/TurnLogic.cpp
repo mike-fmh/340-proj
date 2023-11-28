@@ -190,7 +190,7 @@ bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, Player& curPlayer) {
 }
 
 
-bool TurnLogic::discIsStable(std::shared_ptr<Tile>& tile, Player& curPlayer) {
+bool TurnLogic::discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlayer) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();
     std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white

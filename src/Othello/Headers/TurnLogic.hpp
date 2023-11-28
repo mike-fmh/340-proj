@@ -61,10 +61,10 @@ namespace othello {
         bool tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
         bool tileIsFlanked(std::shared_ptr<Tile>& tile, Player& curPlayer);
      
-        /// Given a tile with a disc on it, returns if that disc can be flipped by the opponent of curPlayer
+        /// Given a tile with a disc on it, returns if that disc can be flipped (currently) by the opponent of curPlayer
         /// @param tile the tile in question
         /// @param curPlayer the player whose turn it currently is
-        bool discIsStable(std::shared_ptr<Tile>& tile, Player& curPlayer);
+        bool discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlayer);
         
         /// GIven a screen x and y coord, translates it into a Board Tile
         /// @param ix the screen x coord
