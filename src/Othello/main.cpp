@@ -438,8 +438,10 @@ void myMouseHandler(int button, int state, int ix, int iy)
                     shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, whitePlayableTiles);
                     if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
                         shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, clickedTile);
+                        //cout << clickedTile->getCol() << ", " << clickedTile->getRow() << endl;
                         allObjects.push_back(newPiece);
                         currentTurn = 0;
+                        gameState->passTurn(playerBlack);
                     }
                     
                 } else {
@@ -447,8 +449,10 @@ void myMouseHandler(int button, int state, int ix, int iy)
                     shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, blackPlayableTiles);
                     if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
                         shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, clickedTile);
+                        //cout << clickedTile->getCol() << ", " << clickedTile->getRow() << endl;
                         allObjects.push_back(newPiece);
                         currentTurn = 1;
+                        gameState->passTurn(playerWhite);
                     }
                 }
                 
