@@ -19,7 +19,7 @@
 #include "Board.hpp"
 #include "Tile.hpp"
 #include "Disc.hpp"
-#include "TurnLogic.hpp"
+#include "GameState.hpp"
 //
 
 using namespace std;
@@ -36,7 +36,7 @@ shared_ptr<Player> playerNull;
 shared_ptr<Player> playerWhite;
 shared_ptr<Player> playerBlack;
 
-shared_ptr<TurnLogic> gameState;
+shared_ptr<GameState> gameState;
 
 bool currentTurn = 1; // 1 = white, 0 = black
 
@@ -628,7 +628,7 @@ void applicationInit()
     addGamePiece(TilePoint{5, 4}, playerWhite);
     addGamePiece(TilePoint{4, 5}, playerWhite);
 
-    gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard);
+    gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
   
 /*
     thisPnt = TilePoint{5, 6};

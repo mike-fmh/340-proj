@@ -8,7 +8,7 @@
 #ifndef AiPlayer_hpp
 #define AiPlayer_hpp
 
-#include "TurnLogic.hpp" // turnlogic includes board, player, tile and more
+#include "GameState.hpp" // includes board, player, tile and more
 
 namespace othello {
 
@@ -50,11 +50,11 @@ public:
     
     /// Calculate the AI player's 'positional score' based on various factors regarding their current pieces and where they're placed.
     /// This gamestate positional score is not based on any fixed metric, but it supposed to give a sense of how strong their board presence is.
-    GamestateScore evalGamestateScore(std::shared_ptr<TurnLogic> currentGamestate);
+    GamestateScore evalGamestateScore(std::shared_ptr<GameState>& currentGamestate);
     
     /// Runs the AI's heuristic algorithm and returns a Tile point for the best possible move out of all valid ones.
     /// @param currentGamestate stores the current game board state (where pieces are placed).
-    TilePoint findBestMove(std::shared_ptr<TurnLogic>& currentGamestate);
+    TilePoint findBestMove(std::shared_ptr<GameState>& currentGamestate);
     
     //disabled constructors & operators
     AiPlayer() = delete;

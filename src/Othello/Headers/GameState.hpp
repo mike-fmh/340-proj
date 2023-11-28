@@ -1,5 +1,5 @@
 //
-//  TurnLogic.hpp
+//  GameState.hpp
 //  Othello
 //
 //  keeps track of info about the current player's turn, like playable moves
@@ -7,8 +7,8 @@
 //  Created by Michael Felix on 11/16/23.
 //
 
-#ifndef TurnLogic_hpp
-#define TurnLogic_hpp
+#ifndef GameState_hpp
+#define GameState_hpp
 
 #include <vector>
 #include <memory>
@@ -17,7 +17,7 @@
 
 
 namespace othello {
-    class TurnLogic {
+    class GameState {
     private:
         /// number of players in the game
         static const int NUM_GAME_PLAYERS;
@@ -37,14 +37,14 @@ namespace othello {
         std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_;
         
     public:
-        TurnLogic(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<Board> board);
+        GameState(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<Board> board);
         
         //disabled constructors & operators
-        TurnLogic() = delete;
-        TurnLogic(const TurnLogic& obj) = delete;    // copy
-        TurnLogic(TurnLogic&& obj) = delete;        // move
-        TurnLogic& operator = (const TurnLogic& obj) = delete;    // copy operator
-        TurnLogic& operator = (TurnLogic&& obj) = delete;        // move operator
+        GameState() = delete;
+        GameState(const GameState& obj) = delete;    // copy
+        GameState(GameState&& obj) = delete;        // move
+        GameState& operator = (const GameState& obj) = delete;    // copy operator
+        GameState& operator = (GameState&& obj) = delete;        // move operator
         
         /// populates the vector referenced by moveableTiles with possible moves for the forWho player
         void getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles);
@@ -96,4 +96,4 @@ namespace othello {
 }
 
 
-#endif /* TurnLogic_hpp */
+#endif /* GameState_hpp */

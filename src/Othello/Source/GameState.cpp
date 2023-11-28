@@ -1,21 +1,21 @@
 //
-//  TurnLogic.cpp
+//  GameState.cpp
 //  Othello
 //
 //  Created by Michael Felix on 11/16/23.
 //
 
-#include "TurnLogic.hpp"
+#include "GameState.hpp"
 
 using namespace std;
 using namespace othello;
 
 
 // othello will always have 2 players
-const int TurnLogic::NUM_GAME_PLAYERS = 2;
+const int GameState::NUM_GAME_PLAYERS = 2;
 
 
-TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
+GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
     :   startingPlayer_(playerWhite), // white always starts in othello
         currentPlayerTurn_(playerWhite),
         playerBlack_(playerBlack),
@@ -26,7 +26,7 @@ TurnLogic::TurnLogic(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBl
     
 }
 
-void TurnLogic::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
+void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
     /// Checks each direction around a tile for discs starting with the opponent's color and ending with the player's color
     
     // coordinates of 1 unit in each direction
@@ -85,7 +85,7 @@ void TurnLogic::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Pl
     }
 }
 
-void TurnLogic::getFlankingTiles(std::shared_ptr<Tile>& tile, Player& curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
+void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, Player& curPlayer, std::vector<std::vector<std::shared_ptr<Tile>>>& flankedTiles) {
     /// Checks each direction around a tile for discs starting with the opponent's color and ending with the player's color
     
     // coordinates of 1 unit in each direction
@@ -145,7 +145,7 @@ void TurnLogic::getFlankingTiles(std::shared_ptr<Tile>& tile, Player& curPlayer,
     }
 }
 
-void TurnLogic::getPlayerTiles(Player& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
+void GameState::getPlayerTiles(Player& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
     bool tilesExistsInRow;
     RGBColor playerColor = whose.getMyColor();
     std::vector<std::vector<std::shared_ptr<Tile>>>* allTiles = board_->getBoardTiles();
@@ -162,7 +162,7 @@ void TurnLogic::getPlayerTiles(Player& whose, std::vector<std::vector<std::share
     }
 }
 
-bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer) {
+bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer) {
     std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
     getFlankingTiles(tile, curPlayer, flankedTiles);
     for (int o = 0; o < flankedTiles.size(); o++) {
@@ -176,7 +176,7 @@ bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Playe
 }
 
 
-bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, Player& curPlayer) {
+bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, Player& curPlayer) {
     std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
     getFlankingTiles(tile, curPlayer, flankedTiles);
     for (int o = 0; o < flankedTiles.size(); o++) {
@@ -190,7 +190,7 @@ bool TurnLogic::tileIsFlanked(std::shared_ptr<Tile>& tile, Player& curPlayer) {
 }
 
 
-bool TurnLogic::discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlayer) {
+bool GameState::discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlayer) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();
     std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white
@@ -211,7 +211,7 @@ bool TurnLogic::discIsPseudostable(std::shared_ptr<Tile>& tile, Player& curPlaye
 }
 
 
-void TurnLogic::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
+void GameState::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
     for (int c = 0; c < boardTiles_->size(); c++) {
         for (int r = 0; r < boardTiles_->at(c).size(); r++) {
@@ -247,7 +247,7 @@ void TurnLogic::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<st
 
 
 // we need to overload this definition to use inside the AIplayer class when it passes itself to this function
-void TurnLogic::getPlayableTiles(Player& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
+void GameState::getPlayableTiles(Player& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
     RGBColor myColor  = forWho.getMyColor();
     for (int c = 0; c < boardTiles_->size(); c++) {
@@ -283,7 +283,7 @@ void TurnLogic::getPlayableTiles(Player& forWho, std::vector<std::shared_ptr<Til
 }
 
 
-std::shared_ptr<Tile> TurnLogic::computeTileClicked(float ix, float iy, std::vector<std::shared_ptr<Tile>>& movableTiles) {
+std::shared_ptr<Tile> GameState::computeTileClicked(float ix, float iy, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // here is the tile the player clicked on
     TilePoint posClicked = board_->pixelToWorld(ix, iy);
     shared_ptr<Tile> tileClicked = board_->getBoardTile(posClicked);
@@ -299,7 +299,7 @@ std::shared_ptr<Tile> TurnLogic::computeTileClicked(float ix, float iy, std::vec
 }
 
 
-std::shared_ptr<Disc> TurnLogic::placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on) {
+std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on) {
     TilePoint tileLoc = on->getPos();
     std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho->getMyColor());
     board_->addPiece(forWho, thisDisc);
@@ -323,7 +323,7 @@ std::shared_ptr<Disc> TurnLogic::placePiece(std::shared_ptr<Player>& forWho, std
     return thisDisc;
 }
 
-bool TurnLogic::isCornerTile(std::shared_ptr<Tile>& tile) {
+bool GameState::isCornerTile(std::shared_ptr<Tile>& tile) {
     bool topRight = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMin();
     bool topLeft = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMax();
     bool bottomRight = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMin();

@@ -27,13 +27,13 @@ AiPlayer::AiPlayer(RGBColor color, std::string name)
     
 }
 
-TilePoint AiPlayer::findBestMove(shared_ptr<TurnLogic>& currentGamestate) {
+TilePoint AiPlayer::findBestMove(shared_ptr<GameState>& currentGamestate) {
     TilePoint bestMove;
     
     return bestMove;
 }
 
-GamestateScore AiPlayer::evalGamestateScore(shared_ptr<TurnLogic> currentGamestate) {
+GamestateScore AiPlayer::evalGamestateScore(shared_ptr<GameState>& currentGamestate) {
     int mobility, pseudostability, stability, cornerPieces;
     GamestateScore curScore;
     
