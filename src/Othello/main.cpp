@@ -30,6 +30,8 @@ using namespace othello;
 bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 
+float cur_ai_turn_wait = 0;
+const float SECS_BETWEEN_AI_MOVES = 2.0;
 
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
@@ -424,12 +426,12 @@ void myTimerFunc(int value)
     
     chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
  
-    /*
+    
     float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
     
     /// TODO: update all Discs
     /// TODO: update all Tiles
-    */
+    
     
     
     // do stuff
@@ -462,27 +464,31 @@ void myTimerFunc(int value)
             whitePlayableTiles.clear();
         }
         
-        // compute black's best move and play it
-
-        
         // populate black's moves if not already done
         if (blackPlayableTiles.size() == 0)
             gameState->getPlayableTiles(playerBlack, blackPlayableTiles);
         
         /*
-        // display current possible moves
-        for (auto tile: blackPlayableTiles) {
-            tile->setColor(0.8, 1, 1);
-        }
-        */
+         // display current possible moves
+         for (auto tile: blackPlayableTiles) {
+         tile->setColor(0.8, 1, 1);
+         }
+         */
         
-        //TilePoint bestMoveLoc = AI_MIND->findBestMove(gameState, blackPlayableTiles);
-        TilePoint bestMoveLoc = computeBestMove(playerBlack, AI_MIND, blackPlayableTiles);
-        shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
-        shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
-        allObjects.push_back(newPiece);
-        currentTurn = 1;
-        gameState->passTurn(playerWhite);
+        if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
+            // compute black's best move and play it
+            
+            //TilePoint bestMoveLoc = AI_MIND->findBestMove(gameState, blackPlayableTiles);
+            TilePoint bestMoveLoc = computeBestMove(playerBlack, AI_MIND, blackPlayableTiles);
+            shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+            shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
+            allObjects.push_back(newPiece);
+            currentTurn = 1;
+            gameState->passTurn(playerWhite);
+            cur_ai_turn_wait = 0;
+        } else {
+            cur_ai_turn_wait += dt;
+        }
         
     }
     
