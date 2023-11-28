@@ -27,8 +27,15 @@ AiPlayer::AiPlayer(RGBColor color, std::string name)
     
 }
 
-TilePoint AiPlayer::findBestMove(shared_ptr<GameState>& currentGamestate) {
-    TilePoint bestMove;
+AiPlayer::AiPlayer(std::shared_ptr<Player> basePlayer)
+    :   Player(basePlayer->getMyColor(), basePlayer->getName())
+{
+
+}
+
+
+shared_ptr<Tile> AiPlayer::findBestMove(shared_ptr<GameState>& currentGamestate) {
+    shared_ptr<Tile> bestMove;
     unsigned int highestMovescore, curMovescore;
     highestMovescore = 0;
     vector<shared_ptr<Tile>> possibleMoves;
@@ -40,7 +47,7 @@ TilePoint AiPlayer::findBestMove(shared_ptr<GameState>& currentGamestate) {
         curMovescore = evalGamestateScore(hypotheticalGamestate);
         if (curMovescore > highestMovescore) {
             highestMovescore = curMovescore;
-            bestMove = thisMove->getPos();
+            bestMove = thisMove;
         }
     }
     
