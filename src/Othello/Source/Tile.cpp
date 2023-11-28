@@ -29,10 +29,12 @@ Tile::Tile(const Tile& obj)
         red_(obj.red_),
         blue_(obj.blue_),
         green_(obj.green_),
-        owner_(std::make_shared<Player>(obj.owner_)),
+        owner_(std::make_shared<Player>(*obj.owner_)),
         disc_(nullptr)
 {
-    
+    if (obj.disc_ != nullptr) {
+        disc_ = std::make_shared<Disc>(*obj.disc_);
+    }
 }
 
 

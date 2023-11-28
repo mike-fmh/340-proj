@@ -21,18 +21,19 @@ namespace othello {
         
         public:
             Disc(TilePoint& loc, RGBColor color);
-            
+            Disc(const Disc& obj);
+        
             void draw() const;
             void update(float dt);
         
-            
-            inline int getRow() {
+                
+            inline int getRow() const {
                 return (int)getX();
             }
-            inline int getCol() {
+            inline int getCol() const {
                 return (int)getY();
             }
-            inline TilePoint getPos() {
+            inline TilePoint getPos() const {
                 return TilePoint{getRow(), getCol()};
             }
             inline void setColor(RGBColor color) {
