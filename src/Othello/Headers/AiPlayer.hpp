@@ -53,7 +53,7 @@ public:
     GamestateScore evalGamestateScore(std::shared_ptr<GameState>& currentGamestate);
     
     /// Runs the AI's heuristic algorithm and returns a Tile point for the best possible move out of all valid ones.
-    /// @param currentGamestate stores the current game board state (where pieces are placed).
+    /// @param currentGamestate the game board state (where pieces are placed) before making any hypothetical moves.
     TilePoint findBestMove(std::shared_ptr<GameState>& currentGamestate);
     
     //disabled constructors & operators
