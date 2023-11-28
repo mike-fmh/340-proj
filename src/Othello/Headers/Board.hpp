@@ -59,7 +59,7 @@ namespace othello
             
             /// Returns the Tile object in worldTiles at the given TilePoint, if any exist
             /// @param at the location of the Tile to return
-            std::shared_ptr<Tile> getBoardTile(TilePoint& at);
+            std::shared_ptr<Tile> getBoardTile(TilePoint& at) const;
         
             /// If there's a disc placed at the given point, return its owner
             std::shared_ptr<Player> getTileOwner(TilePoint& at);

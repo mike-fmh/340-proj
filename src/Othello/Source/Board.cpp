@@ -112,7 +112,7 @@ PixelPoint Board::worldToPixel(const TilePoint& pt)
 
 }
 
-std::shared_ptr<Tile> Board::getBoardTile(TilePoint& at) {
+std::shared_ptr<Tile> Board::getBoardTile(TilePoint& at) const {
     float row = at.x;
     float col = at.y;
     if (row > Board::ROWS_MAX_)
