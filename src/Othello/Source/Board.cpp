@@ -52,6 +52,25 @@ void Board::addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& pie
     }
 }
 
+
+void Board::addPiece(Player& forWho, std::shared_ptr<Disc>& piece) {
+    forWho.addPiece(piece);
+    // now we need to give this player ownership of the tile where we placed the new piece
+    
+    // find this piece's Tile location
+    for (int c = 0; c < allBoardTiles.size(); c++) {
+        for (int r = 0; r < allBoardTiles.at(c).size(); r++) {
+            TilePoint tilePos = allBoardTiles.at(c).at(r)->getPos();
+            TilePoint piecePos = piece->getPos();
+            if ((tilePos.x == piecePos.x) && (tilePos.y == piecePos.y)) { // is this board tile at the location we're placing the new piece?
+                allBoardTiles.at(c).at(r)->setOwner(forWho);
+                allBoardTiles.at(c).at(r)->setPiece(piece);
+                return;
+            }
+        }
+    }
+}
+
 void Board::setScalingRatios(int& paneWidth, int& paneHeight){
 	float widthRatio = WIDTH_ / paneWidth;
 	float heightRatio = HEIGHT_ / paneHeight;

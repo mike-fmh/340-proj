@@ -35,6 +35,7 @@ TilePoint AiPlayer::findBestMove(shared_ptr<GameState>& currentGamestate) {
     
     for (shared_ptr<Tile> thisMove : possibleMoves) {
         GameState hypotheticalGamestate = GameState(*currentGamestate);
+        hypotheticalGamestate.placePiece(*this, thisMove);
     }
     
     return bestMove;

@@ -46,6 +46,7 @@ namespace othello
             void draw() const;
         
             void addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece);
+            void addPiece(Player& forWho, std::shared_ptr<Disc>& piece);
             
             /** Function called through the initialization of a global variable in the
              *    main program.  Although the user specifies dimensions for the rendering pane,

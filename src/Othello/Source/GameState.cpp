@@ -344,6 +344,31 @@ std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std
     return thisDisc;
 }
 
+std::shared_ptr<Disc> GameState::placePiece(Player& forWho, std::shared_ptr<Tile>& on) {
+    TilePoint tileLoc = on->getPos();
+    std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho.getMyColor());
+    board_->addPiece(forWho, thisDisc);
+    
+    std::vector<std::vector<std::shared_ptr<Tile>>> flankedTiles;
+    // retreive which tiles are flanked by this new one
+    getFlankingTiles(on, forWho, flankedTiles);
+    
+    // flip all flanked tiles
+    RGBColor blackColor = playerBlack_->getMyColor();
+    for (auto dir: flankedTiles) {
+        for (auto tile: dir) {
+            if (forWho.getMyColor().isEqualTo(blackColor)) {
+                tile->setOwner(playerBlack_);
+                tile->getPiece()->setColor(0, 0, 0);
+            } else {
+                tile->setOwner(playerWhite_);
+                tile->getPiece()->setColor(1, 1, 1);
+            }
+        }
+    }
+    return thisDisc;
+}
+
 bool GameState::isCornerTile(std::shared_ptr<Tile>& tile) {
     bool topRight = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMin();
     bool topLeft = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMax();

@@ -27,10 +27,10 @@ namespace othello {
         
         Player(RGBColor myColor);
         Player(RGBColor myColor, std::string name);
+        Player(const Player& obj);    // copy
         
         //disabled constructors & operators
         Player() = delete;
-        Player(const Player& obj) = delete;    // copy
         Player(Player&& obj) = delete;        // move
         Player& operator = (const Player& obj) = delete;    // copy operator
         Player& operator = (Player&& obj) = delete;        // move operator
