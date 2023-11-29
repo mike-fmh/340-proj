@@ -45,7 +45,6 @@ namespace othello
             void draw() const;
         
             void addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece);
-            void addPiece(Player& forWho, std::shared_ptr<Disc>& piece);
             
             std::vector<std::shared_ptr<Disc>> getAllPieces() const;
         

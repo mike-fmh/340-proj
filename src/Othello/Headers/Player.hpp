@@ -30,6 +30,7 @@ namespace othello {
         
         //disabled constructors & operators
         Player(Player&& obj) = delete;        // move
+        Player(const Player& obj) = delete;
         Player& operator = (const Player& obj) = delete;    // copy operator
         Player& operator = (Player&& obj) = delete;        // move operator
         

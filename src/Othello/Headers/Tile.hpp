@@ -34,10 +34,6 @@ namespace othello {
                 owner_ = player;
             }
         
-            inline void setOwner(Player& player) {
-                owner_ = std::make_shared<Player>(player);
-            }
-        
             /// Returns the owner (player) that owns the disc placed at this board tile. If no pieces are placed here, return nullplayer
             inline std::shared_ptr<Player> getPieceOwner() {
                 return owner_;
