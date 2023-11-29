@@ -20,7 +20,7 @@ namespace othello
     {
         private:
         
-            static std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles;
+            std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles_;
             
             const std::shared_ptr<Player> nullplayerRef_;
             const int X_MIN_, X_MAX_, Y_MIN_, Y_MAX_;
@@ -79,7 +79,7 @@ namespace othello
             }
         
             inline std::vector<std::vector<std::shared_ptr<Tile>>> getBoardTiles() {
-                return allBoardTiles;
+                return allBoardTiles_;
             }
             inline int getXmin() {
                 return X_MIN_;
