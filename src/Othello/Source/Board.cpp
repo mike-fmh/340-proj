@@ -34,34 +34,6 @@ Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int board
     }
 }
 
-Board::Board(const Board& obj)
-    :   Object(0, 0, 0),
-        GraphicObject(0, 0, 0),
-        Y_MIN_(obj.Y_MIN_),
-        Y_MAX_(obj.Y_MAX_),
-        X_MIN_(obj.X_MIN_),
-        X_MAX_(obj.X_MAX_),
-        HEIGHT_(obj.HEIGHT_),
-        WIDTH_(obj.WIDTH_),
-        COLS_MIN_(1),
-        COLS_MAX_(obj.COLS_MAX_),
-        ROWS_MIN_(1),
-        ROWS_MAX_(obj.COLS_MIN_),
-        PADDING_(obj.PADDING_),
-        DEFAULT_TILE_COLOR_(obj.DEFAULT_TILE_COLOR_),
-        nullplayerRef_(obj.nullplayerRef_)
-{
-    TilePoint thisPnt;
-    for (int c = 1; c <= 8; c++) {
-        allBoardTiles.push_back(std::vector<std::shared_ptr<Tile>>());
-        for (int r = 1; r <= 8; r++) {
-            thisPnt = TilePoint{r, c};
-            std::shared_ptr<Tile> thisTile = std::make_shared<Tile>(thisPnt, DEFAULT_TILE_COLOR_.red, DEFAULT_TILE_COLOR_.blue, DEFAULT_TILE_COLOR_.green, nullplayerRef_);
-            allBoardTiles.at(c-1).push_back(thisTile);
-        }
-    }
-}
-
 std::vector<std::shared_ptr<Disc>> Board::getAllPieces() const {
     std::vector<std::shared_ptr<Disc>> pieces;
     for (unsigned int r = 0; r < allBoardTiles.size(); r++) {
@@ -76,25 +48,6 @@ std::vector<std::shared_ptr<Disc>> Board::getAllPieces() const {
 
 void Board::addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece) {
     forWho->addPiece(piece);
-    // now we need to give this player ownership of the tile where we placed the new piece
-    
-    // find this piece's Tile location
-    for (int c = 0; c < allBoardTiles.size(); c++) {
-        for (int r = 0; r < allBoardTiles.at(c).size(); r++) {
-            TilePoint tilePos = allBoardTiles.at(c).at(r)->getPos();
-            TilePoint piecePos = piece->getPos();
-            if ((tilePos.x == piecePos.x) && (tilePos.y == piecePos.y)) { // is this board tile at the location we're placing the new piece?
-                allBoardTiles.at(c).at(r)->setOwner(forWho);
-                allBoardTiles.at(c).at(r)->setPiece(piece);
-                return;
-            }
-        }
-    }
-}
-
-
-void Board::addPiece(Player& forWho, std::shared_ptr<Disc>& piece) {
-    forWho.addPiece(piece);
     // now we need to give this player ownership of the tile where we placed the new piece
     
     // find this piece's Tile location

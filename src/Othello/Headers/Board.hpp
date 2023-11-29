@@ -41,12 +41,10 @@ namespace othello
             Board& operator = (Board&& obj) = delete;        // move operator
 
             Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef);
-            Board(const Board& obj);   // copy
         
             void draw() const;
         
             void addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece);
-            void addPiece(Player& forWho, std::shared_ptr<Disc>& piece);
             
             std::vector<std::shared_ptr<Disc>> getAllPieces() const;
         
