@@ -19,7 +19,9 @@
 #include "Board.hpp"
 #include "Tile.hpp"
 #include "Disc.hpp"
-#include "TurnLogic.hpp"
+#include "GameState.hpp"
+#include "Player.hpp"
+#include "AiPlayer.hpp"
 //
 
 using namespace std;
@@ -28,6 +30,8 @@ using namespace othello;
 bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 
+float cur_ai_turn_wait = 0;
+const float SECS_BETWEEN_AI_MOVES = 2.0;
 
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
@@ -35,8 +39,9 @@ vector<shared_ptr<GraphicObject>> allObjects;
 shared_ptr<Player> playerNull;
 shared_ptr<Player> playerWhite;
 shared_ptr<Player> playerBlack;
+shared_ptr<AiPlayer> AI_MIND;
 
-shared_ptr<TurnLogic> gameState;
+shared_ptr<GameState> gameState;
 
 bool currentTurn = 1; // 1 = white, 0 = black
 
@@ -108,7 +113,9 @@ void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
 
-void addGamePiece(TilePoint location, shared_ptr<Player> whose);
+void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj);
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, shared_ptr<GameState>& hypotheticalGamestate);
+TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, vector<shared_ptr<Tile>> possibleMoves);
 
 //--------------------------------------
 #if 0
@@ -190,10 +197,84 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #endif
 
 
-void addGamePiece(TilePoint location, shared_ptr<Player> whose) {
+void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj) {
     shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
-    gameBoard->addPiece(whose, thisDisc);
-    allObjects.push_back(thisDisc);
+    theBoard->addPiece(whose, thisDisc);
+    if (addObj) {
+        allObjects.push_back(thisDisc);
+    }
+}
+
+
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, shared_ptr<GameState>& hypotheticalGamestate) {
+    int mobility, pseudostability, stability, cornerPieces;
+    GamestateScore curScore;
+    
+    /// Find mobility (number of possible moves)
+    std::vector<std::shared_ptr<Tile>> possibleMoves;
+    hypotheticalGamestate->getPlayableTiles(AIplayer, possibleMoves);
+    mobility = (int)possibleMoves.size();
+    
+    /// Calculate stability and count corner pieces
+    std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;  // tiles where I currently have pieces placed
+    hypotheticalGamestate->getPlayerTiles(AIplayer, allMyPieces); // populate my tiles
+    cornerPieces = 0;
+    pseudostability = 0;
+    stability = 0;
+    for (unsigned int r = 0; r < allMyPieces.size(); r++) {
+        for (unsigned int c = 0; c < allMyPieces[r].size(); c++) {
+            std::shared_ptr<Tile> thisTile = allMyPieces[r][c];
+            if (hypotheticalGamestate->isCornerTile(thisTile)) // if the tile is a corner piece
+                cornerPieces++;
+            if (hypotheticalGamestate->discIsPseudostable(thisTile, AIplayer)) // if the tile isn't flankable by the opponent
+                pseudostability++;
+        }
+    }
+    
+    /// Multiply by weights and sum products together
+    curScore.mobilityScore = mobility * AImind->getMobilityWeight();
+    curScore.cornerControlScore = cornerPieces * AImind->getCornerWeight();
+    curScore.pseudostabilityScore = pseudostability * AImind->getPseudostabilityWeight();
+    curScore.stabilityScore = stability * AImind->getStabilityWeight();
+    curScore.totalScore = curScore.sum();
+    
+    return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
+}
+
+
+TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, vector<shared_ptr<Tile>> possibleMoves) {
+    TilePoint bestMove;
+    unsigned int highestMovescore, curMovescore;
+    highestMovescore = 0;
+    
+    for (shared_ptr<Tile> thisMove : possibleMoves) {
+        shared_ptr<Player> tempNullPlayer = make_shared<Player>(RGBColor{1, 1, 1}); // owns tiles with nothing placed on them
+        
+        shared_ptr<Board> tempGameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, tempNullPlayer);
+        
+        shared_ptr<Player> tempPlayerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
+        shared_ptr<Player> tempPlayerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
+        
+        shared_ptr<GameState> hypotheticalGamestate = make_shared<GameState>(tempPlayerWhite, tempPlayerBlack, tempGameBoard);
+        
+        vector<shared_ptr<Disc>> p = tempGameBoard->getAllPieces(); // move the main game board's pieces to the temporary one
+        for (shared_ptr<Disc> piece : p) {
+          //  cout << piece->getRow() << ", " << piece->getCol() << endl;
+            TilePoint pieceLoc = piece->getPos();
+            shared_ptr<Tile> pieceTile = tempGameBoard->getBoardTile(pieceLoc);
+            shared_ptr<Player> pieceOwner = tempGameBoard->getTileOwner(pieceLoc);
+            hypotheticalGamestate->placePiece(pieceOwner, pieceTile);
+        }
+        cout << "pieces: " << p.size() << endl;
+        
+        hypotheticalGamestate->placePiece(AIplayer, thisMove);
+        curMovescore = evalGamestateScore(AIplayer, AImind, hypotheticalGamestate);
+        if (curMovescore > highestMovescore) {
+            highestMovescore = curMovescore;
+            bestMove = thisMove->getPos();
+        }
+    }
+    return bestMove;
 }
 
 void myDisplayFunc(void)
@@ -364,8 +445,15 @@ void myTimerFunc(int value)
     glutTimerFunc(1, myTimerFunc, value);
     
     chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
+ 
+    
     float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
-
+    
+    /// TODO: update all Discs
+    /// TODO: update all Tiles
+    
+    
+    
     // do stuff
     
     if (currentTurn) { // white's turn
@@ -401,10 +489,28 @@ void myTimerFunc(int value)
             gameState->getPlayableTiles(playerBlack, blackPlayableTiles);
         
         
-        // display current possible moves
-        for (auto tile: blackPlayableTiles) {
-            tile->setColor(0.8, 1, 1);
+         // display current possible moves
+         for (auto tile: blackPlayableTiles) {
+         tile->setColor(1, 0.8, 1);
+         }
+         
+        
+        if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
+            // compute black's best move and play it
+            
+            //TilePoint bestMoveLoc = AI_MIND->findBestMove(gameState, blackPlayableTiles);
+            TilePoint bestMoveLoc = computeBestMove(playerBlack, AI_MIND, blackPlayableTiles);
+          //  TilePoint bestMoveLoc = TilePoint{6, 5};
+            shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+            shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
+            allObjects.push_back(newPiece);
+            currentTurn = 1;
+            gameState->passTurn(playerWhite);
+            cur_ai_turn_wait = 0;
+        } else {
+            cur_ai_turn_wait += dt;
         }
+        
     }
     
     lastTime = currentTime;
@@ -431,18 +537,25 @@ void myMouseHandler(int button, int state, int ix, int iy)
                     shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, whitePlayableTiles);
                     if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
                         shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, clickedTile);
+                        //cout << clickedTile->getCol() << ", " << clickedTile->getRow() << endl;
                         allObjects.push_back(newPiece);
                         currentTurn = 0;
+                        gameState->passTurn(playerBlack);
                     }
                     
                 } else {
                     // black's turn
+                    
+                    /*
                     shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, blackPlayableTiles);
                     if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
                         shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, clickedTile);
+                        //cout << clickedTile->getCol() << ", " << clickedTile->getRow() << endl;
                         allObjects.push_back(newPiece);
                         currentTurn = 1;
+                        gameState->passTurn(playerWhite);
                     }
+                    */
                 }
                 
             }
@@ -609,15 +722,16 @@ void applicationInit()
     
     playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
     playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
+    AI_MIND = make_shared<AiPlayer>(playerBlack);
     
     // 4 starting pieces (discs)
-    addGamePiece(TilePoint{4, 4}, playerBlack);
-    addGamePiece(TilePoint{5, 5}, playerBlack);
+    addGamePiece(TilePoint{4, 4}, playerBlack, gameBoard, true);
+    addGamePiece(TilePoint{5, 5}, playerBlack, gameBoard, true);
     
-    addGamePiece(TilePoint{5, 4}, playerWhite);
-    addGamePiece(TilePoint{4, 5}, playerWhite);
+    addGamePiece(TilePoint{5, 4}, playerWhite, gameBoard, true);
+    addGamePiece(TilePoint{4, 5}, playerWhite, gameBoard, true);
 
-    gameState = make_shared<TurnLogic>(playerWhite, playerBlack, gameBoard);
+    gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
   
 /*
     thisPnt = TilePoint{5, 6};

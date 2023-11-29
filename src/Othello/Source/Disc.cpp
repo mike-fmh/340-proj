@@ -32,6 +32,25 @@ Disc::Disc(TilePoint& loc, RGBColor color)
     }
 }
 
+Disc::Disc(const Disc& obj)
+    :   Object(obj.getPos(), 0),
+        GraphicObject(obj.getPos(), 0),
+        AnimatedObject(obj.getPos(), 0, 0, 0, 0),
+        color_(obj.color_),
+        size_(0.37)
+{
+    _circlePoints = new float*[_numCirPoints];
+    for (int k=0; k < _numCirPoints; k++) {
+        _circlePoints[k] = new float[2];
+    }
+    float angleStep = 2.f*M_PI/_numCirPoints;
+    float theta;
+    for (int k = 0; k < _numCirPoints; k++) {
+        theta = k * angleStep;
+        _circlePoints[k][0] = cosf(theta) * size_;
+        _circlePoints[k][1] = sinf(theta) * size_;
+    }
+}
 
 void Disc::draw() const
 {
@@ -61,5 +80,5 @@ void Disc::draw() const
 }
 
 void Disc::update(float dt) {
-    // asteroids use a different update fn
+    
 }

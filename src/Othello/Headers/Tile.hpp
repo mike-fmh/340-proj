@@ -26,12 +26,17 @@ namespace othello {
             
         public:
             Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<Player> owner);
-            
+            Tile(const Tile& obj); // copy;
+        
             void draw() const;
             void update(float dt);
             
             inline void setOwner(std::shared_ptr<Player>& player) {
                 owner_ = player;
+            }
+        
+            inline void setOwner(Player& player) {
+                owner_ = std::make_shared<Player>(player);
             }
         
             /// Returns the owner (player) that owns the disc placed at this board tile. If no pieces are placed here, return nullplayer
@@ -52,13 +57,13 @@ namespace othello {
             inline bool posIsEqual(std::shared_ptr<Tile>& other) {
                 return ((other->getRow() == getRow()) && (other->getCol() == getCol()));
             }
-            inline int getRow() {
+            inline int getRow() const {
                 return (int)getX();
             }
-            inline int getCol() {
+            inline int getCol() const {
                 return (int)getY();
             }
-            inline TilePoint getPos() {
+            inline TilePoint getPos() const {
                 return TilePoint{getRow(), getCol()};
             }
             inline void setColor(RGBColor color) {

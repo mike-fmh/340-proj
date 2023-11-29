@@ -22,6 +22,21 @@ Tile::Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<P
     
 }
 
+Tile::Tile(const Tile& obj)
+    :   Object(obj.getPos(), 0),
+        GraphicObject(obj.getPos(), 0),
+        AnimatedObject(obj.getPos(), 0, 0, 0, 0),
+        red_(obj.red_),
+        blue_(obj.blue_),
+        green_(obj.green_),
+        owner_(std::make_shared<Player>(*obj.owner_)),
+        disc_(nullptr)
+{
+    if (obj.disc_ != nullptr) {
+        disc_ = std::make_shared<Disc>(*obj.disc_);
+    }
+}
+
 
 void Tile::draw() const
 {
