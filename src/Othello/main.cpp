@@ -21,7 +21,6 @@
 #include "Disc.hpp"
 #include "GameState.hpp"
 #include "Player.hpp"
-#include "AiPlayer.hpp"
 //
 
 using namespace std;
@@ -33,13 +32,17 @@ bool showingBlackMoves = false;
 float cur_ai_turn_wait = 0;
 const float SECS_BETWEEN_AI_MOVES = 1.0;
 
+// weights for each factor based on their importance
+const int MOBILITY_WEIGHT = 1;
+const int STABILITY_WEIGHT = 2;
+const int CORNER_WEIGHT = 3;
+
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
 
 shared_ptr<Player> playerNull;
 shared_ptr<Player> playerWhite;
 shared_ptr<Player> playerBlack;
-shared_ptr<AiPlayer> AI_MIND;
 
 shared_ptr<GameState> gameState;
 
@@ -67,6 +70,28 @@ const RGBColor DEFAULT_TILE_COLOR = RGBColor{0.2f, 1.f, 0.4f};
 
 const char* WIN_TITLE = "Othello";
 
+
+struct GamestateScore {
+    
+    /// Score based on mobility, which represents the amount of possible moves the player has.
+    int mobilityScore;
+    
+    /// Score based on stability, which represents how many of the player's tiles aren't currently flanked (can't be flipped) by their opponent.
+    int pseudostabilityScore;
+    
+    /// Score based on stability, which represents how many of the player's tiles couldn't possibly be flanked by their opponent for the remainder of the game.
+    int stabilityScore;
+    
+    /// Score based on how many corner pieces the player has.
+    int cornerControlScore;
+    
+    /// The full gamestate score, computed by multiplying each score value by its corresponding weight and summing them together.
+    int totalScore;
+    
+    int sum() {
+        return cornerControlScore + stabilityScore + pseudostabilityScore + mobilityScore;
+    }
+};
 
 enum TextColorSubmenuItemID {    FIRST_TEXT = 11,
                                 RED_TEXT = 11,
@@ -114,8 +139,8 @@ void myTimerFunc(int val);
 void applicationInit();
 
 void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj);
-unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, shared_ptr<GameState>& hypotheticalGamestate);
-TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, vector<shared_ptr<Tile>> possibleMoves);
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate);
+TilePoint computeBestMove(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves);
 
 //--------------------------------------
 #if 0
@@ -206,7 +231,7 @@ void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board
 }
 
 
-unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, shared_ptr<GameState>& hypotheticalGamestate) {
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate) {
     int mobility, pseudostability, stability, cornerPieces;
     GamestateScore curScore;
     
@@ -232,17 +257,17 @@ unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlaye
     }
     
     /// Multiply by weights and sum products together
-    curScore.mobilityScore = mobility * AImind->getMobilityWeight();
-    curScore.cornerControlScore = cornerPieces * AImind->getCornerWeight();
-    curScore.pseudostabilityScore = pseudostability * AImind->getPseudostabilityWeight();
-    curScore.stabilityScore = stability * AImind->getStabilityWeight();
+    curScore.mobilityScore = mobility * MOBILITY_WEIGHT;
+    curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT;
+    curScore.pseudostabilityScore = pseudostability * STABILITY_WEIGHT;
+    curScore.stabilityScore = stability * STABILITY_WEIGHT;
     curScore.totalScore = curScore.sum();
     
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
 }
 
 
-TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, vector<shared_ptr<Tile>> possibleMoves) {
+TilePoint computeBestMove(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves) {
     
 }
 
@@ -466,12 +491,9 @@ void myTimerFunc(int value)
         
         if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
             // compute black's best move and play it
-            
-            //TilePoint bestMoveLoc = AI_MIND->findBestMove(gameState, blackPlayableTiles);
-            
             cout << "game pices: " << (int)gameBoard->getAllPieces().size() << endl;
             
-            TilePoint bestMoveLoc = computeBestMove(playerBlack, AI_MIND, blackPlayableTiles);
+            TilePoint bestMoveLoc = computeBestMove(playerBlack, blackPlayableTiles);
           //  TilePoint bestMoveLoc = TilePoint{6, 5};
             shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
             shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
@@ -694,7 +716,6 @@ void applicationInit()
     
     playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
     playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
-    AI_MIND = make_shared<AiPlayer>(playerBlack);
     
     // 4 starting pieces (discs)
     addGamePiece(TilePoint{4, 4}, playerBlack, gameBoard, true);
