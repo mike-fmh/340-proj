@@ -38,6 +38,9 @@ namespace othello {
             inline TilePoint getPos() const {
                 return TilePoint{getRow(), getCol()};
             }
+            inline RGBColor getColor() {
+                return color_;
+            }
             inline void setColor(RGBColor color) {
                 color_ = color;
             }

@@ -272,15 +272,45 @@ TilePoint bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile
     
     RGBColor WHITE = RGBColor{1, 1, 1};
     RGBColor BLACK = RGBColor{0, 0, 0};
-    shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
-    shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
-    shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
     
-    shared_ptr<Board> tempBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, tempNull);
-    shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
+    unsigned int bestMoveScore = 0;
+    unsigned int curMoveScore = 0;
+    for (shared_ptr<Tile> thisMove : possibleMoves) {
+        shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
+        shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
+        shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
+        
+        shared_ptr<Board> tempBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, tempNull);
+        shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
+        
+        
+        for (shared_ptr<Disc> piece : gameBoard->getAllPieces()) {
+            TilePoint thisPiecePos = piece->getPos();
+            shared_ptr<Player> tempOwner;
+            if (piece->getColor().isEqualTo(WHITE)) {
+                tempOwner = tempWhite;
+            } else {
+                tempOwner = tempBlack;
+            }
+            addGamePiece(thisPiecePos, tempOwner, tempBoard, false);
+        }
+        
+        
+        TilePoint thisMoveLoc = thisMove->getPos();
+        shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
+        
+        tempGamestate->placePiece(AIplayer, hypMove);
+        
+        curMoveScore = evalGamestateScore(AIplayer, tempGamestate);
+        cout << "hypgame pieces: " << tempBoard->getAllPieces().size() << endl;
+        cout << "this move score: " << curMoveScore << "\n";
+        
+        if (curMoveScore > bestMoveScore) {
+            bestMoveLoc = thisMoveLoc;
+            bestMoveScore = curMoveScore;
+        }
     
-    
-    bestMoveLoc = possibleMoves[0]->getPos();
+    }
     
     shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
     shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
