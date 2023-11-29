@@ -20,7 +20,7 @@ namespace othello
     {
         private:
         
-            static std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles;
+            std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles_;
             
             const std::shared_ptr<Player> nullplayerRef_;
             const int X_MIN_, X_MAX_, Y_MIN_, Y_MAX_;
@@ -36,7 +36,6 @@ namespace othello
         public:
             //disabled constructors & operators
             Board() = delete;
-            Board(const Board& obj) = delete;    // copy
             Board(Board&& obj) = delete;        // move
             Board& operator = (const Board& obj) = delete;    // copy operator
             Board& operator = (Board&& obj) = delete;        // move operator
@@ -47,6 +46,8 @@ namespace othello
         
             void addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece);
             
+            std::vector<std::shared_ptr<Disc>> getAllPieces() const;
+        
             /** Function called through the initialization of a global variable in the
              *    main program.  Although the user specifies dimensions for the rendering pane,
              *    the function may set different values that agree better with the world
@@ -77,8 +78,8 @@ namespace othello
                 return ((at.x >= ROWS_MIN_) & (at.x <= ROWS_MAX_) & (at.y >= COLS_MIN_) & (at.y <= COLS_MAX_));
             }
         
-            inline std::vector<std::vector<std::shared_ptr<Tile>>>* getTiles() {
-                return &allBoardTiles;
+            inline std::vector<std::vector<std::shared_ptr<Tile>>> getBoardTiles() {
+                return allBoardTiles_;
             }
             inline int getXmin() {
                 return X_MIN_;
@@ -92,6 +93,19 @@ namespace othello
             inline int getYmax() {
                 return Y_MAX_;
             }
+            inline int getColsMin() {
+                return COLS_MIN_;
+            }
+            inline int getColsMax() {
+                return COLS_MAX_;
+            }
+            inline int getRowsMin() {
+                return ROWS_MIN_;
+            }
+            inline int getRowsMax() {
+                return ROWS_MAX_;
+            }
+        
             inline std::shared_ptr<Player> getNullPlayer() {
                 return nullplayerRef_;
             }

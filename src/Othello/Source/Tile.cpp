@@ -22,7 +22,6 @@ Tile::Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<P
     
 }
 
-
 void Tile::draw() const
 {
     //    save the current coordinate system (origin, axes, scale)

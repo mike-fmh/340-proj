@@ -17,7 +17,10 @@ Disc::Disc(TilePoint& loc, RGBColor color)
         GraphicObject(loc, 0),
         AnimatedObject(loc, 0, 0, 0, 0),
         color_(color),
-        size_(0.37)
+        size_(0.37),
+        switchColorAfter_(-1),
+        curSwitchTimer_(0),
+        colorToSwitch_(RGBColor{-1, -1, -1})
 {
     _circlePoints = new float*[_numCirPoints];
     for (int k=0; k < _numCirPoints; k++) {
@@ -31,7 +34,6 @@ Disc::Disc(TilePoint& loc, RGBColor color)
         _circlePoints[k][1] = sinf(theta) * size_;
     }
 }
-
 
 void Disc::draw() const
 {
@@ -61,5 +63,14 @@ void Disc::draw() const
 }
 
 void Disc::update(float dt) {
-    // asteroids use a different update fn
+    if (switchColorAfter_ > -1) {
+        curSwitchTimer_ += dt;
+        if (curSwitchTimer_ >= switchColorAfter_) {
+            color_ = colorToSwitch_;
+            switchColorAfter_ = -1;
+        }
+    } else {
+        colorToSwitch_ = RGBColor{-1, -1, -1};
+        curSwitchTimer_ = 0;
+    }
 }

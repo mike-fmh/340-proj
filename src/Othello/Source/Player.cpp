@@ -26,3 +26,4 @@ Player::Player(RGBColor color, std::string name)
 {
     
 }
+

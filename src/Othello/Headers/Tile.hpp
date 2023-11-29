@@ -26,7 +26,7 @@ namespace othello {
             
         public:
             Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<Player> owner);
-            
+        
             void draw() const;
             void update(float dt);
             
@@ -52,13 +52,13 @@ namespace othello {
             inline bool posIsEqual(std::shared_ptr<Tile>& other) {
                 return ((other->getRow() == getRow()) && (other->getCol() == getCol()));
             }
-            inline int getRow() {
+            inline int getRow() const {
                 return (int)getX();
             }
-            inline int getCol() {
+            inline int getCol() const {
                 return (int)getY();
             }
-            inline TilePoint getPos() {
+            inline TilePoint getPos() const {
                 return TilePoint{getRow(), getCol()};
             }
             inline void setColor(RGBColor color) {

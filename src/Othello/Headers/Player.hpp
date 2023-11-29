@@ -29,15 +29,16 @@ namespace othello {
         Player(RGBColor myColor, std::string name);
         
         //disabled constructors & operators
-        Player() = delete;
-        Player(const Player& obj) = delete;    // copy
         Player(Player&& obj) = delete;        // move
+        Player(const Player& obj) = delete;
         Player& operator = (const Player& obj) = delete;    // copy operator
         Player& operator = (Player&& obj) = delete;        // move operator
         
+        /*
         /// remove pieces from this player's control
         /// @param pieces the vector of pieces to remove from my control
-      //  void rmPieces(std::vector<std::shared_ptr<Disc>> pieces);
+        void rmPieces(std::vector<std::shared_ptr<Disc>> pieces);
+        */
         
         inline RGBColor getMyColor() {
             return DiscColor_;
@@ -48,8 +49,8 @@ namespace othello {
         }
         
         /// returns a reference to a vector of all pieces under my control
-        inline std::vector<std::shared_ptr<Disc>>* getMyPieces() {
-            return &myPieces_;
+        inline std::vector<std::shared_ptr<Disc>> getMyPieces() {
+            return myPieces_;
         }
         
         inline void addPiece(std::shared_ptr<Disc> piece) {
