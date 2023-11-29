@@ -302,8 +302,10 @@ TilePoint bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile
         tempGamestate->placePiece(AIplayer, hypMove);
         
         curMoveScore = evalGamestateScore(AIplayer, tempGamestate);
+        /*
         cout << "hypgame pieces: " << tempBoard->getAllPieces().size() << endl;
         cout << "this move score: " << curMoveScore << "\n";
+        */
         
         if (curMoveScore > bestMoveScore) {
             bestMoveLoc = thisMoveLoc;
@@ -311,13 +313,6 @@ TilePoint bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile
         }
     
     }
-    
-    shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
-    shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
-    allObjects.push_back(newPiece);
-    
-    cout << evalGamestateScore(AIplayer, gameState);
-    
     return bestMoveLoc;
 }
 
@@ -543,7 +538,10 @@ void myTimerFunc(int value)
             cout << "game pices: " << (int)gameBoard->getAllPieces().size() << endl;
             
             TilePoint bestMoveLoc = bestMoveHeuristic(playerBlack, blackPlayableTiles);
-          //  TilePoint bestMoveLoc = TilePoint{6, 5};
+          
+            shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+            shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
+            allObjects.push_back(newPiece);
             
             currentTurn = 1;
             gameState->passTurn(playerWhite);
