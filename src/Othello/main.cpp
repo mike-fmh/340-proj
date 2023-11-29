@@ -140,7 +140,7 @@ void applicationInit();
 
 void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj);
 unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate);
-TilePoint computeBestMove(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves);
+TilePoint bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves);
 
 //--------------------------------------
 #if 0
@@ -267,8 +267,12 @@ unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameSta
 }
 
 
-TilePoint computeBestMove(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves) {
+TilePoint bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves) {
+    TilePoint bestMove;
     
+    bestMove = possibleMoves[0]->getPos();
+    
+    return bestMove;
 }
 
 void myDisplayFunc(void)
@@ -493,7 +497,7 @@ void myTimerFunc(int value)
             // compute black's best move and play it
             cout << "game pices: " << (int)gameBoard->getAllPieces().size() << endl;
             
-            TilePoint bestMoveLoc = computeBestMove(playerBlack, blackPlayableTiles);
+            TilePoint bestMoveLoc = bestMoveHeuristic(playerBlack, blackPlayableTiles);
           //  TilePoint bestMoveLoc = TilePoint{6, 5};
             shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
             shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
