@@ -186,6 +186,9 @@ std::shared_ptr<Tile> GameState::computeTileClicked(float ix, float iy, std::vec
 
 
 std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on) {
+    RGBColor BLACK = RGBColor{0, 0, 0};
+    RGBColor WHITE = RGBColor{1, 1, 1};
+    
     TilePoint tileLoc = on->getPos();
     std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho->getMyColor());
     board_->addPiece(forWho, thisDisc);
@@ -197,12 +200,12 @@ std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std
     // flip all flanked tiles
     for (auto dir: flankedTiles) {
         for (auto tile: dir) {
-            if (forWho == playerBlack_) {
+            if (forWho->getMyColor().isEqualTo(BLACK)) {
                 tile->setOwner(playerBlack_);
-                tile->getPiece()->setColor(0, 0, 0);
-            } else {
+                tile->getPiece()->setColor(BLACK);
+            } else if (forWho->getMyColor().isEqualTo(WHITE)) {
                 tile->setOwner(playerWhite_);
-                tile->getPiece()->setColor(1, 1, 1);
+                tile->getPiece()->setColor(WHITE);
             }
         }
     }
