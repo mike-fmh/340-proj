@@ -19,6 +19,9 @@ namespace othello {
             RGBColor color_; // false = white, true = black
             float size_; // how large should the disc be?
         
+            float switchColorAfter_, curSwitchTimer_;
+            RGBColor colorToSwitch_;
+        
         public:
             Disc(TilePoint& loc, RGBColor color);
         
@@ -40,6 +43,10 @@ namespace othello {
             }
             inline void setColor(float red, float green, float blue) {
                 color_ = RGBColor{red, green, blue};
+            }
+            inline void setColorAfter(RGBColor color, float secs) {
+                colorToSwitch_ = color;
+                switchColorAfter_ = secs;
             }
     };
 }

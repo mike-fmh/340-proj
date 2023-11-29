@@ -447,7 +447,6 @@ void myTimerFunc(int value)
     
     float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
     
-    /// TODO: update all Discs
     /// TODO: update all Tiles
     
     
@@ -509,6 +508,11 @@ void myTimerFunc(int value)
             cur_ai_turn_wait += dt;
         }
         
+    }
+    
+    
+    for (auto disc : gameBoard->getAllPieces()) {
+        disc->update(dt);
     }
     
     lastTime = currentTime;
