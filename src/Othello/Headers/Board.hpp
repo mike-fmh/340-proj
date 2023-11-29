@@ -48,6 +48,8 @@ namespace othello
             void addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece);
             void addPiece(Player& forWho, std::shared_ptr<Disc>& piece);
             
+            std::vector<std::shared_ptr<Disc>> getAllPieces() const;
+        
             /** Function called through the initialization of a global variable in the
              *    main program.  Although the user specifies dimensions for the rendering pane,
              *    the function may set different values that agree better with the world
@@ -59,7 +61,7 @@ namespace othello
             
             /// Returns the Tile object in worldTiles at the given TilePoint, if any exist
             /// @param at the location of the Tile to return
-            std::shared_ptr<Tile> getBoardTile(TilePoint& at) const;
+            std::shared_ptr<Tile> getBoardTile(TilePoint& at);
         
             /// If there's a disc placed at the given point, return its owner
             std::shared_ptr<Player> getTileOwner(TilePoint& at);

@@ -62,6 +62,18 @@ Board::Board(const Board& obj)
     }
 }
 
+std::vector<std::shared_ptr<Disc>> Board::getAllPieces() const {
+    std::vector<std::shared_ptr<Disc>> pieces;
+    for (unsigned int r = 0; r < allBoardTiles.size(); r++) {
+        for (std::shared_ptr<Tile> tile : allBoardTiles[r]) {
+            if (tile->getPiece() != nullptr) {
+                pieces.push_back(tile->getPiece());
+            }
+        }
+    }
+    return pieces;
+}
+
 void Board::addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece) {
     forWho->addPiece(piece);
     // now we need to give this player ownership of the tile where we placed the new piece
@@ -140,7 +152,7 @@ PixelPoint Board::worldToPixel(const TilePoint& pt)
 
 }
 
-std::shared_ptr<Tile> Board::getBoardTile(TilePoint& at) const {
+std::shared_ptr<Tile> Board::getBoardTile(TilePoint& at) {
     float row = at.x;
     float col = at.y;
     if (row > Board::ROWS_MAX_)

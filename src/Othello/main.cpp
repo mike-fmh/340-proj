@@ -113,7 +113,7 @@ void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
 
-void addGamePiece(TilePoint location, shared_ptr<Player> whose);
+void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj);
 unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, shared_ptr<GameState>& hypotheticalGamestate);
 TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AImind, vector<shared_ptr<Tile>> possibleMoves);
 
@@ -197,10 +197,12 @@ const GLfloat* bgndColor = BGND_COLOR[0];
 #endif
 
 
-void addGamePiece(TilePoint location, shared_ptr<Player> whose) {
+void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj) {
     shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
-    gameBoard->addPiece(whose, thisDisc);
-    allObjects.push_back(thisDisc);
+    theBoard->addPiece(whose, thisDisc);
+    if (addObj) {
+        allObjects.push_back(thisDisc);
+    }
 }
 
 
@@ -246,7 +248,25 @@ TilePoint computeBestMove(shared_ptr<Player>& AIplayer, shared_ptr<AiPlayer>& AI
     highestMovescore = 0;
     
     for (shared_ptr<Tile> thisMove : possibleMoves) {
-        shared_ptr<GameState> hypotheticalGamestate = make_shared<GameState>(*gameState);
+        shared_ptr<Player> tempNullPlayer = make_shared<Player>(RGBColor{1, 1, 1}); // owns tiles with nothing placed on them
+        
+        shared_ptr<Board> tempGameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, tempNullPlayer);
+        
+        shared_ptr<Player> tempPlayerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
+        shared_ptr<Player> tempPlayerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
+        
+        shared_ptr<GameState> hypotheticalGamestate = make_shared<GameState>(tempPlayerWhite, tempPlayerBlack, tempGameBoard);
+        
+        vector<shared_ptr<Disc>> p = tempGameBoard->getAllPieces(); // move the main game board's pieces to the temporary one
+        for (shared_ptr<Disc> piece : p) {
+          //  cout << piece->getRow() << ", " << piece->getCol() << endl;
+            TilePoint pieceLoc = piece->getPos();
+            shared_ptr<Tile> pieceTile = tempGameBoard->getBoardTile(pieceLoc);
+            shared_ptr<Player> pieceOwner = tempGameBoard->getTileOwner(pieceLoc);
+            hypotheticalGamestate->placePiece(pieceOwner, pieceTile);
+        }
+        cout << "pieces: " << p.size() << endl;
+        
         hypotheticalGamestate->placePiece(AIplayer, thisMove);
         curMovescore = evalGamestateScore(AIplayer, AImind, hypotheticalGamestate);
         if (curMovescore > highestMovescore) {
@@ -480,6 +500,7 @@ void myTimerFunc(int value)
             
             //TilePoint bestMoveLoc = AI_MIND->findBestMove(gameState, blackPlayableTiles);
             TilePoint bestMoveLoc = computeBestMove(playerBlack, AI_MIND, blackPlayableTiles);
+          //  TilePoint bestMoveLoc = TilePoint{6, 5};
             shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
             shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
             allObjects.push_back(newPiece);
@@ -704,11 +725,11 @@ void applicationInit()
     AI_MIND = make_shared<AiPlayer>(playerBlack);
     
     // 4 starting pieces (discs)
-    addGamePiece(TilePoint{4, 4}, playerBlack);
-    addGamePiece(TilePoint{5, 5}, playerBlack);
+    addGamePiece(TilePoint{4, 4}, playerBlack, gameBoard, true);
+    addGamePiece(TilePoint{5, 5}, playerBlack, gameBoard, true);
     
-    addGamePiece(TilePoint{5, 4}, playerWhite);
-    addGamePiece(TilePoint{4, 5}, playerWhite);
+    addGamePiece(TilePoint{5, 4}, playerWhite, gameBoard, true);
+    addGamePiece(TilePoint{4, 5}, playerWhite, gameBoard, true);
 
     gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
   

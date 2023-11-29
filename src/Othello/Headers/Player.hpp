@@ -49,8 +49,8 @@ namespace othello {
         }
         
         /// returns a reference to a vector of all pieces under my control
-        inline std::vector<std::shared_ptr<Disc>>* getMyPieces() {
-            return &myPieces_;
+        inline std::vector<std::shared_ptr<Disc>> getMyPieces() {
+            return myPieces_;
         }
         
         inline void addPiece(std::shared_ptr<Disc> piece) {
