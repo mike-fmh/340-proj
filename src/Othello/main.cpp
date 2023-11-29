@@ -268,11 +268,27 @@ unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameSta
 
 
 TilePoint bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves) {
-    TilePoint bestMove;
+    TilePoint bestMoveLoc;
     
-    bestMove = possibleMoves[0]->getPos();
+    RGBColor WHITE = RGBColor{1, 1, 1};
+    RGBColor BLACK = RGBColor{0, 0, 0};
+    shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
+    shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
+    shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
     
-    return bestMove;
+    shared_ptr<Board> tempBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, tempNull);
+    shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
+    
+    
+    bestMoveLoc = possibleMoves[0]->getPos();
+    
+    shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+    shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
+    allObjects.push_back(newPiece);
+    
+    cout << evalGamestateScore(AIplayer, gameState);
+    
+    return bestMoveLoc;
 }
 
 void myDisplayFunc(void)
@@ -498,9 +514,7 @@ void myTimerFunc(int value)
             
             TilePoint bestMoveLoc = bestMoveHeuristic(playerBlack, blackPlayableTiles);
           //  TilePoint bestMoveLoc = TilePoint{6, 5};
-            shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
-            shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
-            allObjects.push_back(newPiece);
+            
             currentTurn = 1;
             gameState->passTurn(playerWhite);
             cur_ai_turn_wait = 0;
