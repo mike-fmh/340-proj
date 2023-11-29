@@ -21,7 +21,6 @@ namespace othello {
         
         public:
             Disc(TilePoint& loc, RGBColor color);
-            Disc(const Disc& obj);
         
             void draw() const;
             void update(float dt);

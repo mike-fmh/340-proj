@@ -27,10 +27,3 @@ Player::Player(RGBColor color, std::string name)
     
 }
 
-Player::Player(const Player& obj)
-    :   DiscColor_(obj.DiscColor_),
-        myPieces_(vector<shared_ptr<Disc>>()),
-        name_(obj.name_)
-{
-    
-}

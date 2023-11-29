@@ -26,7 +26,6 @@ namespace othello {
             
         public:
             Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<Player> owner);
-            Tile(const Tile& obj); // copy;
         
             void draw() const;
             void update(float dt);
