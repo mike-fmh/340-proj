@@ -14,6 +14,7 @@ using namespace othello;
 // othello will always have 2 players
 const int GameState::NUM_GAME_PLAYERS = 2;
 
+const float GameState::flip_interval_secs_ = 0.15;
 
 GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
     :   startingPlayer_(playerWhite), // white always starts in othello
@@ -189,8 +190,6 @@ std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std
     RGBColor BLACK = RGBColor{0, 0, 0};
     RGBColor WHITE = RGBColor{1, 1, 1};
     
-    float flip_interval = 0.15;
-    
     TilePoint tileLoc = on->getPos();
     std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho->getMyColor());
     board_->addPiece(forWho, thisDisc);
@@ -205,10 +204,10 @@ std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std
             shared_ptr<Tile> tile = dir[i];
             if (forWho->getMyColor().isEqualTo(BLACK)) {
                 tile->setOwner(playerBlack_);
-                tile->getPiece()->setColorAfter(BLACK, flip_interval * i);
+                tile->getPiece()->setColorAfter(BLACK, flip_interval_secs_ * i);
             } else if (forWho->getMyColor().isEqualTo(WHITE)) {
                 tile->setOwner(playerWhite_);
-                tile->getPiece()->setColorAfter(WHITE, flip_interval * i);
+                tile->getPiece()->setColorAfter(WHITE, flip_interval_secs_ * i);
             }
         }
     }
@@ -219,8 +218,6 @@ std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std
 unsigned int GameState::placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on, bool returnInt) {
     RGBColor BLACK = RGBColor{0, 0, 0};
     RGBColor WHITE = RGBColor{1, 1, 1};
-    
-    float flip_interval = 0.15;
     
     TilePoint tileLoc = on->getPos();
     std::shared_ptr<Disc> thisDisc = std::make_shared<Disc>(tileLoc, forWho->getMyColor());
@@ -237,10 +234,10 @@ unsigned int GameState::placePiece(std::shared_ptr<Player>& forWho, std::shared_
             shared_ptr<Tile> tile = dir[i];
             if (forWho->getMyColor().isEqualTo(BLACK)) {
                 tile->setOwner(playerBlack_);
-                tile->getPiece()->setColorAfter(BLACK, flip_interval * i);
+                tile->getPiece()->setColorAfter(BLACK, flip_interval_secs_ * i);
             } else if (forWho->getMyColor().isEqualTo(WHITE)) {
                 tile->setOwner(playerWhite_);
-                tile->getPiece()->setColorAfter(WHITE, flip_interval * i);
+                tile->getPiece()->setColorAfter(WHITE, flip_interval_secs_ * i);
             }
             num_flipped++;
         }
