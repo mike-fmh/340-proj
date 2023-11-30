@@ -51,10 +51,6 @@ namespace othello {
                 colorToSwitch_ = color;
                 switchColorAfter_ = secs;
             }
-            inline void applyPendingColorChange() {
-                color_ = colorToSwitch_;
-                switchColorAfter_ = -1;
-            }
     };
 }
 
