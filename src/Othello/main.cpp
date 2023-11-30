@@ -30,7 +30,7 @@ bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 
 float cur_ai_turn_wait = 0;
-const float SECS_BETWEEN_AI_MOVES = 1.0;
+const float SECS_BETWEEN_AI_MOVES = 0.2;
 
 // weights for each factor based on their importance
 const int MOBILITY_WEIGHT = 1;
