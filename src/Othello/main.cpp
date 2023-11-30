@@ -35,7 +35,7 @@ const float SECS_BETWEEN_AI_MOVES = 1.0;
 // weights for each factor based on their importance
 const int MOBILITY_WEIGHT = 1;
 const int STABILITY_WEIGHT = 2;
-const int CORNER_WEIGHT = 3;
+const int CORNER_WEIGHT = 4;
 
 /// Power refers to how many pieces a move flips
 const int POWER_WEIGHT = 3;
