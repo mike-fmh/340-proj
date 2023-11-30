@@ -14,7 +14,7 @@ using namespace othello;
 // othello will always have 2 players
 const int GameState::NUM_GAME_PLAYERS = 2;
 
-const float GameState::flip_interval_secs_ = 0.15;
+const float GameState::flip_interval_secs_ = 0.0;
 
 GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
     :   startingPlayer_(playerWhite), // white always starts in othello
