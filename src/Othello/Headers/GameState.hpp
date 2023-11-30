@@ -22,6 +22,8 @@ namespace othello {
         /// number of players in the game
         static const int NUM_GAME_PLAYERS;
         
+        static const float flip_interval_secs_;
+        
         std::shared_ptr<Board> board_;
         
         std::shared_ptr<Player> playerBlack_;
