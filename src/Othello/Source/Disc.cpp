@@ -66,8 +66,7 @@ void Disc::update(float dt) {
     if (switchColorAfter_ > -1) {
         curSwitchTimer_ += dt;
         if (curSwitchTimer_ >= switchColorAfter_) {
-            color_ = colorToSwitch_;
-            switchColorAfter_ = -1;
+            applyPendingColorChange();
         }
     } else {
         colorToSwitch_ = RGBColor{-1, -1, -1};
