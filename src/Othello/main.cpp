@@ -249,6 +249,7 @@ void startTurn(shared_ptr<Player>& whoseTurn) {
             if (whitePlayableTiles.size() == 0) { // if white has no valid moves
                 currentTurn = 0; // this equates to passing the turn to black (handled in the timer function)
                 gameState->passTurn(playerBlack);
+                cur_ai_turn_wait = 0;
             }
         }
         
@@ -557,7 +558,20 @@ void myTimerFunc(int value)
     if (currentTurn) { // white's turn
         startTurn(playerWhite);
         
-        // white's turn logic is handled in the mouse function
+        if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
+            // compute black's best move and play it
+            unsigned int bestMoveIndex = bestMoveHeuristic(playerWhite, whitePlayableTiles);
+            TilePoint bestMoveLoc = whitePlayableTiles[bestMoveIndex]->getPos();
+            shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+            shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, bestMove);
+            allObjects.push_back(newPiece);
+            
+            currentTurn = 0;
+            gameState->passTurn(playerBlack);
+            cur_ai_turn_wait = 0;
+        } else {
+            cur_ai_turn_wait += dt;
+        }
         
     } else {
         startTurn(playerBlack);
