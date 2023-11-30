@@ -30,7 +30,7 @@ bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 
 float cur_ai_turn_wait = 0;
-const float SECS_BETWEEN_AI_MOVES = 0.2;
+const float SECS_BETWEEN_AI_MOVES = 0.01;
 
 // weights for each factor based on their importance
 const int MOBILITY_WEIGHT = 1;
@@ -95,7 +95,7 @@ struct GamestateScore {
     int totalScore;
     
     int sum() {
-        return cornerControlScore + stabilityScore + pseudostabilityScore + mobilityScore;
+        return cornerControlScore + stabilityScore + pseudostabilityScore + mobilityScore + powerScore;
     }
 };
 
@@ -344,10 +344,10 @@ unsigned int bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<T
         shared_ptr<Board> tempBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, tempNull);
         shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
         
-        
+        shared_ptr<Player> tempOwner;
         for (shared_ptr<Disc> piece : gameBoard->getAllPieces()) {
+            
             TilePoint thisPiecePos = piece->getPos();
-            shared_ptr<Player> tempOwner;
             if (piece->getColor().isEqualTo(WHITE)) {
                 tempOwner = tempWhite;
             } else {
@@ -356,17 +356,17 @@ unsigned int bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<T
             addGamePiece(thisPiecePos, tempOwner, tempBoard, false);
         }
         
-        
         TilePoint thisMoveLoc = thisMove->getPos();
         shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
         
-        unsigned int numFlipped = tempGamestate->placePiece(AIplayer, hypMove, true);
-        
-        curMoveScore = evalGamestateScore(AIplayer, tempGamestate, numFlipped);
-        /*
-        cout << "hypgame pieces: " << tempBoard->getAllPieces().size() << endl;
-        cout << "this move score: " << curMoveScore << "\n";
-        */
+        // get AIplayer reference for the temp boardstate
+        if (AIplayer->getMyColor().isEqualTo(WHITE)) {
+            tempOwner = tempWhite;
+        } else {
+            tempOwner = tempBlack;
+        }
+        unsigned int numFlipped = tempGamestate->placePiece(tempOwner, hypMove, true);
+        curMoveScore = evalGamestateScore(tempOwner, tempGamestate, numFlipped);
         
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
