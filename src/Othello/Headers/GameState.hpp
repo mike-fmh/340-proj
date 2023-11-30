@@ -72,6 +72,8 @@ namespace othello {
         /// @param forWho which player should own the new piece
         /// @param on the tile to place the new piece
         std::shared_ptr<Disc> placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on);
+        /// @param returnInt if a boolean is given to placePiece as the final param, the function will return how many opposing pieces this move flipped instead of a pointer to the new Disc it placed
+        unsigned int placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on, bool returnInt);
         
         void getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
         

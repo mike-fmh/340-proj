@@ -37,6 +37,9 @@ const int MOBILITY_WEIGHT = 1;
 const int STABILITY_WEIGHT = 2;
 const int CORNER_WEIGHT = 3;
 
+/// Power refers to how many pieces a move flips
+const int POWER_WEIGHT = 3;
+
 shared_ptr<Board> gameBoard;
 vector<shared_ptr<GraphicObject>> allObjects;
 
@@ -84,6 +87,9 @@ struct GamestateScore {
     
     /// Score based on how many corner pieces the player has.
     int cornerControlScore;
+    
+    /// Score based on how many opposing pieces were flipped in the move which resulted in this gamestate
+    int powerScore;
     
     /// The full gamestate score, computed by multiplying each score value by its corresponding weight and summing them together.
     int totalScore;
@@ -140,7 +146,7 @@ void applicationInit();
 
 void startTurn(shared_ptr<Player>& whoseTurn);
 void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj);
-unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate);
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate, int movePower);
 unsigned int bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves);
 
 //--------------------------------------
@@ -287,7 +293,7 @@ void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board
 }
 
 
-unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate) {
+unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate, int movePower) {
     int mobility, pseudostability, stability, cornerPieces;
     GamestateScore curScore;
     
@@ -317,6 +323,7 @@ unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameSta
     curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT;
     curScore.pseudostabilityScore = pseudostability * STABILITY_WEIGHT;
     curScore.stabilityScore = stability * STABILITY_WEIGHT;
+    curScore.powerScore = movePower * POWER_WEIGHT;
     curScore.totalScore = curScore.sum();
     
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
@@ -352,9 +359,9 @@ unsigned int bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<T
         TilePoint thisMoveLoc = thisMove->getPos();
         shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
         
-        tempGamestate->placePiece(AIplayer, hypMove);
+        unsigned int numFlipped = tempGamestate->placePiece(AIplayer, hypMove, true);
         
-        curMoveScore = evalGamestateScore(AIplayer, tempGamestate);
+        curMoveScore = evalGamestateScore(AIplayer, tempGamestate, numFlipped);
         /*
         cout << "hypgame pieces: " << tempBoard->getAllPieces().size() << endl;
         cout << "this move score: " << curMoveScore << "\n";
