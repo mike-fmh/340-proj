@@ -56,6 +56,7 @@ shared_ptr<Player> playerBlack;
 shared_ptr<GameState> gameState;
 
 bool currentTurn = 1; // 1 = white, 0 = black
+bool gameOver = 0;
 
 // during each player's turn, these vectors will store the tiles they can place pieces on
 vector<shared_ptr<Tile>> whitePlayableTiles;
@@ -156,24 +157,24 @@ RGBColor BLACK = RGBColor{0, 0, 0};
 void endGame() {
     unsigned int numBlackTiles, numWhiteTiles;
     vector<vector<shared_ptr<Tile>>> blackTiles, whiteTiles;
-    currentTurn = -1; // game over
+    gameOver = 1; // game over
     
     // how many tiles does each player control?
     numBlackTiles = gameState->getPlayerTiles(playerBlack, blackTiles);
     numWhiteTiles = gameState->getPlayerTiles(playerWhite, whiteTiles);
     
     if (numBlackTiles > numWhiteTiles) {
-        cout << "BLACK WINS";
-        for (unsigned int r = 0; r < blackTiles.size(); r++) {
-            for (unsigned int c = 0; c < blackTiles[r].size(); c++) {
-                blackTiles[r][c]->setColor(1,0,0);
-            }
-        }
-    } else {
-        cout << "WHITE WINS";
+        cout << "\nBLACK WINS\n\n";
         for (unsigned int r = 0; r < whiteTiles.size(); r++) {
             for (unsigned int c = 0; c < whiteTiles[r].size(); c++) {
                 whiteTiles[r][c]->setColor(1,0,0);
+            }
+        }
+    } else {
+        cout << "\nWHITE WINS\n\n";
+        for (unsigned int r = 0; r < blackTiles.size(); r++) {
+            for (unsigned int c = 0; c < blackTiles[r].size(); c++) {
+                blackTiles[r][c]->setColor(1,0,0);
             }
         }
     }
@@ -477,28 +478,30 @@ void myTimerFunc(int value)
     
     chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
     float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
-    
-    if (currentTurn) { // white's turn
-        if (!turnStarted)
-            startTurn(playerWhite);
-        // white's turn logic is handled in the mouse function
-    } else {
-        if (!turnStarted)
-            startTurn(playerBlack);
-        // black's (AI) turn logic
-        if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
-            // compute black's best move and play it
-            unsigned int bestMoveIndex = bestMoveHeuristic(playerBlack, blackPlayableTiles);
-            TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
-            shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
-            shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
-            allObjects.push_back(newPiece);
-            cur_ai_turn_wait = 0;
-            passTurn(playerWhite);
-        } else {
-            cur_ai_turn_wait += dt;
-        }
         
+    if (!gameOver) { // turn logic
+        if (currentTurn) { // white's turn
+            if (!turnStarted)
+                startTurn(playerWhite);
+               // white's turn logic is handled in the mouse function
+        } else {
+            if (!turnStarted)
+                startTurn(playerBlack);
+            // black's (AI) turn logic
+            if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
+                // compute black's best move and play it
+                unsigned int bestMoveIndex = bestMoveHeuristic(playerBlack, blackPlayableTiles);
+                TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
+                shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+                shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
+                allObjects.push_back(newPiece);
+                cur_ai_turn_wait = 0;
+                passTurn(playerWhite);
+            } else {
+                cur_ai_turn_wait += dt;
+            }
+            
+        }
     }
     
     // update all discs (game pieces)
@@ -522,7 +525,7 @@ void myMouseHandler(int button, int state, int ix, int iy)
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_DOWN)
             {
-                if (currentTurn) { // white's turn
+                if ((currentTurn) && (!gameOver)) { // white's turn
                     shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, whitePlayableTiles);
                     if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
                         shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, clickedTile);
