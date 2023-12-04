@@ -29,6 +29,10 @@ bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 bool turnStarted = false;
 
+/// Was the last turn ended because the player had no valid moves?
+/// In othello, the game can end early (before the board is filled) if neither player has a valid move.
+bool lastMoveInvalid = false;
+
 float cur_ai_turn_wait = 0;
 const float SECS_BETWEEN_AI_MOVES = 1.0;
 
@@ -96,6 +100,9 @@ void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
 
+
+void endGame();
+
 /// Passes the turn to the given player - startTurn() must be called separately.
 ///@param toWho Which player to pass the turn to.
 void passTurn(shared_ptr<Player>& toWho);
@@ -146,6 +153,33 @@ RGBColor WHITE = RGBColor{1, 1, 1};
 RGBColor BLACK = RGBColor{0, 0, 0};
 
 
+void endGame() {
+    unsigned int numBlackTiles, numWhiteTiles;
+    vector<vector<shared_ptr<Tile>>> blackTiles, whiteTiles;
+    currentTurn = -1; // game over
+    
+    // how many tiles does each player control?
+    numBlackTiles = gameState->getPlayerTiles(playerBlack, blackTiles);
+    numWhiteTiles = gameState->getPlayerTiles(playerWhite, whiteTiles);
+    
+    if (numBlackTiles > numWhiteTiles) {
+        cout << "BLACK WINS";
+        for (unsigned int r = 0; r < blackTiles.size(); r++) {
+            for (unsigned int c = 0; c < blackTiles[r].size(); c++) {
+                blackTiles[r][c]->setColor(1,0,0);
+            }
+        }
+    } else {
+        cout << "WHITE WINS";
+        for (unsigned int r = 0; r < whiteTiles.size(); r++) {
+            for (unsigned int c = 0; c < whiteTiles[r].size(); c++) {
+                whiteTiles[r][c]->setColor(1,0,0);
+            }
+        }
+    }
+}
+
+
 void passTurn(shared_ptr<Player>& toWho) {
     turnStarted = false;
     if (toWho->getMyColor().isEqualTo(BLACK)) {
@@ -173,7 +207,10 @@ void startTurn(shared_ptr<Player>& whoseTurn) {
         if (whitePlayableTiles.size() == 0) {
             gameState->getPlayableTiles(playerWhite, whitePlayableTiles);
             if (whitePlayableTiles.size() == 0) { // if white has no valid moves
+                if (lastMoveInvalid) // if black also had no valid moves
+                    endGame();
                 passTurn(playerBlack);
+                lastMoveInvalid = true;
             }
         }
         
@@ -196,8 +233,11 @@ void startTurn(shared_ptr<Player>& whoseTurn) {
         if (blackPlayableTiles.size() == 0) {
             gameState->getPlayableTiles(playerBlack, blackPlayableTiles);
             if (blackPlayableTiles.size() == 0) { // if black has no valid moves
+                if (lastMoveInvalid) // if white also had no valid moves
+                    endGame();
                 passTurn(playerWhite);
                 cur_ai_turn_wait = 0;
+                lastMoveInvalid = true;
             }
         }
         

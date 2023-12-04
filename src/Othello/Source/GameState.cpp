@@ -86,20 +86,20 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Pl
     }
 }
 
-void GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
-    bool tilesExistsInRow;
+unsigned int GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
+    unsigned int numPlayerTiles = 0;
     RGBColor playerColor = whose->getMyColor();
     for (unsigned int r = 0; r < boardTiles_.size(); r++) {
         playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
-        tilesExistsInRow = false;
         for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
             std::shared_ptr<Tile> thisTile = boardTiles_[r][c];
             if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
                 playerTiles[r].push_back(thisTile);
-                tilesExistsInRow = true;
+                numPlayerTiles++;
             }
         }
     }
+    return numPlayerTiles;
 }
 
 bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer) {

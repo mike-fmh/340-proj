@@ -77,7 +77,7 @@ namespace othello {
         /// @param returnInt if a boolean is given to placePiece as the final param, the function will return how many opposing pieces this move flipped instead of a pointer to the new Disc it placed
         unsigned int placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on, bool returnInt);
         
-        void getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
+        unsigned int getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
         
         /// Given a tile, returns whether or not it's on a board corner
         bool isCornerTile(std::shared_ptr<Tile>& tile);
