@@ -45,10 +45,7 @@ std::vector<std::shared_ptr<Disc>> Board::getAllPieces() const {
 }
 
 void Board::addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece) {
-    forWho->addPiece(piece);
-    // now we need to give this player ownership of the tile where we placed the new piece
-    
-    // find this piece's Tile location
+    // give the player ownership of the tile where we placed the new piece
     for (int c = 0; c < allBoardTiles_.size(); c++) {
         for (int r = 0; r < allBoardTiles_.at(c).size(); r++) {
             TilePoint tilePos = allBoardTiles_.at(c).at(r)->getPos();
