@@ -142,11 +142,32 @@ void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
 
+/// Passes the turn to the given player - startTurn() must be called separately.
+///@param toWho Which player to pass the turn to.
 void passTurn(shared_ptr<Player>& toWho);
+
+/// Starts the given player's turn. Computes & highlights their possible moves.
+/// @param whoseTurn The player whose turn should begin.
 void startTurn(shared_ptr<Player>& whoseTurn);
-void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj);
-unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate, int movePower);
-unsigned int bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves);
+
+/// Add a piece to the board without flipping any pieces (used for initializing the game).
+/// @param location Where on the board to place ths new tile.
+/// @param whose The player who will control this piece.
+/// @param theBoard Reference to the game board where this piece will exist.
+/// @param addObj Should this piece be added to the main object list? (to be rendered)
+void addGamePiece(TilePoint location, shared_ptr<Player>& whose, shared_ptr<Board>& theBoard, bool addObj);
+
+/// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
+/// @param forWho The player for whom to compute the best next move for.
+/// @param possibleMoves List of possible tiles that the player can choose as their next move.
+unsigned int bestMoveHeuristic(shared_ptr<Player>& forWho, vector<shared_ptr<Tile>>& possibleMoves);
+
+/// Called after a player places a piece on the board, this evaluates their gamestate advantage score.
+/// @param forWho The player for whom to calculate the gamestate advantage score (after they've placed a new piece).
+/// @param layout The gamestate from which to calculate the advantage score from.
+/// @param numFlippedTiles How many tiles were flipped in the player's move that lead to the 'layout' gamestate.
+unsigned int evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout, unsigned int numFlippedTiles);
+
 
 //--------------------------------------
 #if 0
@@ -292,7 +313,7 @@ void startTurn(shared_ptr<Player>& whoseTurn) {
     }
 }
 
-void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj) {
+void addGamePiece(TilePoint location, shared_ptr<Player>& whose, shared_ptr<Board>& theBoard, bool addObj) {
     shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
     theBoard->addPiece(whose, thisDisc);
     if (addObj) {
@@ -301,26 +322,26 @@ void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board
 }
 
 
-unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate, int movePower) {
+unsigned int evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout, unsigned int numFlippedTiles) {
     int mobility, stability, cornerPieces;
     GamestateScore curScore;
     
     /// Find mobility (number of possible moves)
     std::vector<std::shared_ptr<Tile>> possibleMoves;
-    hypotheticalGamestate->getPlayableTiles(AIplayer, possibleMoves);
+    layout->getPlayableTiles(forWho, possibleMoves);
     mobility = (int)possibleMoves.size();
     
     /// Calculate stability and count corner pieces
     std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;  // tiles where I currently have pieces placed
-    hypotheticalGamestate->getPlayerTiles(AIplayer, allMyPieces); // populate my tiles
+    layout->getPlayerTiles(forWho, allMyPieces); // populate my tiles
     cornerPieces = 0;
     stability = 0;
     for (unsigned int r = 0; r < allMyPieces.size(); r++) {
         for (unsigned int c = 0; c < allMyPieces[r].size(); c++) {
             std::shared_ptr<Tile> thisTile = allMyPieces[r][c];
-            if (hypotheticalGamestate->isCornerTile(thisTile)) // if the tile is a corner piece
+            if (layout->isCornerTile(thisTile)) // if the tile is a corner piece
                 cornerPieces++;
-            if (hypotheticalGamestate->discIsPseudostable(thisTile, AIplayer)) // if the tile isn't flankable by the opponent
+            if (layout->discIsPseudostable(thisTile, forWho)) // if the tile isn't flankable by the opponent
                 stability++;
         }
     }
@@ -329,14 +350,14 @@ unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameSta
     curScore.mobilityScore = mobility * MOBILITY_WEIGHT;
     curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT;
     curScore.stabilityScore = stability * STABILITY_WEIGHT;
-    curScore.powerScore = movePower * POWER_WEIGHT;
+    curScore.powerScore = numFlippedTiles * POWER_WEIGHT;
     curScore.totalScore = curScore.sum();
     
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
 }
 
 
-unsigned int bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<Tile>> possibleMoves) {
+unsigned int bestMoveHeuristic(shared_ptr<Player>& forWho, vector<shared_ptr<Tile>>& possibleMoves) {
     unsigned int bestMoveInd = 0;
     unsigned int bestMoveScore = 0;
     unsigned int curMoveScore = 0;
@@ -365,7 +386,7 @@ unsigned int bestMoveHeuristic(shared_ptr<Player>& AIplayer, vector<shared_ptr<T
         shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
         
         // get AIplayer reference for the temp boardstate
-        if (AIplayer->getMyColor().isEqualTo(WHITE)) {
+        if (forWho->getMyColor().isEqualTo(WHITE)) {
             tempOwner = tempWhite;
         } else {
             tempOwner = tempBlack;
