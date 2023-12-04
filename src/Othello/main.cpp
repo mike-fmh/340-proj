@@ -80,9 +80,6 @@ struct GamestateScore {
     int mobilityScore;
     
     /// Score based on stability, which represents how many of the player's tiles aren't currently flanked (can't be flipped) by their opponent.
-    int pseudostabilityScore;
-    
-    /// Score based on stability, which represents how many of the player's tiles couldn't possibly be flanked by their opponent for the remainder of the game.
     int stabilityScore;
     
     /// Score based on how many corner pieces the player has.
@@ -95,7 +92,7 @@ struct GamestateScore {
     int totalScore;
     
     int sum() {
-        return cornerControlScore + stabilityScore + pseudostabilityScore + mobilityScore + powerScore;
+        return cornerControlScore + stabilityScore + mobilityScore + powerScore;
     }
 };
 
@@ -294,7 +291,7 @@ void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board
 
 
 unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate, int movePower) {
-    int mobility, pseudostability, stability, cornerPieces;
+    int mobility, stability, cornerPieces;
     GamestateScore curScore;
     
     /// Find mobility (number of possible moves)
@@ -306,7 +303,6 @@ unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameSta
     std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;  // tiles where I currently have pieces placed
     hypotheticalGamestate->getPlayerTiles(AIplayer, allMyPieces); // populate my tiles
     cornerPieces = 0;
-    pseudostability = 0;
     stability = 0;
     for (unsigned int r = 0; r < allMyPieces.size(); r++) {
         for (unsigned int c = 0; c < allMyPieces[r].size(); c++) {
@@ -314,14 +310,13 @@ unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameSta
             if (hypotheticalGamestate->isCornerTile(thisTile)) // if the tile is a corner piece
                 cornerPieces++;
             if (hypotheticalGamestate->discIsPseudostable(thisTile, AIplayer)) // if the tile isn't flankable by the opponent
-                pseudostability++;
+                stability++;
         }
     }
     
     /// Multiply by weights and sum products together
     curScore.mobilityScore = mobility * MOBILITY_WEIGHT;
     curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT;
-    curScore.pseudostabilityScore = pseudostability * STABILITY_WEIGHT;
     curScore.stabilityScore = stability * STABILITY_WEIGHT;
     curScore.powerScore = movePower * POWER_WEIGHT;
     curScore.totalScore = curScore.sum();
