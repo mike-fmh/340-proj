@@ -28,6 +28,7 @@ using namespace othello;
 
 bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
+bool turnStarted = false;
 
 float cur_ai_turn_wait = 0;
 const float SECS_BETWEEN_AI_MOVES = 1.0;
@@ -141,6 +142,7 @@ void mySpecialKeyUpHandler(int key, int x, int y);
 void myTimerFunc(int val);
 void applicationInit();
 
+void passTurn(shared_ptr<Player>& toWho);
 void startTurn(shared_ptr<Player>& whoseTurn);
 void addGamePiece(TilePoint location, shared_ptr<Player> whose, shared_ptr<Board> theBoard, bool addObj);
 unsigned int evalGamestateScore(shared_ptr<Player>& AIplayer, shared_ptr<GameState>& hypotheticalGamestate, int movePower);
@@ -228,7 +230,18 @@ RGBColor BLACK = RGBColor{0, 0, 0};
 #endif
 
 
+void passTurn(shared_ptr<Player>& toWho) {
+    turnStarted = false;
+    if (toWho->getMyColor().isEqualTo(BLACK)) {
+        currentTurn = 0; // signifies black's turn
+    } else {
+        currentTurn = 1; // signifies white's turn
+    }
+    gameState->passTurn(toWho);
+}
+
 void startTurn(shared_ptr<Player>& whoseTurn) {
+    turnStarted = true;
     if (whoseTurn->getMyColor().isEqualTo(WHITE)) {
         /// White's turn
         
@@ -244,8 +257,7 @@ void startTurn(shared_ptr<Player>& whoseTurn) {
         if (whitePlayableTiles.size() == 0) {
             gameState->getPlayableTiles(playerWhite, whitePlayableTiles);
             if (whitePlayableTiles.size() == 0) { // if white has no valid moves
-                currentTurn = 0; // this equates to passing the turn to black (handled in the timer function)
-                gameState->passTurn(playerBlack);
+                passTurn(playerBlack);
             }
         }
         
@@ -268,8 +280,7 @@ void startTurn(shared_ptr<Player>& whoseTurn) {
         if (blackPlayableTiles.size() == 0) {
             gameState->getPlayableTiles(playerBlack, blackPlayableTiles);
             if (blackPlayableTiles.size() == 0) { // if black has no valid moves
-                currentTurn = 1; // pass the turn to white (handled in the timer function)
-                gameState->passTurn(playerWhite);
+                passTurn(playerWhite);
                 cur_ai_turn_wait = 0;
             }
         }
@@ -470,10 +481,7 @@ void mySpecialKeyUpHandler(int key, int x, int y) {
 //
 void myKeyHandler(unsigned char c, int x, int y)
 {
-    
-   // cout << c << endl;
     // silence warning
-    
     (void) x;
     (void) y;
         
@@ -484,34 +492,7 @@ void myKeyHandler(unsigned char c, int x, int y)
         case 27:
             exit(0);
             break;
-        /*
-        case 'w': {
-            vector<shared_ptr<Tile>> mov;
-            gameState->getPlayableTiles(playerWhite, mov);
-            for (auto tile : mov) {
-                if (!showingWhiteMoves) {
-                    tile->setColor(RGBColor{0.8, 1, 1});
-                } else {
-                    tile->setColor(DEFAULT_TILE_COLOR);
-                }
-            }
-            showingWhiteMoves = !showingWhiteMoves;
-            break;
-        }
-        case 'b': {
-            vector<shared_ptr<Tile>> mov;
-            gameState->getPlayableTiles(playerBlack, mov);
-            for (auto tile : mov) {
-                if (!showingBlackMoves) {
-                    tile->setColor(RGBColor{0.8, 1, 1});
-                } else {
-                    tile->setColor(DEFAULT_TILE_COLOR);
-                }
-            }
-            showingBlackMoves = !showingBlackMoves;
-            break;
-        }
-        */
+
         default:
             break;
     }
@@ -532,31 +513,23 @@ void myKeyUpHandler(unsigned char c, int x, int y)
 
 void myTimerFunc(int value)
 {
+    // the timer function is run between every frame
     static int frameIndex=0;
     static chrono::high_resolution_clock::time_point lastTime = chrono::high_resolution_clock::now();
 
-    //    "re-prime the timer"
+    //    re-prime the timer function
     glutTimerFunc(1, myTimerFunc, value);
     
     chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
- 
-    
     float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
     
-    /// TODO: update all Tiles
-    
-    
-    
-    // do stuff
-    
     if (currentTurn) { // white's turn
-        startTurn(playerWhite);
-        
+        if (!turnStarted)
+            startTurn(playerWhite);
         // white's turn logic is handled in the mouse function
-        
     } else {
-        startTurn(playerBlack);
-        
+        if (!turnStarted)
+            startTurn(playerBlack);
         // black's (AI) turn logic
         if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
             // compute black's best move and play it
@@ -565,24 +538,21 @@ void myTimerFunc(int value)
             shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
             shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
             allObjects.push_back(newPiece);
-            
-            currentTurn = 1;
-            gameState->passTurn(playerWhite);
             cur_ai_turn_wait = 0;
+            passTurn(playerWhite);
         } else {
             cur_ai_turn_wait += dt;
         }
         
     }
     
-    
+    // update all discs (game pieces)
     for (auto disc : gameBoard->getAllPieces()) {
         disc->update(dt);
     }
     
     lastTime = currentTime;
 
-    
     //    And finally I perform the rendering
     if (frameIndex++ % 10 == 0)
     {
@@ -592,43 +562,24 @@ void myTimerFunc(int value)
 
 void myMouseHandler(int button, int state, int ix, int iy)
 {
-//    static int clickCount = 0;
-
     switch (button)
     {
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_DOWN)
             {
-                if (currentTurn) {
-                    // white's turn
+                if (currentTurn) { // white's turn
                     shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, whitePlayableTiles);
                     if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
                         shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, clickedTile);
-                        //cout << clickedTile->getCol() << ", " << clickedTile->getRow() << endl;
                         allObjects.push_back(newPiece);
-                        currentTurn = 0;
-                        gameState->passTurn(playerBlack);
+                        passTurn(playerBlack);
                     }
                     
-                } else {
-                    // black's turn
-                    
-                    /*
-                    shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, blackPlayableTiles);
-                    if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
-                        shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, clickedTile);
-                        //cout << clickedTile->getCol() << ", " << clickedTile->getRow() << endl;
-                        allObjects.push_back(newPiece);
-                        currentTurn = 1;
-                        gameState->passTurn(playerWhite);
-                    }
-                    */
                 }
-                
             }
             else if (state == GLUT_UP)
             {
-                
+                // mouse up
             }
             break;
             
