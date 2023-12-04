@@ -20,9 +20,7 @@ namespace othello {
         /// color of this player's discs (pieces)
         const RGBColor DiscColor_;
         const std::string name_;
-        
-        /// all pieces under this player's control
-        std::vector<std::shared_ptr<Disc>> myPieces_;
+
     public:
         
         Player(RGBColor myColor);
@@ -46,15 +44,6 @@ namespace othello {
         
         inline std::string getName() {
             return name_;
-        }
-        
-        /// returns a reference to a vector of all pieces under my control
-        inline std::vector<std::shared_ptr<Disc>> getMyPieces() {
-            return myPieces_;
-        }
-        
-        inline void addPiece(std::shared_ptr<Disc> piece) {
-            myPieces_.push_back(piece);
         }
     };
 }

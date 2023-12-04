@@ -12,7 +12,6 @@ using namespace othello;
 
 Player::Player(RGBColor color)
     :   DiscColor_(color),
-        myPieces_(vector<shared_ptr<Disc>>()),
         name_("none")
 {
     
@@ -21,7 +20,6 @@ Player::Player(RGBColor color)
 
 Player::Player(RGBColor color, std::string name)
     :   DiscColor_(color),
-        myPieces_(vector<shared_ptr<Disc>>()),
         name_(name)
 {
     
