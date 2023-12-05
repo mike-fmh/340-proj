@@ -26,14 +26,11 @@ namespace othello {
         /// Score based on how many corner pieces the player has.
         int cornerControlScore;
         
-        /// Score based on how many opposing pieces were flipped in the move which resulted in this gamestate
-        int powerScore;
-        
         /// The full gamestate score, computed by multiplying each score value by its corresponding weight and summing them together.
         int totalScore;
         
         int sum() {
-            return cornerControlScore + stabilityScore + mobilityScore + powerScore;
+            return cornerControlScore + stabilityScore + mobilityScore;
         }
     };
 
@@ -52,19 +49,26 @@ namespace othello {
         
         static RGBColor WHITE, BLACK;
         
+        std::pair<std::shared_ptr<Player>, std::shared_ptr<GameState>> applyMove_(std::shared_ptr<Player>& forWho, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<Tile>& thisMove);
+        
     public:
         AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol);
+        
+        
+        unsigned int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, unsigned int alpha, unsigned int beta);
         
         /// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
         /// @param forWho The player for whom to compute the best next move for.
         /// @param possibleMoves List of possible tiles that the player can choose as their next move.
-        unsigned int bestMoveHeuristic(std::shared_ptr<Player>& forWho, std::shared_ptr<Board> mainGameBoard, std::vector<std::shared_ptr<Tile>>& possibleMoves);
+        unsigned int bestMoveHeuristic(std::shared_ptr<Player>& forWho, std::shared_ptr<Board>& mainGameBoard, std::vector<std::shared_ptr<Tile>>& possibleMoves);
+        unsigned int bestMoveHeuristic(std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves);
 
+        unsigned int bestMoveMinimax(std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves, unsigned int depth);
+        
         /// Called after a player places a piece on the board, this evaluates their gamestate advantage score.
         /// @param forWho The player for whom to calculate the gamestate advantage score (after they've placed a new piece).
         /// @param layout The gamestate from which to calculate the advantage score from.
-        /// @param numFlippedTiles How many tiles were flipped in the player's move that lead to the 'layout' gamestate.
-        unsigned int evalGamestateScore(std::shared_ptr<Player>& forWho, std::shared_ptr<GameState>& layout, unsigned int numFlippedTiles);
+        unsigned int evalGamestateScore(std::shared_ptr<Player>& forWho, std::shared_ptr<GameState>& layout);
         
         //disabled constructors & operators
         AiMind(AiMind&& obj) = delete;        // move
