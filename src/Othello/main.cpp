@@ -353,8 +353,10 @@ void myTimerFunc(int value)
             // black's (AI) turn logic
             if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
                 // compute black's best move and play it
-                //unsigned int bestMoveIndex = AI_MIND->bestMoveHeuristic(playerBlack, gameBoard, blackPlayableTiles);
                 unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, playerWhite, gameBoard, gameState, blackPlayableTiles, 4);
+                
+                // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
+                currentTime = chrono::high_resolution_clock::now();
                 cout << "chose: " << bestMoveIndex << endl;
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
