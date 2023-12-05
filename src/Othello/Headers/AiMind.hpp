@@ -58,12 +58,12 @@ namespace othello {
         AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol);
         
         
-        unsigned int minimax(unsigned int depth, std::shared_ptr<Player>& forWho, bool maximizing, std::shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped);
+        unsigned int minimax(unsigned int depth, std::shared_ptr<Player>& forWho, std::shared_ptr<Board>& mainGameBoard, bool maximizing, std::shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped);
         
         /// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
         /// @param forWho The player for whom to compute the best next move for.
         /// @param possibleMoves List of possible tiles that the player can choose as their next move.
-        unsigned int bestMoveHeuristic(std::shared_ptr<Player>& forWho, std::shared_ptr<Board> mainGameBoard, std::vector<std::shared_ptr<Tile>>& possibleMoves);
+        unsigned int bestMoveHeuristic(std::shared_ptr<Player>& forWho, std::shared_ptr<Board>& mainGameBoard, std::vector<std::shared_ptr<Tile>>& possibleMoves);
 
         /// Called after a player places a piece on the board, this evaluates their gamestate advantage score.
         /// @param forWho The player for whom to calculate the gamestate advantage score (after they've placed a new piece).

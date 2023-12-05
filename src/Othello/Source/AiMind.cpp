@@ -26,7 +26,6 @@ AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsign
 }
 
 
-
 unsigned int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout, unsigned int numFlippedTiles) {
     int mobility, stability, cornerPieces;
     GamestateScore curScore;
@@ -62,7 +61,7 @@ unsigned int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<G
 }
 
 
-unsigned int AiMind::bestMoveHeuristic(shared_ptr<Player>& forWho, shared_ptr<Board> mainGameBoard, vector<shared_ptr<Tile>>& possibleMoves) {
+unsigned int AiMind::bestMoveHeuristic(shared_ptr<Player>& forWho, shared_ptr<Board>& mainGameBoard, vector<shared_ptr<Tile>>& possibleMoves) {
     unsigned int bestMoveInd = 0;
     unsigned int bestMoveScore = 0;
     unsigned int curMoveScore = 0;
