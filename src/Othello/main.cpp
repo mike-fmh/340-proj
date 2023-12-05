@@ -21,6 +21,7 @@
 #include "Disc.hpp"
 #include "GameState.hpp"
 #include "Player.hpp"
+#include "AiMind.hpp"
 
 using namespace std;
 using namespace othello;
@@ -52,6 +53,7 @@ shared_ptr<Board> gameBoard;
 shared_ptr<Player> playerNull;
 shared_ptr<Player> playerWhite;
 shared_ptr<Player> playerBlack;
+shared_ptr<AiMind> AI_MIND;
 
 shared_ptr<GameState> gameState;
 
@@ -66,28 +68,6 @@ const RGBColor DEFAULT_TILE_COLOR = RGBColor{0.2f, 1.f, 0.4f};
 
 const char* WIN_TITLE = "Othello";
 
-
-struct GamestateScore {
-    
-    /// Score based on mobility, which represents the amount of possible moves the player has.
-    int mobilityScore;
-    
-    /// Score based on stability, which represents how many of the player's tiles aren't currently flanked (can't be flipped) by their opponent.
-    int stabilityScore;
-    
-    /// Score based on how many corner pieces the player has.
-    int cornerControlScore;
-    
-    /// Score based on how many opposing pieces were flipped in the move which resulted in this gamestate
-    int powerScore;
-    
-    /// The full gamestate score, computed by multiplying each score value by its corresponding weight and summing them together.
-    int totalScore;
-    
-    int sum() {
-        return cornerControlScore + stabilityScore + mobilityScore + powerScore;
-    }
-};
 
 /// GLUT/OpenGL functions
 void displayTextualInfo(const string& infoStr, int textRow);
@@ -112,35 +92,8 @@ void passTurn(shared_ptr<Player>& toWho);
 /// @param whoseTurn The player whose turn should begin.
 void startTurn(shared_ptr<Player>& whoseTurn);
 
-/// Add a piece to the board without flipping any pieces (used for initializing the game).
-/// @param location Where on the board to place ths new tile.
-/// @param whose The player who will control this piece.
-/// @param theBoard Reference to the game board where this piece will exist.
-/// @param addObj Should this piece be added to the main object list? (to be rendered)
-void addGamePiece(TilePoint location, shared_ptr<Player>& whose, shared_ptr<Board>& theBoard, bool addObj);
-
-/// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
-/// @param forWho The player for whom to compute the best next move for.
-/// @param possibleMoves List of possible tiles that the player can choose as their next move.
-unsigned int bestMoveHeuristic(shared_ptr<Player>& forWho, vector<shared_ptr<Tile>>& possibleMoves);
-
-/// Called after a player places a piece on the board, this evaluates their gamestate advantage score.
-/// @param forWho The player for whom to calculate the gamestate advantage score (after they've placed a new piece).
-/// @param layout The gamestate from which to calculate the advantage score from.
-/// @param numFlippedTiles How many tiles were flipped in the player's move that lead to the 'layout' gamestate.
-unsigned int evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout, unsigned int numFlippedTiles);
-
 
 const int INIT_WIN_X = 10, INIT_WIN_Y = 32;
-
-// traditional othello board is 8x8 tiles
-const int BOARD_ROWS_MIN = 1;
-const int BOARD_ROWS_MAX = 8;
-const int BOARD_COLS_MIN = 1;
-const int BOARD_COLS_MAX = 8;
-
-// the actual "world" to render should larger than the game board
-const int BOARD_PADDING = 1;
 
 time_t startTime = -1;
 int winWidth = 800,
@@ -247,96 +200,6 @@ void startTurn(shared_ptr<Player>& whoseTurn) {
          tile->setColor(1, 0.8, 1);
          }
     }
-}
-
-void addGamePiece(TilePoint location, shared_ptr<Player>& whose, shared_ptr<Board>& theBoard, bool addObj) {
-    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
-    theBoard->addPiece(whose, thisDisc);
-    if (addObj) {
-        allObjects.push_back(thisDisc);
-    }
-}
-
-
-unsigned int evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout, unsigned int numFlippedTiles) {
-    int mobility, stability, cornerPieces;
-    GamestateScore curScore;
-    
-    /// Find mobility (number of possible moves)
-    std::vector<std::shared_ptr<Tile>> possibleMoves;
-    layout->getPlayableTiles(forWho, possibleMoves);
-    mobility = (int)possibleMoves.size();
-    
-    /// Calculate stability and count corner pieces
-    std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;  // tiles where I currently have pieces placed
-    layout->getPlayerTiles(forWho, allMyPieces); // populate my tiles
-    cornerPieces = 0;
-    stability = 0;
-    for (unsigned int r = 0; r < allMyPieces.size(); r++) {
-        for (unsigned int c = 0; c < allMyPieces[r].size(); c++) {
-            std::shared_ptr<Tile> thisTile = allMyPieces[r][c];
-            if (layout->isCornerTile(thisTile)) // if the tile is a corner piece
-                cornerPieces++;
-            if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
-                stability++;
-        }
-    }
-    
-    /// Multiply by weights and sum products together
-    curScore.mobilityScore = mobility * MOBILITY_WEIGHT;
-    curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT;
-    curScore.stabilityScore = stability * STABILITY_WEIGHT;
-    curScore.powerScore = numFlippedTiles * POWER_WEIGHT;
-    curScore.totalScore = curScore.sum();
-    
-    return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
-}
-
-
-unsigned int bestMoveHeuristic(shared_ptr<Player>& forWho, vector<shared_ptr<Tile>>& possibleMoves) {
-    unsigned int bestMoveInd = 0;
-    unsigned int bestMoveScore = 0;
-    unsigned int curMoveScore = 0;
-    for (unsigned int i = 0; i < possibleMoves.size(); i++) {
-        shared_ptr<Tile> thisMove = possibleMoves[i];
-        shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
-        shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
-        shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
-        
-        shared_ptr<Board> tempBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, tempNull);
-        shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
-        
-        shared_ptr<Player> tempOwner;
-        for (shared_ptr<Disc> piece : gameBoard->getAllPieces()) {
-            
-            TilePoint thisPiecePos = piece->getPos();
-            if (piece->getColor().isEqualTo(WHITE)) {
-                tempOwner = tempWhite;
-            } else {
-                tempOwner = tempBlack;
-            }
-            addGamePiece(thisPiecePos, tempOwner, tempBoard, false);
-        }
-        
-        TilePoint thisMoveLoc = thisMove->getPos();
-        shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
-        
-        // get AIplayer reference for the temp boardstate
-        if (forWho->getMyColor().isEqualTo(WHITE)) {
-            tempOwner = tempWhite;
-        } else {
-            tempOwner = tempBlack;
-        }
-        unsigned int numFlipped = tempGamestate->placePiece(tempOwner, hypMove, true);
-        curMoveScore = evalGamestateScore(tempOwner, tempGamestate, numFlipped);
-        
-        if (curMoveScore > bestMoveScore) {
-            bestMoveInd = i;
-            bestMoveScore = curMoveScore;
-        }
-    
-    }
-    return bestMoveInd;
 }
 
 void myDisplayFunc(void)
@@ -490,7 +353,7 @@ void myTimerFunc(int value)
             // black's (AI) turn logic
             if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
                 // compute black's best move and play it
-                unsigned int bestMoveIndex = bestMoveHeuristic(playerBlack, blackPlayableTiles);
+                unsigned int bestMoveIndex = AI_MIND->bestMoveHeuristic(playerBlack, gameBoard, blackPlayableTiles);
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
                 shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
@@ -552,28 +415,24 @@ void applicationInit()
 {
     playerNull = make_shared<Player>(RGBColor{-1, -1, -1}); // owns tiles with nothing placed on them
     
-    gameBoard = make_shared<Board>(BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_COLS_MIN, BOARD_COLS_MAX, BOARD_PADDING, DEFAULT_TILE_COLOR, playerNull);
+    gameBoard = make_shared<Board>(DEFAULT_TILE_COLOR, playerNull);
     allObjects.push_back(gameBoard);
-    
     
     playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
     playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
     
-    // 4 starting pieces (discs)
-    addGamePiece(TilePoint{4, 4}, playerBlack, gameBoard, true);
-    addGamePiece(TilePoint{5, 5}, playerBlack, gameBoard, true);
-    
-    addGamePiece(TilePoint{5, 4}, playerWhite, gameBoard, true);
-    addGamePiece(TilePoint{4, 5}, playerWhite, gameBoard, true);
-
     gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
-  
-/*
-    thisPnt = TilePoint{5, 6};
-    gameBoard->getBoardTile(thisPnt)->setColor(1, 1, 0.3);
-    gameState->TileIsFlanked(gameBoard->getBoardTile(thisPnt), playerWhite);
-*/
     
+    AI_MIND = make_shared<AiMind>(MOBILITY_WEIGHT, STABILITY_WEIGHT, CORNER_WEIGHT, POWER_WEIGHT, DEFAULT_TILE_COLOR);
+    
+    // 4 starting pieces (discs)
+    gameState->addGamePiece(TilePoint{4, 4}, playerBlack, allObjects);
+    gameState->addGamePiece(TilePoint{5, 5}, playerBlack, allObjects);
+    
+    gameState->addGamePiece(TilePoint{5, 4}, playerWhite, allObjects);
+    gameState->addGamePiece(TilePoint{4, 5}, playerWhite, allObjects);
+  
+
     //    time really starts now
     startTime = time(nullptr);
 }

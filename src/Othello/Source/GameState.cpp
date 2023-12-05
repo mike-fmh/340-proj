@@ -246,6 +246,20 @@ unsigned int GameState::placePiece(std::shared_ptr<Player>& forWho, std::shared_
 }
 
 
+void GameState::addGamePiece(TilePoint location, shared_ptr<Player>& whose, std::vector<std::shared_ptr<GraphicObject>>& allObjects) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    board_->addPiece(whose, thisDisc);
+    allObjects.push_back(thisDisc);
+}
+
+
+void GameState::addGamePiece(TilePoint location, shared_ptr<Player>& whose) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    board_->addPiece(whose, thisDisc);
+    // overloaded definition doesn't append to allObjects
+}
+
+
 bool GameState::isCornerTile(std::shared_ptr<Tile>& tile) {
     bool topRight = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMin();
     bool topLeft = tile->getCol() == board_->getColsMax() && tile->getRow() == board_->getRowsMax();

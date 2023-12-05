@@ -82,6 +82,14 @@ namespace othello {
         /// Given a tile, returns whether or not it's on a board corner
         bool isCornerTile(std::shared_ptr<Tile>& tile);
         
+        /// Add a piece to the board without flipping any pieces (used for initializing the game).
+        /// @param location Where on the board to place ths new tile.
+        /// @param whose The player who will control this piece.
+        /// @param allObjects List of all game objects (to be rendered).
+        void addGamePiece(TilePoint location, std::shared_ptr<Player>& whose, std::vector<std::shared_ptr<GraphicObject>>& allObjects);
+        /// Overloaded definition doesn't append to allObjects
+        void addGamePiece(TilePoint location, std::shared_ptr<Player>& whose);
+        
         inline void passTurn(std::shared_ptr<Player> toWho) {
             currentPlayerTurn_ = toWho;
         }

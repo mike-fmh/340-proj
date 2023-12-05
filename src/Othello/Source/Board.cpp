@@ -3,20 +3,27 @@
 using namespace othello;
 
 
-Board::Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef)
+// traditional othello board is 8x8 tiles
+const int Board::COLS_MIN_ = 1;
+const int Board::COLS_MAX_ = 8;
+const int Board::ROWS_MIN_ = 1;
+const int Board::ROWS_MAX_ = 8;
+
+// the actual "world" to render should larger than the game board
+const int Board::PADDING_ = 1;
+
+const int Board::X_MIN_ = 1 - PADDING_;
+const int Board::X_MAX_ = 8 + PADDING_;
+const int Board::Y_MIN_ = 1 - PADDING_;
+const int Board::Y_MAX_ = 8 + PADDING_;
+
+const float Board::WIDTH_ = (ROWS_MAX_ + PADDING_) - (ROWS_MIN_ - PADDING_);
+const float Board::HEIGHT_ = (COLS_MAX_ + PADDING_) - (COLS_MIN_ - PADDING_);
+
+
+Board::Board(RGBColor tileColor, std::shared_ptr<Player> nullplayerRef)
     :   Object(0, 0, 0),
         GraphicObject(0, 0, 0),
-        Y_MIN_(boardMinHeight - boardPadding),
-        Y_MAX_(boardMaxHeight + boardPadding),
-        X_MIN_(boardMinWidth - boardPadding),
-        X_MAX_(boardMaxWidth + boardPadding),
-        HEIGHT_((boardMaxHeight + boardPadding) - (boardMinHeight - boardPadding)),
-        WIDTH_((boardMaxWidth + boardPadding) - (boardMinWidth - boardPadding)),
-        COLS_MIN_(1),
-        COLS_MAX_(boardMaxWidth),
-        ROWS_MIN_(1),
-        ROWS_MAX_(boardMaxHeight),
-        PADDING_(boardPadding),
         DEFAULT_TILE_COLOR_(tileColor),
         nullplayerRef_(nullplayerRef),
         allBoardTiles_(std::vector<std::vector<std::shared_ptr<Tile>>>())
