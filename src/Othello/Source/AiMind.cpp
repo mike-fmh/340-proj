@@ -198,7 +198,7 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
         }
         TilePoint thisMoveLoc = thisMove->getPos();
         shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
-        tempGamestate->placePiece(tempWhite, hypMove, true);
+        tempGamestate->placePiece(tempBlack, hypMove, true);
         
         curMoveScore = minimax(true, depth, tempBlack, tempWhite, tempBoard, tempGamestate, 0, INT_MAX);
         if (curMoveScore > bestMoveScore) {
