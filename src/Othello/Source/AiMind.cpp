@@ -48,6 +48,7 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
             shared_ptr<Board> tempBoard = make_shared<Board>(DEFAULT_TILE_COLOR_, tempNull);
             shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
             shared_ptr<Player> tempOwner;
+            // bring the new board up to date
             // thisboard = the board before this hypothetical move
             for (shared_ptr<Disc> piece : thisBoard->getAllPieces()) {
                 TilePoint thisPiecePos = piece->getPos();
@@ -75,12 +76,15 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
             shared_ptr<Tile> thisMove = possibleMoves[i];
             
+            // each hypothetical move needs a new board object, thus also needs a new gamestate obj and new player objs
             shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
             shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
             shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
             shared_ptr<Board> tempBoard = make_shared<Board>(DEFAULT_TILE_COLOR_, tempNull);
             shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
             shared_ptr<Player> tempOwner;
+            // bring the new board up to date
+            // thisboard = the board before this hypothetical move
             for (shared_ptr<Disc> piece : thisBoard->getAllPieces()) {
                 TilePoint thisPiecePos = piece->getPos();
                 if (piece->getColor().isEqualTo(WHITE)) {
@@ -170,12 +174,29 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
     unsigned int curMoveScore = 0;
     for (unsigned int i = 0; i < possibleMoves.size(); i++) {
         shared_ptr<Tile> thisMove = possibleMoves[i];
-        pair<shared_ptr<Player>, shared_ptr<GameState>> thisMoveResult;
-        thisMoveResult = applyMove_(playerBlack, mainGameBoard, thisMove);
-        shared_ptr<Player> newMovePieceOwner = thisMoveResult.first;
-        shared_ptr<GameState> newMoveState = thisMoveResult.second;
-        curMoveScore = minimax(true, 2, playerBlack, playerWhite, mainGameBoard, newMoveState, 0, INT_MAX);
-        std::cout << "cur" << curMoveScore << "," << std::endl;
+        
+        shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
+        shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
+        shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
+        shared_ptr<Board> tempBoard = make_shared<Board>(DEFAULT_TILE_COLOR_, tempNull);
+        shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
+        shared_ptr<Player> tempOwner;
+        // bring the new board up to date
+        // thisboard = the board before this hypothetical move
+        for (shared_ptr<Disc> piece : mainGameBoard->getAllPieces()) {
+            TilePoint thisPiecePos = piece->getPos();
+            if (piece->getColor().isEqualTo(WHITE)) {
+                tempOwner = tempWhite;
+            } else {
+                tempOwner = tempBlack;
+            }
+            tempGamestate->addGamePiece(thisPiecePos, tempOwner);
+        }
+        TilePoint thisMoveLoc = thisMove->getPos();
+        shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
+        tempGamestate->placePiece(tempWhite, hypMove, true);
+        
+        curMoveScore = minimax(true, 2, tempBlack, tempWhite, tempBoard, tempGamestate, 0, INT_MAX);
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
             bestMoveScore = curMoveScore;
