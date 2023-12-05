@@ -26,44 +26,81 @@ AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsign
 }
 
 
-unsigned int AiMind::minimax(unsigned int depth, shared_ptr<Player>& forWho, shared_ptr<Board>& mainGameBoard, bool maximizing, shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped) {
+unsigned int AiMind::minimax(unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& mainGameBoard, bool maximizing, shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped) {
     if (depth == 0) // base case
-        return evalGamestateScore(forWho, layout, numTilesLastFlipped);
+        return evalGamestateScore(playerBlack, layout, numTilesLastFlipped);
     
     std::vector<std::shared_ptr<Tile>> possibleMoves;
-    layout->getPlayableTiles(forWho, possibleMoves);
-    
     
     if (maximizing) {
+        // simulate black placing a piece that puts them at the largest advantage
+        layout->getPlayableTiles(playerBlack, possibleMoves);
         unsigned int maxMove = 0;
+        unsigned int maxMoveInd = 0;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
             shared_ptr<Tile> thisMove = possibleMoves[i];
-            pair<shared_ptr<Player>, shared_ptr<GameState>> thisMoveResult;
-            unsigned int numFlipped;
-            thisMoveResult = applyMove_(forWho, mainGameBoard, thisMove, &numFlipped);
-            shared_ptr<Player> newMovePieceOwner = thisMoveResult.first;
-            shared_ptr<GameState> newMoveState = thisMoveResult.second;
-            unsigned int thisMoveScore = minimax(depth - 1, newMovePieceOwner, mainGameBoard, false, newMoveState, numFlipped);
+            
+            shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
+            shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
+            shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
+            shared_ptr<Board> tempBoard = make_shared<Board>(DEFAULT_TILE_COLOR_, tempNull);
+            shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
+            shared_ptr<Player> tempOwner;
+            for (shared_ptr<Disc> piece : mainGameBoard->getAllPieces()) {
+                
+                TilePoint thisPiecePos = piece->getPos();
+                if (piece->getColor().isEqualTo(WHITE)) {
+                    tempOwner = tempWhite;
+                } else {
+                    tempOwner = tempBlack;
+                }
+                tempGamestate->addGamePiece(thisPiecePos, tempOwner);
+            }
+            TilePoint thisMoveLoc = thisMove->getPos();
+            shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
+            unsigned int numFlipped = tempGamestate->placePiece(tempBlack, hypMove, true);
+            
+            unsigned int thisMoveScore = minimax(depth - 1, tempBlack, tempWhite, mainGameBoard, false, tempGamestate, numFlipped);
             if (thisMoveScore > maxMove) {
                 maxMove = thisMoveScore;
+                maxMoveInd = i;
             }
         }
-        return maxMove;
+        return maxMoveInd;
     } else {
+        // simulate white placing the piece which puts black at the largest disadvantage
+        layout->getPlayableTiles(playerWhite, possibleMoves);
         unsigned int minMove = INT_MAX;
+        unsigned int minMoveInd = 0;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
             shared_ptr<Tile> thisMove = possibleMoves[i];
-            pair<shared_ptr<Player>, shared_ptr<GameState>> thisMoveResult;
-            unsigned int numFlipped;
-            thisMoveResult = applyMove_(forWho, mainGameBoard, thisMove, &numFlipped);
-            shared_ptr<Player> newMovePieceOwner = thisMoveResult.first;
-            shared_ptr<GameState> newMoveState = thisMoveResult.second;
-            unsigned int thisMoveScore = minimax(depth - 1, newMovePieceOwner, mainGameBoard, true, newMoveState, numFlipped);
+            
+            shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
+            shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
+            shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
+            shared_ptr<Board> tempBoard = make_shared<Board>(DEFAULT_TILE_COLOR_, tempNull);
+            shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
+            shared_ptr<Player> tempOwner;
+            for (shared_ptr<Disc> piece : mainGameBoard->getAllPieces()) {
+                TilePoint thisPiecePos = piece->getPos();
+                if (piece->getColor().isEqualTo(WHITE)) {
+                    tempOwner = tempWhite;
+                } else {
+                    tempOwner = tempBlack;
+                }
+                tempGamestate->addGamePiece(thisPiecePos, tempOwner);
+            }
+            TilePoint thisMoveLoc = thisMove->getPos();
+            shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
+            unsigned int numFlipped = tempGamestate->placePiece(tempWhite, hypMove, true);
+            
+            unsigned int thisMoveScore = minimax(depth - 1, tempBlack, tempWhite, mainGameBoard, true, tempGamestate, numFlipped);
             if (thisMoveScore < minMove) {
                 minMove = thisMoveScore;
+                minMoveInd = i;
             }
         }
-        return minMove;
+        return minMoveInd;
     }
 }
 

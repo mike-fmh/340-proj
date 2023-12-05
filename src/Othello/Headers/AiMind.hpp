@@ -58,7 +58,7 @@ namespace othello {
         AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol);
         
         
-        unsigned int minimax(unsigned int depth, std::shared_ptr<Player>& forWho, std::shared_ptr<Board>& mainGameBoard, bool maximizing, std::shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped);
+        unsigned int minimax(unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, bool maximizing, std::shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped);
         
         /// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
         /// @param forWho The player for whom to compute the best next move for.
