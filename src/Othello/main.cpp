@@ -57,7 +57,7 @@ shared_ptr<AiMind> AI_MIND;
 
 shared_ptr<GameState> gameState;
 
-bool currentTurn = 1; // 1 = white, 0 = black
+bool currentTurn = 0; // 1 = white, 0 = black
 bool gameOver = 0;
 
 // during each player's turn, these vectors will store the tiles they can place pieces on
@@ -354,7 +354,7 @@ void myTimerFunc(int value)
             if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
                 // compute black's best move and play it
                 //unsigned int bestMoveIndex = AI_MIND->bestMoveHeuristic(playerBlack, gameBoard, blackPlayableTiles);
-                unsigned int bestMoveIndex = AI_MIND->minimax(4, playerBlack, playerWhite, gameBoard, true, gameState, 0);
+                unsigned int bestMoveIndex = AI_MIND->minimax(true, 4, playerBlack, playerWhite, gameBoard, gameState);
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
                 shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
