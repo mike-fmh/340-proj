@@ -29,7 +29,7 @@ AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsign
 
 
 unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& thisBoard, shared_ptr<GameState>& layout, unsigned int alpha, unsigned int beta) {
-    if (depth == 0) // base case
+    if (depth == 0) //or game is over // base case
         return evalGamestateScore(playerBlack, layout);
     
     std::vector<std::shared_ptr<Tile>> possibleMoves;
