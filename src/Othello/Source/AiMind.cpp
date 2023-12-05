@@ -201,7 +201,7 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
         tempGamestate->placePiece(tempBlack, hypMove, true);
         
         // applying minimax to this hypothetical move will give us the overall score for this move
-        curMoveScore = minimax(true, depth, tempBlack, tempWhite, tempBoard, tempGamestate, 0, INT_MAX);
+        curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, 0, INT_MAX);
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
             bestMoveScore = curMoveScore;
