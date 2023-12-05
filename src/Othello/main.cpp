@@ -355,6 +355,7 @@ void myTimerFunc(int value)
                 // compute black's best move and play it
                 //unsigned int bestMoveIndex = AI_MIND->bestMoveHeuristic(playerBlack, gameBoard, blackPlayableTiles);
                 unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, playerWhite, gameBoard, gameState, blackPlayableTiles);
+                cout << "chose: " << bestMoveIndex << endl;
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
                 shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
