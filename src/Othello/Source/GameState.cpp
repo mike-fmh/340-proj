@@ -86,20 +86,20 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Pl
     }
 }
 
-void GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
-    bool tilesExistsInRow;
+unsigned int GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
+    unsigned int numPlayerTiles = 0;
     RGBColor playerColor = whose->getMyColor();
     for (unsigned int r = 0; r < boardTiles_.size(); r++) {
         playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
-        tilesExistsInRow = false;
         for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
             std::shared_ptr<Tile> thisTile = boardTiles_[r][c];
             if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
                 playerTiles[r].push_back(thisTile);
-                tilesExistsInRow = true;
+                numPlayerTiles++;
             }
         }
     }
+    return numPlayerTiles;
 }
 
 bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer) {
@@ -115,7 +115,7 @@ bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Playe
     return false;
 }
 
-bool GameState::discIsPseudostable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
+bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();
     std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white
@@ -243,6 +243,20 @@ unsigned int GameState::placePiece(std::shared_ptr<Player>& forWho, std::shared_
         }
     }
     return num_flipped;
+}
+
+
+void GameState::addGamePiece(TilePoint location, shared_ptr<Player>& whose, std::vector<std::shared_ptr<GraphicObject>>& allObjects) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    board_->addPiece(whose, thisDisc);
+    allObjects.push_back(thisDisc);
+}
+
+
+void GameState::addGamePiece(TilePoint location, shared_ptr<Player>& whose) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    board_->addPiece(whose, thisDisc);
+    // overloaded definition doesn't append to allObjects
 }
 
 
