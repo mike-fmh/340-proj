@@ -34,12 +34,21 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
     
     std::vector<std::shared_ptr<Tile>> possibleMoves;
     
+    std::cout << "Minimax call: Depth = " << depth << ", Maximizing = " << (maximizing ? "True" : "False")
+              << ", Alpha = " << alpha << ", Beta = " << beta << std::endl;
+
+    
     if (maximizing) {
         // simulate black placing a piece that puts them at the largest advantage
         layout->getPlayableTiles(playerBlack, possibleMoves);
         unsigned int maxEval = 0;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
             shared_ptr<Tile> thisMove = possibleMoves[i];
+            
+            TilePoint loc = thisMove->getPos();
+            
+            std::cout << "Considering Move: (" << loc.x << ", " << loc.y << ") by Player " << (maximizing ? "Black" : "White") << std::endl;
+
             
             // each hypothetical move needs a new board object, thus also needs a new gamestate obj and new player objs
             shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
@@ -64,11 +73,12 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
             tempGamestate->placePiece(tempBlack, hypMove, true);
             
             unsigned int eval = minimax(false, depth - 1, tempBlack, tempWhite, tempBoard, tempGamestate, alpha, beta);
+            std::cout << "Evaluated Score: " << eval << " for Move: (" << loc.x << ", " << loc.y << ")" << std::endl;
             maxEval = std::max(maxEval, eval);
             alpha = std::max(alpha, eval);
-            if (beta <= alpha) {
-                break; // alpha-beta pruning
-            }
+            //if (beta <= alpha) {
+            //    break; // alpha-beta pruning
+            //}
         }
         return maxEval;
     } else {
@@ -77,6 +87,10 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
         unsigned int minEval = INT_MAX;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
             shared_ptr<Tile> thisMove = possibleMoves[i];
+            
+            TilePoint loc = thisMove->getPos();
+            
+            std::cout << "Considering Move: (" << loc.x << ", " << loc.y << ") by Player " << (maximizing ? "Black" : "White") << std::endl;
             
             // each hypothetical move needs a new board object, thus also needs a new gamestate obj and new player objs
             shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
@@ -103,9 +117,9 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
             unsigned int eval = minimax(true, depth - 1, tempBlack, tempWhite, tempBoard, tempGamestate, alpha, beta);
             minEval = std::min(minEval, eval);
             beta = std::min(beta, eval);
-            if (beta <= alpha) {
-                break; // alpha-beta pruning
-            }
+            //if (beta <= alpha) {
+            //    break; // alpha-beta pruning
+            //}
         }
         return minEval;
     }
