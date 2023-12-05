@@ -52,8 +52,13 @@ namespace othello {
         
         static RGBColor WHITE, BLACK;
         
+        std::pair<std::shared_ptr<Player>, std::shared_ptr<GameState>> applyMove_(std::shared_ptr<Player>& forWho, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<Tile>& thisMove, unsigned int* numFlipped);
+        
     public:
         AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol);
+        
+        
+        unsigned int minimax(unsigned int depth, std::shared_ptr<Player>& forWho, bool maximizing, std::shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped);
         
         /// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
         /// @param forWho The player for whom to compute the best next move for.

@@ -26,6 +26,7 @@ AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsign
 }
 
 
+
 unsigned int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout, unsigned int numFlippedTiles) {
     int mobility, stability, cornerPieces;
     GamestateScore curScore;
@@ -67,36 +68,10 @@ unsigned int AiMind::bestMoveHeuristic(shared_ptr<Player>& forWho, shared_ptr<Bo
     unsigned int curMoveScore = 0;
     for (unsigned int i = 0; i < possibleMoves.size(); i++) {
         shared_ptr<Tile> thisMove = possibleMoves[i];
-        shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
-        shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
-        shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
-        
-        shared_ptr<Board> tempBoard = make_shared<Board>(DEFAULT_TILE_COLOR_, tempNull);
-        shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
-        
-        shared_ptr<Player> tempOwner;
-        for (shared_ptr<Disc> piece : mainGameBoard->getAllPieces()) {
-            
-            TilePoint thisPiecePos = piece->getPos();
-            if (piece->getColor().isEqualTo(WHITE)) {
-                tempOwner = tempWhite;
-            } else {
-                tempOwner = tempBlack;
-            }
-            tempGamestate->addGamePiece(thisPiecePos, tempOwner);
-        }
-        
-        TilePoint thisMoveLoc = thisMove->getPos();
-        shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
-        
-        // get AIplayer reference for the temp boardstate
-        if (forWho->getMyColor().isEqualTo(WHITE)) {
-            tempOwner = tempWhite;
-        } else {
-            tempOwner = tempBlack;
-        }
-        unsigned int numFlipped = tempGamestate->placePiece(tempOwner, hypMove, true);
-        curMoveScore = evalGamestateScore(tempOwner, tempGamestate, numFlipped);
+        unsigned int numFlipped;
+        pair<shared_ptr<Player>, shared_ptr<GameState>> thisMoveResult;
+        thisMoveResult = applyMove_(forWho, mainGameBoard, thisMove, &numFlipped);
+        curMoveScore = evalGamestateScore(thisMoveResult.first, thisMoveResult.second, numFlipped);
         
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
@@ -105,4 +80,39 @@ unsigned int AiMind::bestMoveHeuristic(shared_ptr<Player>& forWho, shared_ptr<Bo
     
     }
     return bestMoveInd;
+}
+
+
+pair<shared_ptr<Player>, shared_ptr<GameState>> AiMind::applyMove_(shared_ptr<Player>& forWho, shared_ptr<Board>& mainGameBoard, shared_ptr<Tile>& thisMove, unsigned int* numFlipped) {
+    shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
+    shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
+    shared_ptr<Player> tempNull = make_shared<Player>(RGBColor{-1, -1, -1}, "null");
+    
+    shared_ptr<Board> tempBoard = make_shared<Board>(DEFAULT_TILE_COLOR_, tempNull);
+    shared_ptr<GameState> tempGamestate = make_shared<GameState>(tempWhite, tempBlack, tempBoard);
+    
+    shared_ptr<Player> tempOwner;
+    for (shared_ptr<Disc> piece : mainGameBoard->getAllPieces()) {
+        
+        TilePoint thisPiecePos = piece->getPos();
+        if (piece->getColor().isEqualTo(WHITE)) {
+            tempOwner = tempWhite;
+        } else {
+            tempOwner = tempBlack;
+        }
+        tempGamestate->addGamePiece(thisPiecePos, tempOwner);
+    }
+    
+    TilePoint thisMoveLoc = thisMove->getPos();
+    shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
+    
+    // get AIplayer reference for the temp boardstate
+    if (forWho->getMyColor().isEqualTo(WHITE)) {
+        tempOwner = tempWhite;
+    } else {
+        tempOwner = tempBlack;
+    }
+    *numFlipped = tempGamestate->placePiece(tempOwner, hypMove, true);
+    
+    return make_pair(tempOwner, tempGamestate);
 }
