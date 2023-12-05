@@ -26,14 +26,11 @@ namespace othello {
         /// Score based on how many corner pieces the player has.
         int cornerControlScore;
         
-        /// Score based on how many opposing pieces were flipped in the move which resulted in this gamestate
-        int powerScore;
-        
         /// The full gamestate score, computed by multiplying each score value by its corresponding weight and summing them together.
         int totalScore;
         
         int sum() {
-            return cornerControlScore + stabilityScore + mobilityScore + powerScore;
+            return cornerControlScore + stabilityScore + mobilityScore;
         }
     };
 
@@ -58,7 +55,7 @@ namespace othello {
         AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol);
         
         
-        unsigned int minimax(unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, bool maximizing, std::shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped);
+        unsigned int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& layout);
         
         /// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
         /// @param forWho The player for whom to compute the best next move for.
@@ -68,8 +65,7 @@ namespace othello {
         /// Called after a player places a piece on the board, this evaluates their gamestate advantage score.
         /// @param forWho The player for whom to calculate the gamestate advantage score (after they've placed a new piece).
         /// @param layout The gamestate from which to calculate the advantage score from.
-        /// @param numFlippedTiles How many tiles were flipped in the player's move that lead to the 'layout' gamestate.
-        unsigned int evalGamestateScore(std::shared_ptr<Player>& forWho, std::shared_ptr<GameState>& layout, unsigned int numFlippedTiles);
+        unsigned int evalGamestateScore(std::shared_ptr<Player>& forWho, std::shared_ptr<GameState>& layout);
         
         //disabled constructors & operators
         AiMind(AiMind&& obj) = delete;        // move

@@ -26,9 +26,9 @@ AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsign
 }
 
 
-unsigned int AiMind::minimax(unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& mainGameBoard, bool maximizing, shared_ptr<GameState>& layout, unsigned int numTilesLastFlipped) {
+unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& mainGameBoard, shared_ptr<GameState>& layout) {
     if (depth == 0) // base case
-        return evalGamestateScore(playerBlack, layout, numTilesLastFlipped);
+        return evalGamestateScore(playerBlack, layout);
     
     std::vector<std::shared_ptr<Tile>> possibleMoves;
     
@@ -58,9 +58,9 @@ unsigned int AiMind::minimax(unsigned int depth, shared_ptr<Player>& playerBlack
             }
             TilePoint thisMoveLoc = thisMove->getPos();
             shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
-            unsigned int numFlipped = tempGamestate->placePiece(tempBlack, hypMove, true);
+            tempGamestate->placePiece(tempBlack, hypMove, true);
             
-            unsigned int thisMoveScore = minimax(depth - 1, tempBlack, tempWhite, mainGameBoard, false, tempGamestate, numFlipped);
+            unsigned int thisMoveScore = minimax(false, depth - 1, tempBlack, tempWhite, mainGameBoard, tempGamestate);
             if (thisMoveScore > maxMove) {
                 maxMove = thisMoveScore;
                 maxMoveInd = i;
@@ -92,9 +92,9 @@ unsigned int AiMind::minimax(unsigned int depth, shared_ptr<Player>& playerBlack
             }
             TilePoint thisMoveLoc = thisMove->getPos();
             shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
-            unsigned int numFlipped = tempGamestate->placePiece(tempWhite, hypMove, true);
+            tempGamestate->placePiece(tempWhite, hypMove, true);
             
-            unsigned int thisMoveScore = minimax(depth - 1, tempBlack, tempWhite, mainGameBoard, true, tempGamestate, numFlipped);
+            unsigned int thisMoveScore = minimax(true, depth - 1, tempBlack, tempWhite, mainGameBoard, tempGamestate);
             if (thisMoveScore < minMove) {
                 minMove = thisMoveScore;
                 minMoveInd = i;
@@ -104,7 +104,7 @@ unsigned int AiMind::minimax(unsigned int depth, shared_ptr<Player>& playerBlack
     }
 }
 
-unsigned int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout, unsigned int numFlippedTiles) {
+unsigned int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout) {
     int mobility, stability, cornerPieces;
     GamestateScore curScore;
     
@@ -132,7 +132,6 @@ unsigned int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<G
     curScore.mobilityScore = mobility * MOBILITY_WEIGHT_;
     curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT_;
     curScore.stabilityScore = stability * STABILITY_WEIGHT_;
-    curScore.powerScore = numFlippedTiles * POWER_WEIGHT_;
     curScore.totalScore = curScore.sum();
     
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
@@ -150,7 +149,7 @@ unsigned int AiMind::bestMoveHeuristic(shared_ptr<Player>& forWho, shared_ptr<Bo
         thisMoveResult = applyMove_(forWho, mainGameBoard, thisMove, &numFlipped);
         shared_ptr<Player> newMovePieceOwner = thisMoveResult.first;
         shared_ptr<GameState> newMoveState = thisMoveResult.second;
-        curMoveScore = evalGamestateScore(newMovePieceOwner, newMoveState, numFlipped);
+        curMoveScore = evalGamestateScore(newMovePieceOwner, newMoveState);
         
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
