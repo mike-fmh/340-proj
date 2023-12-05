@@ -65,8 +65,8 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
             tempGamestate->placePiece(tempBlack, hypMove, true);
             
             unsigned int eval = minimax(false, depth - 1, tempBlack, tempWhite, tempBoard, tempGamestate, alpha, beta);
-            std::cout << "max: " << eval << "\n";
             if (eval > maxEval) {
+                std::cout << "max: " << eval << "\n";
                 maxEval = eval;
             }
         }
@@ -101,8 +101,8 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
             tempGamestate->placePiece(tempWhite, hypMove, true);
             
             unsigned int eval = minimax(true, depth - 1, tempBlack, tempWhite, tempBoard, tempGamestate, alpha, beta);
-            std::cout << "min: " << eval << "\n";
             if (eval < minEval) {
+                std::cout << "min: " << eval << "\n";
                 minEval = eval;
             }
         }
