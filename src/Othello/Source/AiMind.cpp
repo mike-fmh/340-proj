@@ -134,7 +134,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
                 cornerPieces++;
             if (layout->isCornerAdj(thisTile))
                 cornerAdj++;
-            if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
+            if (layout->discIsStable(thisTile)) // if the tile isn't flankable by the opponent
                 stability++;
             frontiers += layout->numFrontierTiles(thisTile);
         }
