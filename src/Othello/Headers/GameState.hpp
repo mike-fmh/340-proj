@@ -63,7 +63,7 @@ namespace othello {
         bool tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
      
         /// Given a tile with a disc on it, returns whether that disc can be flipped (currently) by the opponent of 'curPlayer'.
-        /// @param tile The tile in question.
+        /// @param tile Reference to the Tile to check stability for.
         bool discIsStable(std::shared_ptr<Tile>& tile);
         
         /// GIven a screen x and y coord, translates it into a Board Tile.
@@ -84,7 +84,7 @@ namespace othello {
         /// @param playerTiles The empty vector to populate with Tile references.
         unsigned int getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
         
-        /// Given a tile, returns whether or not it's on a board corner
+        /// Given a tile, returns whether or not it's a corner tile.
         /// @param tile Reference to the tile to check is a corner tile.
         bool isCornerTile(std::shared_ptr<Tile>& tile);
         /// @param tileLoc Location of the tile to check is a corner tile.
