@@ -16,13 +16,14 @@ RGBColor AiMind::WHITE = RGBColor{1, 1, 1};
 RGBColor AiMind::BLACK = RGBColor{0, 0, 0};
 
 
-AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol)
+AiMind::AiMind(unsigned int discWeight, unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol)
     :
     MOBILITY_WEIGHT_(mobilityWeight),
     STABILITY_WEIGHT_(stabilityWeight),
     CORNER_WEIGHT_(cornerWeight),
     CORNER_ADJ_WEIGHT_(cornerAdjWeight),
     NUM_FRONTIER_WEIGHT_(frontierWeight),
+    NUM_DISC_WEIGHT_(discWeight),
     DEFAULT_TILE_COLOR_(defaultTileCol)
 {
     
@@ -112,6 +113,8 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     int mobility, stability, cornerPieces, cornerAdj, frontiers;
     GamestateScore curScore;
     
+    std::vector<std::vector<std::shared_ptr<Tile>>> myTiles;
+    
     /// Find mobility (number of possible moves)
     std::vector<std::shared_ptr<Tile>> possibleMoves;
     layout->getPlayableTiles(forWho, possibleMoves);
@@ -134,6 +137,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
             if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
                 stability++;
             frontiers = layout->numFrontierTiles(thisTile);
+            layout->getPlayerTiles(forWho, myTiles);
         }
     }
     
@@ -143,6 +147,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     curScore.stabilityScore = stability * STABILITY_WEIGHT_;
     curScore.cornerAdjScore = cornerAdj * CORNER_ADJ_WEIGHT_;
     curScore.frontierScore = frontiers * NUM_FRONTIER_WEIGHT_;
+    curScore.discScore = (int)myTiles.size() * NUM_DISC_WEIGHT_;
     curScore.totalScore = curScore.sum();
     
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
