@@ -113,9 +113,11 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     int mobility, stability, cornerPieces, cornerAdj, frontiers;
     GamestateScore curScore;
     
+    /// Find number of discs I control
     std::vector<std::vector<std::shared_ptr<Tile>>> myTiles;
+    layout->getPlayerTiles(forWho, myTiles);
     
-    /// Find mobility (number of possible moves)
+    /// Find my mobility (number of possible moves)
     std::vector<std::shared_ptr<Tile>> possibleMoves;
     layout->getPlayableTiles(forWho, possibleMoves);
     mobility = (int)possibleMoves.size();
@@ -136,8 +138,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
                 cornerAdj++;
             if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
                 stability++;
-            frontiers = layout->numFrontierTiles(thisTile);
-            layout->getPlayerTiles(forWho, myTiles);
+            frontiers += layout->numFrontierTiles(thisTile);
         }
     }
     
