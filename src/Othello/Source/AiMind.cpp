@@ -159,7 +159,7 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
         }
         TilePoint thisMoveLoc = thisMove->getPos();
         shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
-        tempGamestate->placePiece(tempBlack, hypMove, true);
+        tempGamestate->placePiece(tempBlack, hypMove);
         
         // applying minimax to this hypothetical move will give us the overall score for this move
         curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, 0, INT_MAX);
