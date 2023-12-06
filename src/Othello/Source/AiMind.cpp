@@ -113,9 +113,11 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     int mobility, stability, cornerPieces, cornerAdj, frontiers;
     GamestateScore curScore;
     
+    /// Find number of discs I control
     std::vector<std::vector<std::shared_ptr<Tile>>> myTiles;
+    layout->getPlayerTiles(forWho, myTiles);
     
-    /// Find mobility (number of possible moves)
+    /// Find my mobility (number of possible moves)
     std::vector<std::shared_ptr<Tile>> possibleMoves;
     layout->getPlayableTiles(forWho, possibleMoves);
     mobility = (int)possibleMoves.size();
@@ -136,8 +138,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
                 cornerAdj++;
             if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
                 stability++;
-            frontiers = layout->numFrontierTiles(thisTile);
-            layout->getPlayerTiles(forWho, myTiles);
+            frontiers += layout->numFrontierTiles(thisTile);
         }
     }
     
@@ -154,7 +155,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
 }
 
 
-unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& mainGameBoard, shared_ptr<GameState>& mainGameState, vector<shared_ptr<Tile>>& possibleMoves, unsigned int depth) {
+unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& aiPlayer, shared_ptr<Board>& mainGameBoard, shared_ptr<GameState>& mainGameState, vector<shared_ptr<Tile>>& possibleMoves, unsigned int depth) {
     unsigned int bestMoveInd = 0;
     int bestMoveScore = 0;
     int curMoveScore = 0;
@@ -183,8 +184,13 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
         tempGamestate->placePiece(tempBlack, hypMove);
         
         // applying minimax to this hypothetical move will give us the overall score for this move
-        curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
-        std::cout << "cur (" << thisMoveLoc.x << ", " << thisMoveLoc.y << "), "<< i <<": " << curMoveScore << ", num blank adjs: " << tempGamestate->numFrontierTiles(thisMove) << std::endl;
+        if (aiPlayer->getMyColor().isEqualTo(BLACK)) {
+            // AI is in black's perspective, white is the opponent
+            curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
+        } else {
+            // AI is in white's perspective, black is the opponent
+            curMoveScore = minimax(false, depth, tempWhite, tempBlack, tempBoard, tempGamestate, INT_MIN, INT_MAX);
+        }
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
             bestMoveScore = curMoveScore;
