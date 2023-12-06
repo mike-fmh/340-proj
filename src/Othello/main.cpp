@@ -30,6 +30,8 @@ bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 bool turnStarted = false;
 
+const unsigned int MINIMAX_DEPTH = 4;
+
 /// Was the last turn ended because the player had no valid moves?
 /// In othello, the game can end early (before the board is filled) if neither player has a valid move.
 bool lastMoveInvalid = false;
@@ -354,7 +356,7 @@ void myTimerFunc(int value)
             // black's (AI) turn logic
             if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
                 // compute black's best move and play it
-                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, gameBoard, gameState, blackPlayableTiles, 4);
+                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, gameBoard, gameState, blackPlayableTiles, MINIMAX_DEPTH);
                 
                 // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
                 currentTime = chrono::high_resolution_clock::now();
