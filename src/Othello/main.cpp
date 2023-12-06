@@ -42,7 +42,7 @@ const float SECS_BETWEEN_AI_MOVES = 1.0;
 const unsigned int MOBILITY_WEIGHT = 1;
 const unsigned int STABILITY_WEIGHT = 2;
 const unsigned int CORNER_WEIGHT = 4;
-const int CORNER_ADJ_WEIGHT = -1;
+const int CORNER_ADJ_WEIGHT = -2;
 
 
 vector<shared_ptr<GraphicObject>> allObjects; // objects to be rendered
