@@ -115,6 +115,30 @@ bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Playe
     return false;
 }
 
+bool GameState::gameIsOver() {
+    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
+    getPlayableTiles(playerBlack_, blackMoves);
+    getPlayableTiles(playerWhite_, whiteMoves);
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
+/// provided with either whitemoves or blackmoves
+bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& playerMoves, bool isWhite) {
+    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
+    if (isWhite) {
+        getPlayableTiles(playerBlack_, blackMoves);
+        whiteMoves = playerMoves;
+    } else {
+        getPlayableTiles(playerBlack_, whiteMoves);
+        blackMoves = playerMoves;
+    }
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
+bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& blackMoves, std::vector<std::shared_ptr<Tile>>& whiteMoves) {
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
 bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();

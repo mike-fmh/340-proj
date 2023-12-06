@@ -82,6 +82,10 @@ namespace othello {
         /// Given a tile, returns whether or not it's on a board corner
         bool isCornerTile(std::shared_ptr<Tile>& tile);
         
+        bool gameIsOver();
+        bool gameIsOver(std::vector<std::shared_ptr<Tile>>& playerMoves, bool isWhite);
+        bool gameIsOver(std::vector<std::shared_ptr<Tile>>& blackMoves, std::vector<std::shared_ptr<Tile>>& whiteMoves);
+        
         /// Add a piece to the board without flipping any pieces (used for initializing the game).
         /// @param location Where on the board to place ths new tile.
         /// @param whose The player who will control this piece.
