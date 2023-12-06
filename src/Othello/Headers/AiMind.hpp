@@ -17,6 +17,8 @@ namespace othello {
 
     struct GamestateScore {
         
+        unsigned int discScore;
+        
         /// Score based on mobility, which represents the amount of possible moves the player has.
         unsigned int mobilityScore;
         
@@ -37,7 +39,7 @@ namespace othello {
         int totalScore;
         
         int sum() {
-            return cornerControlScore + stabilityScore + mobilityScore + cornerAdjScore + frontierScore;
+            return discScore + cornerControlScore + stabilityScore + mobilityScore + cornerAdjScore + frontierScore;
         }
     };
 
@@ -50,6 +52,7 @@ namespace othello {
         const unsigned int CORNER_WEIGHT_;
         const int NUM_FRONTIER_WEIGHT_;
         const int CORNER_ADJ_WEIGHT_;
+        const unsigned int NUM_DISC_WEIGHT_;
         
         RGBColor DEFAULT_TILE_COLOR_;
         
@@ -58,7 +61,7 @@ namespace othello {
         int applyMinimaxMove_(bool maxing, unsigned int depth, std::shared_ptr<Tile>& thisMove, std::shared_ptr<Board>& oldBoard, int alpha, int beta);
         
     public:
-        AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol);
+        AiMind(unsigned int discWeight, unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol);
         
         
         int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
