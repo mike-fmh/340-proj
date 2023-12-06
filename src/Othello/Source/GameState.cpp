@@ -16,6 +16,7 @@ const int GameState::NUM_GAME_PLAYERS = 2;
 
 const float GameState::flip_interval_secs_ = 0.0;
 
+
 GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
     :   startingPlayer_(playerWhite), // white always starts in othello
         currentPlayerTurn_(playerWhite),
@@ -86,20 +87,20 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Pl
     }
 }
 
-void GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
-    bool tilesExistsInRow;
+unsigned int GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
+    unsigned int numPlayerTiles = 0;
     RGBColor playerColor = whose->getMyColor();
     for (unsigned int r = 0; r < boardTiles_.size(); r++) {
         playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
-        tilesExistsInRow = false;
         for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
             std::shared_ptr<Tile> thisTile = boardTiles_[r][c];
             if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
                 playerTiles[r].push_back(thisTile);
-                tilesExistsInRow = true;
+                numPlayerTiles++;
             }
         }
     }
+    return numPlayerTiles;
 }
 
 bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer) {
@@ -115,7 +116,31 @@ bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Playe
     return false;
 }
 
-bool GameState::discIsPseudostable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
+bool GameState::gameIsOver() {
+    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
+    getPlayableTiles(playerBlack_, blackMoves);
+    getPlayableTiles(playerWhite_, whiteMoves);
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
+/// provided with either whitemoves or blackmoves
+bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& playerMoves, bool isWhite) {
+    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
+    if (isWhite) {
+        getPlayableTiles(playerBlack_, blackMoves);
+        whiteMoves = playerMoves;
+    } else {
+        getPlayableTiles(playerBlack_, whiteMoves);
+        blackMoves = playerMoves;
+    }
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
+bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& blackMoves, std::vector<std::shared_ptr<Tile>>& whiteMoves) {
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
+bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();
     std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white
@@ -204,10 +229,10 @@ std::shared_ptr<Disc> GameState::placePiece(std::shared_ptr<Player>& forWho, std
             shared_ptr<Tile> tile = dir[i];
             if (forWho->getMyColor().isEqualTo(BLACK)) {
                 tile->setOwner(playerBlack_);
-                tile->getPiece()->setColorAfter(BLACK, flip_interval_secs_ * i);
+                tile->getPiece()->setColorAfter(BLACK, flip_interval_secs_ * (i+1));
             } else if (forWho->getMyColor().isEqualTo(WHITE)) {
                 tile->setOwner(playerWhite_);
-                tile->getPiece()->setColorAfter(WHITE, flip_interval_secs_ * i);
+                tile->getPiece()->setColorAfter(WHITE, flip_interval_secs_ * (i+1));
             }
         }
     }
@@ -234,15 +259,29 @@ unsigned int GameState::placePiece(std::shared_ptr<Player>& forWho, std::shared_
             shared_ptr<Tile> tile = dir[i];
             if (forWho->getMyColor().isEqualTo(BLACK)) {
                 tile->setOwner(playerBlack_);
-                tile->getPiece()->setColorAfter(BLACK, flip_interval_secs_ * i);
+                tile->getPiece()->setColorAfter(BLACK, flip_interval_secs_ * (i+1));
             } else if (forWho->getMyColor().isEqualTo(WHITE)) {
                 tile->setOwner(playerWhite_);
-                tile->getPiece()->setColorAfter(WHITE, flip_interval_secs_ * i);
+                tile->getPiece()->setColorAfter(WHITE, flip_interval_secs_ * (i+1));
             }
             num_flipped++;
         }
     }
     return num_flipped;
+}
+
+
+void GameState::addGamePiece(TilePoint location, shared_ptr<Player>& whose, std::vector<std::shared_ptr<GraphicObject>>& allObjects) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    board_->addPiece(whose, thisDisc);
+    allObjects.push_back(thisDisc);
+}
+
+
+void GameState::addGamePiece(TilePoint location, shared_ptr<Player>& whose) {
+    shared_ptr<Disc> thisDisc = make_shared<Disc>(location, whose->getMyColor());
+    board_->addPiece(whose, thisDisc);
+    // overloaded definition doesn't append to allObjects
 }
 
 
@@ -252,4 +291,45 @@ bool GameState::isCornerTile(std::shared_ptr<Tile>& tile) {
     bool bottomRight = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMin();
     bool bottomLeft = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMax();
     return topRight || topLeft || bottomLeft || bottomRight;
+}
+
+bool GameState::isCornerTile(TilePoint& tile) {
+    bool topRight = tile.x == board_->getColsMax() && tile.y == board_->getRowsMin();
+    bool topLeft = tile.x == board_->getColsMax() && tile.y == board_->getRowsMax();
+    bool bottomRight = tile.x == board_->getColsMin() && tile.y == board_->getRowsMin();
+    bool bottomLeft = tile.x == board_->getColsMin() && tile.y == board_->getRowsMax();
+    return topRight || topLeft || bottomLeft || bottomRight;
+}
+
+
+bool GameState::isCornerAdj(std::shared_ptr<Tile>& tile) {
+    std::vector<TilePoint> nextDir = {
+        {0, -1}, {0, 1}, {-1, 0}, {1, 0}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
+    };
+    TilePoint thisLoc;
+    for (auto dir: nextDir) {
+        thisLoc = TilePoint{tile->getRow() + dir.x, tile->getCol() + dir.y};
+        if (isCornerTile(thisLoc))
+            return true;
+    }
+    return false;
+}
+
+
+unsigned int GameState::numFrontierTiles(std::shared_ptr<Tile>& tile) {
+    std::vector<TilePoint> nextDir = {
+        {0, -1}, {0, 1}, {-1, 0}, {1, 0}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
+    };
+    TilePoint thisLoc;
+    shared_ptr<Player> thisOwner;
+    unsigned int numBlank = 0;
+    for (auto dir: nextDir) {
+        thisLoc = TilePoint{tile->getRow() + dir.x, tile->getCol() + dir.y};
+        if (board_->isValidPosition(thisLoc)) {
+            thisOwner = board_->getTileOwner(thisLoc);
+            if (thisOwner == board_->getNullPlayer())
+                numBlank++;
+        }
+    }
+    return numBlank;
 }

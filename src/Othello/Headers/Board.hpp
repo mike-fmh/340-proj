@@ -23,9 +23,9 @@ namespace othello
             std::vector<std::vector<std::shared_ptr<Tile>>> allBoardTiles_;
             
             const std::shared_ptr<Player> nullplayerRef_;
-            const int X_MIN_, X_MAX_, Y_MIN_, Y_MAX_;
-            const int COLS_MIN_, COLS_MAX_, ROWS_MIN_, ROWS_MAX_, PADDING_;
-            const float WIDTH_, HEIGHT_;
+            static const int X_MIN_, X_MAX_, Y_MIN_, Y_MAX_;
+            static const int COLS_MIN_, COLS_MAX_, ROWS_MIN_, ROWS_MAX_, PADDING_;
+            static const float WIDTH_, HEIGHT_;
             
             RGBColor DEFAULT_TILE_COLOR_;
             
@@ -40,7 +40,7 @@ namespace othello
             Board& operator = (const Board& obj) = delete;    // copy operator
             Board& operator = (Board&& obj) = delete;        // move operator
 
-            Board(int boardMinWidth, int boardMaxWidth, int boardMinHeight, int boardMaxHeight, int boardPadding, RGBColor tileColor, std::shared_ptr<Player> nullplayerRef);
+            Board(RGBColor tileColor, std::shared_ptr<Player> nullplayerRef);
         
             void draw() const;
         

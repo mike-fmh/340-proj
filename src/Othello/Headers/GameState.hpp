@@ -62,7 +62,7 @@ namespace othello {
         /// Given a tile with a disc on it, returns if that disc can be flipped (currently) by the opponent of curPlayer
         /// @param tile the tile in question
         /// @param curPlayer the player whose turn it currently is
-        bool discIsPseudostable(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
+        bool discIsStable(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
         
         /// GIven a screen x and y coord, translates it into a Board Tile
         /// @param ix the screen x coord
@@ -77,10 +77,28 @@ namespace othello {
         /// @param returnInt if a boolean is given to placePiece as the final param, the function will return how many opposing pieces this move flipped instead of a pointer to the new Disc it placed
         unsigned int placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on, bool returnInt);
         
-        void getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
+        unsigned int getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
         
         /// Given a tile, returns whether or not it's on a board corner
         bool isCornerTile(std::shared_ptr<Tile>& tile);
+        bool isCornerTile(TilePoint& tile);
+        
+        bool isCornerAdj(std::shared_ptr<Tile>& tile);
+        
+        /// Counts the number of unplaced tiles around the given tile
+        unsigned int numFrontierTiles(std::shared_ptr<Tile>& tile);
+        
+        bool gameIsOver();
+        bool gameIsOver(std::vector<std::shared_ptr<Tile>>& playerMoves, bool isWhite);
+        bool gameIsOver(std::vector<std::shared_ptr<Tile>>& blackMoves, std::vector<std::shared_ptr<Tile>>& whiteMoves);
+        
+        /// Add a piece to the board without flipping any pieces (used for initializing the game).
+        /// @param location Where on the board to place ths new tile.
+        /// @param whose The player who will control this piece.
+        /// @param allObjects List of all game objects (to be rendered).
+        void addGamePiece(TilePoint location, std::shared_ptr<Player>& whose, std::vector<std::shared_ptr<GraphicObject>>& allObjects);
+        /// Overloaded definition doesn't append to allObjects
+        void addGamePiece(TilePoint location, std::shared_ptr<Player>& whose);
         
         inline void passTurn(std::shared_ptr<Player> toWho) {
             currentPlayerTurn_ = toWho;
