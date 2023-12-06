@@ -32,9 +32,6 @@ namespace othello {
         std::shared_ptr<Player> playerBlack_;
         std::shared_ptr<Player> playerWhite_;
         
-        /// Player whose turn it currently is
-        std::shared_ptr<Player> currentPlayerTurn_;
-        
     public:
         GameState(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<Board> board);
         
@@ -97,17 +94,9 @@ namespace othello {
         /// Overloaded definition doesn't append to allObjects
         void addGamePiece(TilePoint location, std::shared_ptr<Player>& whose);
         
-        inline void passTurn(std::shared_ptr<Player> toWho) {
-            currentPlayerTurn_ = toWho;
-        }
-        
         /// Get a Tile on the board from its position
         inline std::shared_ptr<Tile> getBoardTile(TilePoint& at) const {
             return board_->getBoardTile(at);
-        }
-        
-        inline std::shared_ptr<Player> getCurrentPlayer() {
-            return currentPlayerTurn_;
         }
         inline std::shared_ptr<Board> getBoard() {
             return board_;

@@ -17,8 +17,7 @@ const int GameState::NUM_GAME_PLAYERS = 2;
 const float GameState::flip_interval_secs_ = 0.1;
 
 GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
-    :   currentPlayerTurn_(playerWhite),
-        playerBlack_(playerBlack),
+    :   playerBlack_(playerBlack),
         playerWhite_(playerWhite),
         board_(board)
 {

@@ -146,7 +146,6 @@ void passTurn(shared_ptr<Player>& toWho) {
     } else {
         currentTurn = 1; // signifies white's turn
     }
-    gameState->passTurn(toWho);
 }
 
 void startTurn(shared_ptr<Player>& whoseTurn) {
