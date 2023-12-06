@@ -110,12 +110,12 @@ int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_ptr<Tile>&
 
 
 int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout) {
-    int mobility, stability, cornerPieces, cornerAdj, frontiers;
+    unsigned int numDiscs, mobility, stability, cornerPieces, cornerAdj, frontiers;
     GamestateScore curScore;
     
     /// Find number of discs I control
     std::vector<std::vector<std::shared_ptr<Tile>>> myTiles;
-    layout->getPlayerTiles(forWho, myTiles);
+    numDiscs = layout->getPlayerTiles(forWho, myTiles);
     
     /// Find my mobility (number of possible moves)
     std::vector<std::shared_ptr<Tile>> possibleMoves;
@@ -148,9 +148,8 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     curScore.stabilityScore = stability * STABILITY_WEIGHT_;
     curScore.cornerAdjScore = cornerAdj * CORNER_ADJ_WEIGHT_;
     curScore.frontierScore = frontiers * NUM_FRONTIER_WEIGHT_;
-    curScore.discScore = (int)myTiles.size() * NUM_DISC_WEIGHT_;
+    curScore.discScore = numDiscs * NUM_DISC_WEIGHT_;
     curScore.totalScore = curScore.sum();
-    
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
 }
 
