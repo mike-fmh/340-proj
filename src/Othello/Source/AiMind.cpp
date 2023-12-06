@@ -16,12 +16,12 @@ RGBColor AiMind::WHITE = RGBColor{1, 1, 1};
 RGBColor AiMind::BLACK = RGBColor{0, 0, 0};
 
 
-AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol)
+AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, RGBColor defaultTileCol)
     :
     MOBILITY_WEIGHT_(mobilityWeight),
     STABILITY_WEIGHT_(stabilityWeight),
     CORNER_WEIGHT_(cornerWeight),
-    POWER_WEIGHT_(powerWeight),
+    CORNER_ADJ_WEIGHT_(cornerAdjWeight),
     DEFAULT_TILE_COLOR_(defaultTileCol)
 {
     
@@ -100,7 +100,7 @@ int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_ptr<Tile>&
 
 
 int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout) {
-    int mobility, stability, cornerPieces;
+    int mobility, stability, cornerPieces, cornerAdj;
     GamestateScore curScore;
     
     /// Find mobility (number of possible moves)
@@ -112,12 +112,15 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     std::vector<std::vector<std::shared_ptr<Tile>>> allMyPieces;  // tiles where I currently have pieces placed
     layout->getPlayerTiles(forWho, allMyPieces); // populate my tiles
     cornerPieces = 0;
+    cornerAdj = 0;
     stability = 0;
     for (unsigned int r = 0; r < allMyPieces.size(); r++) {
         for (unsigned int c = 0; c < allMyPieces[r].size(); c++) {
             std::shared_ptr<Tile> thisTile = allMyPieces[r][c];
             if (layout->isCornerTile(thisTile)) // if the tile is a corner piece
                 cornerPieces++;
+            if (layout->isCornerAdj(thisTile))
+                cornerAdj++;
             if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
                 stability++;
         }
@@ -127,6 +130,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     curScore.mobilityScore = mobility * MOBILITY_WEIGHT_;
     curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT_;
     curScore.stabilityScore = stability * STABILITY_WEIGHT_;
+    curScore.cornerAdjScore = cornerAdj * CORNER_ADJ_WEIGHT_;
     curScore.totalScore = curScore.sum();
     
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate

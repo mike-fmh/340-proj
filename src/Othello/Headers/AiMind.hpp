@@ -18,13 +18,16 @@ namespace othello {
     struct GamestateScore {
         
         /// Score based on mobility, which represents the amount of possible moves the player has.
-        int mobilityScore;
+        unsigned int mobilityScore;
         
         /// Score based on stability, which represents how many of the player's tiles aren't currently flanked (can't be flipped) by their opponent.
-        int stabilityScore;
+        unsigned int stabilityScore;
         
         /// Score based on how many corner pieces the player has.
-        int cornerControlScore;
+        unsigned int cornerControlScore;
+        
+        /// Tiles adjacent to corners should result in lower scores, since they can allow the opponent to place on the corners
+        int cornerAdjScore;
         
         /// The full gamestate score, computed by multiplying each score value by its corresponding weight and summing them together.
         int totalScore;
@@ -38,12 +41,10 @@ namespace othello {
     private:
         // weights for each factor based on their importance
         // used in computing Gamestate Advantage Score (measures how "good" a player's current gamestate is)
-        const int MOBILITY_WEIGHT_;
-        const int STABILITY_WEIGHT_;
-        const int CORNER_WEIGHT_;
-
-        /// Power refers to how many pieces a move flips
-        const int POWER_WEIGHT_;
+        const unsigned int MOBILITY_WEIGHT_;
+        const unsigned int STABILITY_WEIGHT_;
+        const unsigned int CORNER_WEIGHT_;
+        const int CORNER_ADJ_WEIGHT_;
         
         RGBColor DEFAULT_TILE_COLOR_;
         
@@ -52,7 +53,7 @@ namespace othello {
         int applyMinimaxMove_(bool maxing, unsigned int depth, std::shared_ptr<Tile>& thisMove, std::shared_ptr<Board>& oldBoard, int alpha, int beta);
         
     public:
-        AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol);
+        AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, RGBColor defaultTileCol);
         
         
         unsigned int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);

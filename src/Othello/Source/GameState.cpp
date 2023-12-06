@@ -291,3 +291,25 @@ bool GameState::isCornerTile(std::shared_ptr<Tile>& tile) {
     bool bottomLeft = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMax();
     return topRight || topLeft || bottomLeft || bottomRight;
 }
+
+bool GameState::isCornerTile(TilePoint& tile) {
+    bool topRight = tile.x == board_->getColsMax() && tile.y == board_->getRowsMin();
+    bool topLeft = tile.x == board_->getColsMax() && tile.y == board_->getRowsMax();
+    bool bottomRight = tile.x == board_->getColsMin() && tile.y == board_->getRowsMin();
+    bool bottomLeft = tile.x == board_->getColsMin() && tile.y == board_->getRowsMax();
+    return topRight || topLeft || bottomLeft || bottomRight;
+}
+
+
+bool GameState::isCornerAdj(std::shared_ptr<Tile>& tile) {
+    std::vector<TilePoint> nextDir = {
+        {0, -1}, {0, 1}, {-1, 0}, {1, 0}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
+    };
+    TilePoint thisLoc;
+    for (auto dir: nextDir) {
+        thisLoc = TilePoint{tile->getCol() + dir.x, tile->getRow() + dir.y};
+        if (isCornerTile(thisLoc))
+            return true;
+    }
+    return false;
+}
