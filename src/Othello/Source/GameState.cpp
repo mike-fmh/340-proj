@@ -86,11 +86,11 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Pl
 unsigned int GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
     unsigned int numPlayerTiles = 0;
     RGBColor playerColor = whose->getMyColor();
-    std::vector<std::vector<std::shared_ptr<Tile>>> boardTiles_ = board_->getBoardTiles();
-    for (unsigned int r = 0; r < boardTiles_.size(); r++) {
+    std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_ = board_->getBoardTiles();
+    for (unsigned int r = 0; r < boardTiles_->size(); r++) {
         playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
-        for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
-            std::shared_ptr<Tile> thisTile = boardTiles_[r][c];
+        for (unsigned int c = 0; c < boardTiles_->at(r).size(); c++) {
+            std::shared_ptr<Tile> thisTile = boardTiles_->at(r)[c];
             if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
                 playerTiles[r].push_back(thisTile);
                 numPlayerTiles++;
@@ -144,10 +144,10 @@ bool GameState::discIsStable(std::shared_ptr<Tile>& tile) {
 
 void GameState::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
-    std::vector<std::vector<std::shared_ptr<Tile>>> boardTiles_ = board_->getBoardTiles();
-    for (int r = 0; r < boardTiles_.size(); r++) {
-        for (int c = 0; c < boardTiles_[r].size(); c++) {
-            std::shared_ptr<Tile> currentTile = boardTiles_[r][c];
+    std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_ = board_->getBoardTiles();
+    for (int r = 0; r < boardTiles_->size(); r++) {
+        for (int c = 0; c < boardTiles_->at(r).size(); c++) {
+            std::shared_ptr<Tile> currentTile = boardTiles_->at(r)[c];
             
             // check if the tile is owned by the opposing player (if it has an opponent's piece on it)
             if ((currentTile->getPieceOwner() != forWho) && (currentTile->getPieceOwner() != board_->getNullPlayer() ))
