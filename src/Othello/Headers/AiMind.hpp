@@ -80,9 +80,10 @@ namespace othello {
         AiMind(unsigned int discWeight, unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol);
         
         
-        int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
+        /// MiniMax search algorithm implimentation, used as a general heuristic for measuring a player's position as a score.
+        int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& aiPlayer, std::shared_ptr<Player>& opponent, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
         
-        unsigned int bestMoveMinimax(std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves, unsigned int depth);
+        unsigned int bestMoveMinimax(std::shared_ptr<Player>& aiPlayer, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves, unsigned int depth);
         
         /// Called after a player places a piece on the board, this evaluates their gamestate advantage score.
         /// @param forWho The player for whom to calculate the gamestate advantage score (after they've placed a new piece).
