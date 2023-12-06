@@ -29,18 +29,18 @@ AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsign
 }
 
 
-int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& thisBoard, shared_ptr<GameState>& layout, int alpha, int beta) {
+int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& aiPlayer, shared_ptr<Player>& opponent, shared_ptr<Board>& thisBoard, shared_ptr<GameState>& layout, int alpha, int beta) {
     if (depth == 0) //or game is over // base case
-        return evalGamestateScore(playerBlack, layout);
+        return evalGamestateScore(aiPlayer, layout);
     
     std::vector<std::shared_ptr<Tile>> possibleMoves;
     
     if (maximizing) {
         // simulate black placing a piece that puts them at the largest advantage
-        layout->getPlayableTiles(playerBlack, possibleMoves);
+        layout->getPlayableTiles(aiPlayer, possibleMoves);
         if (possibleMoves.size() == 0) { // no more moves for black
             std::cout << "no more moves in this branch(black)\n";
-            return evalGamestateScore(playerBlack, layout);
+            return evalGamestateScore(aiPlayer, layout);
         }
         int maxEval = INT_MIN;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
@@ -55,10 +55,10 @@ int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& pla
         return maxEval;
     } else {
         // simulate white placing the piece which puts black at the largest disadvantage
-        layout->getPlayableTiles(playerWhite, possibleMoves);
+        layout->getPlayableTiles(opponent, possibleMoves);
         if (possibleMoves.size() == 0) { // no more moves for white
             std::cout << "no more moves in this branch(white)\n";
-            return evalGamestateScore(playerBlack, layout);
+            return evalGamestateScore(aiPlayer, layout);
         }
         int minEval = INT_MAX;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
@@ -149,7 +149,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
 }
 
 
-unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& mainGameBoard, shared_ptr<GameState>& mainGameState, vector<shared_ptr<Tile>>& possibleMoves, unsigned int depth) {
+unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& aiPlayer, shared_ptr<Board>& mainGameBoard, shared_ptr<GameState>& mainGameState, vector<shared_ptr<Tile>>& possibleMoves, unsigned int depth) {
     unsigned int bestMoveInd = 0;
     int bestMoveScore = 0;
     int curMoveScore = 0;
@@ -178,6 +178,15 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
         tempGamestate->placePiece(tempBlack, hypMove);
         
         // applying minimax to this hypothetical move will give us the overall score for this move
+        
+        /*
+        if (aiPlayer->getMyColor().isEqualTo(BLACK)) {
+            curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
+        } else {
+            curMoveScore = minimax(false, depth, tempWhite, tempBlack, tempBoard, tempGamestate, INT_MIN, INT_MAX);
+        }
+        */
+        
         curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
         std::cout << "cur (" << thisMoveLoc.x << ", " << thisMoveLoc.y << "), "<< i <<": " << curMoveScore << ", num blank adjs: " << tempGamestate->numFrontierTiles(thisMove) << std::endl;
         if (curMoveScore > bestMoveScore) {
