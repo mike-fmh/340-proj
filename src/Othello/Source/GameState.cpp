@@ -17,12 +17,10 @@ const int GameState::NUM_GAME_PLAYERS = 2;
 const float GameState::flip_interval_secs_ = 0.1;
 
 GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
-    :   startingPlayer_(playerWhite), // white always starts in othello
-        currentPlayerTurn_(playerWhite),
+    :   currentPlayerTurn_(playerWhite),
         playerBlack_(playerBlack),
         playerWhite_(playerWhite),
-        board_(board),
-        boardTiles_(board->getBoardTiles())
+        board_(board)
 {
     
 }
@@ -89,6 +87,7 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Pl
 unsigned int GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
     unsigned int numPlayerTiles = 0;
     RGBColor playerColor = whose->getMyColor();
+    std::vector<std::vector<std::shared_ptr<Tile>>> boardTiles_ = board_->getBoardTiles();
     for (unsigned int r = 0; r < boardTiles_.size(); r++) {
         playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
         for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
@@ -161,9 +160,10 @@ bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& cu
 
 void GameState::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
-    for (int c = 0; c < boardTiles_.size(); c++) {
-        for (int r = 0; r < boardTiles_[c].size(); r++) {
-            std::shared_ptr<Tile> currentTile = boardTiles_[c][r];
+    std::vector<std::vector<std::shared_ptr<Tile>>> boardTiles_ = board_->getBoardTiles();
+    for (int r = 0; r < boardTiles_.size(); r++) {
+        for (int c = 0; c < boardTiles_[r].size(); c++) {
+            std::shared_ptr<Tile> currentTile = boardTiles_[r][c];
             
             // check if the tile is owned by the opposing player (if it has an opponent's piece on it)
             if ((currentTile->getPieceOwner() != forWho) && (currentTile->getPieceOwner() != board_->getNullPlayer() ))

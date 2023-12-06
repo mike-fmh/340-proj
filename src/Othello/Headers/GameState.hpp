@@ -22,21 +22,18 @@ namespace othello {
         /// number of players in the game
         static const int NUM_GAME_PLAYERS;
         
+        /// Animation time between flipping each sequential tile after a new piece is placed.
         static const float flip_interval_secs_;
         
+        /// Reference to the game board
         std::shared_ptr<Board> board_;
         
+        /// References to the white & black players used by board_
         std::shared_ptr<Player> playerBlack_;
         std::shared_ptr<Player> playerWhite_;
         
-        /// player whose turn it is when the game starts
-        std::shared_ptr<Player> startingPlayer_;
-        
-        /// player whose turn it currently is
+        /// Player whose turn it currently is
         std::shared_ptr<Player> currentPlayerTurn_;
-        
-        /// pointer reference to the game board
-        std::vector<std::vector<std::shared_ptr<Tile>>> boardTiles_;
         
     public:
         GameState(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<Board> board);
