@@ -30,7 +30,7 @@ bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 bool turnStarted = false;
 
-const unsigned int MINIMAX_DEPTH = 4;
+const unsigned int MINIMAX_DEPTH = 2;
 
 /// Was the last turn ended because the player had no valid moves?
 /// In othello, the game can end early (before the board is filled) if neither player has a valid move.
