@@ -39,12 +39,13 @@ const float SECS_BETWEEN_AI_MOVES = 1.0;
 
 // weights for each factor based on their importance
 // used in computing Gamestate Advantage Score (measures how "good" a player's current gamestate is)
-const int MOBILITY_WEIGHT = 1;
-const int STABILITY_WEIGHT = 2;
-const int CORNER_WEIGHT = 4;
+const unsigned int NUM_DISC_WEIGHT = 3;
+const unsigned int MOBILITY_WEIGHT = 1;
+const unsigned int STABILITY_WEIGHT = 2;
+const unsigned int CORNER_WEIGHT = 4;
+const int NUM_FRONTIER_WEIGHT = -1;
+const int CORNER_ADJ_WEIGHT = -2;
 
-/// Power refers to how many pieces a move flips
-const int POWER_WEIGHT = 3;
 
 vector<shared_ptr<GraphicObject>> allObjects; // objects to be rendered
 
@@ -57,7 +58,7 @@ shared_ptr<AiMind> AI_MIND;
 
 shared_ptr<GameState> gameState;
 
-bool currentTurn = 1; // 1 = white, 0 = black
+bool currentTurn = 0; // 1 = white, 0 = black
 bool gameOver = 0;
 
 // during each player's turn, these vectors will store the tiles they can place pieces on
@@ -353,7 +354,11 @@ void myTimerFunc(int value)
             // black's (AI) turn logic
             if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
                 // compute black's best move and play it
-                unsigned int bestMoveIndex = AI_MIND->bestMoveHeuristic(playerBlack, gameBoard, blackPlayableTiles);
+                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, gameBoard, gameState, blackPlayableTiles, 4);
+                
+                // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
+                currentTime = chrono::high_resolution_clock::now();
+                cout << "chose: " << bestMoveIndex << endl;
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
                 shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
@@ -423,7 +428,7 @@ void applicationInit()
     
     gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
     
-    AI_MIND = make_shared<AiMind>(MOBILITY_WEIGHT, STABILITY_WEIGHT, CORNER_WEIGHT, POWER_WEIGHT, DEFAULT_TILE_COLOR);
+    AI_MIND = make_shared<AiMind>(NUM_DISC_WEIGHT, MOBILITY_WEIGHT, STABILITY_WEIGHT, CORNER_WEIGHT, CORNER_ADJ_WEIGHT, NUM_FRONTIER_WEIGHT, DEFAULT_TILE_COLOR);
     
     // 4 starting pieces (discs)
     gameState->addGamePiece(TilePoint{4, 4}, playerBlack, allObjects);
