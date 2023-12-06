@@ -65,7 +65,7 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
     }
 }
 
-int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_ptr<Tile>& thisMove, shared_ptr<Board>& oldBoard, unsigned int alpha, unsigned int beta) {
+int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_ptr<Tile>& thisMove, shared_ptr<Board>& oldBoard, int alpha, int beta) {
     // each hypothetical move needs a new board object, thus also needs a new gamestate obj and new player objs
     shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
     shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
