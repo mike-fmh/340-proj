@@ -34,16 +34,22 @@ namespace othello
             static float drawInPixelScale;
 
         public:
+            /// Constructs a new game board.
+            /// @param tileColor The default color of tiles (tiles are where we place pieces/discs).
+            /// @param nullplayerRef Reference to the 'null' player (null player controls tiles that have no pieces on them).
+            Board(RGBColor tileColor, std::shared_ptr<Player>& nullplayerRef);
+        
             //disabled constructors & operators
             Board() = delete;
             Board(Board&& obj) = delete;        // move
             Board& operator = (const Board& obj) = delete;    // copy operator
             Board& operator = (Board&& obj) = delete;        // move operator
 
-            Board(RGBColor tileColor, std::shared_ptr<Player> nullplayerRef);
-        
+            /// The draw function is run every frame.
             void draw() const;
         
+            /// Adds a new piece to a tile, and the given player gains control of that tile.
+            ///
             void addPiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Disc>& piece);
             
             std::vector<std::shared_ptr<Disc>> getAllPieces() const;
