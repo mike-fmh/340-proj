@@ -33,7 +33,14 @@ namespace othello {
         std::shared_ptr<Player> playerWhite_;
         
     public:
-        GameState(std::shared_ptr<Player> playerWhite, std::shared_ptr<Player> playerBlack, std::shared_ptr<Board> board);
+        /// Constructs a new GameState object, which stores references player objects & board object.
+        /// Creating new GameState objects other than the main one (the one that's rendered in the game window) is done when an AI needs to hypothesize different possible moves that it can take.
+        /// Each new GameState object needs a new separate board object, as the whole point of creating a new GameState object is that it contains a different board state than others,
+        /// but also needs new separate player objects as well.
+        /// @param playerWhite This GameState's reference to the White player.
+        /// @param playerBlack This GameState's reference to the Black player.
+        /// @param board The reference to this GameState's game board.
+        GameState(std::shared_ptr<Player>& playerWhite, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Board>& board);
         
         //disabled constructors & operators
         GameState(const GameState& obj) = delete;   // copy
@@ -41,7 +48,9 @@ namespace othello {
         GameState(GameState&& obj) = delete;        // move
         GameState& operator = (GameState&& obj) = delete;        // move operator
         
-        /// populates the vector referenced by moveableTiles with possible moves for the forWho player
+        /// Populates the 'moveableTiles' vector with Tile references of possible moves for the given player.
+        /// @param forWho The player whose possible moves to retrieve.
+        /// @param movableTiles The vector to polulate with Tile references of their possible moves.
         void getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles);
         
         /// Populates the flankedTiles vector a subvector for each direction, then appends tile sequences of opponent's tiles to each subvector in directions with valid flanks.
@@ -71,7 +80,9 @@ namespace othello {
         /// @param returnInt if a boolean is given to placePiece as the final param, the function will return how many opposing pieces this move flipped instead of a pointer to the new Disc it placed
         unsigned int placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on, bool returnInt);
         
-        /// Populates 'playerTiles' with all tiles owned by the player, and returns how many are owned in total.
+        /// Populates 'playerTiles' with all tiles owned by the player (their pieces/discs), and returns how many are owned in total.
+        /// @param whose Reference to the player whose discs to count.
+        /// @param playerTiles The empty vector to populate with Tile references.
         unsigned int getPlayerTiles(std::shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles);
         
         /// Given a tile, returns whether or not it's on a board corner
