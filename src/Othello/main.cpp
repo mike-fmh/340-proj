@@ -126,13 +126,15 @@ void endGame() {
                 whiteTiles[r][c]->setColor(1,0,0);
             }
         }
-    } else {
+    } else if (numBlackTiles < numWhiteTiles) {
         cout << "\nWHITE WINS\n\n";
         for (unsigned int r = 0; r < blackTiles.size(); r++) {
             for (unsigned int c = 0; c < blackTiles[r].size(); c++) {
                 blackTiles[r][c]->setColor(1,0,0);
             }
         }
+    } else {
+        cout << "\nTIE\n\n";
     }
 }
 
