@@ -307,9 +307,28 @@ bool GameState::isCornerAdj(std::shared_ptr<Tile>& tile) {
     };
     TilePoint thisLoc;
     for (auto dir: nextDir) {
-        thisLoc = TilePoint{tile->getCol() + dir.x, tile->getRow() + dir.y};
+        thisLoc = TilePoint{tile->getRow() + dir.x, tile->getCol() + dir.y};
         if (isCornerTile(thisLoc))
             return true;
     }
     return false;
+}
+
+
+unsigned int GameState::numFrontierTiles(std::shared_ptr<Tile>& tile) {
+    std::vector<TilePoint> nextDir = {
+        {0, -1}, {0, 1}, {-1, 0}, {1, 0}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
+    };
+    TilePoint thisLoc;
+    shared_ptr<Player> thisOwner;
+    unsigned int numBlank = 0;
+    for (auto dir: nextDir) {
+        thisLoc = TilePoint{tile->getRow() + dir.x, tile->getCol() + dir.y};
+        if (board_->isValidPosition(thisLoc)) {
+            thisOwner = board_->getTileOwner(thisLoc);
+            if (thisOwner == board_->getNullPlayer())
+                numBlank++;
+        }
+    }
+    return numBlank;
 }

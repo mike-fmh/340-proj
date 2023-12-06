@@ -85,6 +85,9 @@ namespace othello {
         
         bool isCornerAdj(std::shared_ptr<Tile>& tile);
         
+        /// Counts the number of unplaced tiles around the given tile
+        unsigned int numFrontierTiles(std::shared_ptr<Tile>& tile);
+        
         bool gameIsOver();
         bool gameIsOver(std::vector<std::shared_ptr<Tile>>& playerMoves, bool isWhite);
         bool gameIsOver(std::vector<std::shared_ptr<Tile>>& blackMoves, std::vector<std::shared_ptr<Tile>>& whiteMoves);
