@@ -14,6 +14,7 @@ namespace othello
 {
 	class GraphicObject	: public virtual Object	// abstract class
 	{
+        /// This class was written by Professor Jean-Yves Hervé (provided in template code from CSC406).
 		private:
 
 		public:
