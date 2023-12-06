@@ -184,8 +184,13 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& aiPlayer, shared_ptr<Bo
         tempGamestate->placePiece(tempBlack, hypMove);
         
         // applying minimax to this hypothetical move will give us the overall score for this move
-        curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
-        std::cout << "cur (" << thisMoveLoc.x << ", " << thisMoveLoc.y << "), "<< i <<": " << curMoveScore << ", num blank adjs: " << tempGamestate->numFrontierTiles(thisMove) << std::endl;
+        if (aiPlayer->getMyColor().isEqualTo(BLACK)) {
+            // AI is in black's perspective, white is the opponent
+            curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
+        } else {
+            // AI is in white's perspective, black is the opponent
+            curMoveScore = minimax(false, depth, tempWhite, tempBlack, tempBoard, tempGamestate, INT_MIN, INT_MAX);
+        }
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
             bestMoveScore = curMoveScore;
