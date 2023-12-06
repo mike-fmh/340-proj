@@ -28,7 +28,7 @@ AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsign
 }
 
 
-unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& thisBoard, shared_ptr<GameState>& layout, unsigned int alpha, unsigned int beta) {
+unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& thisBoard, shared_ptr<GameState>& layout, int alpha, int beta) {
     if (depth == 0) //or game is over // base case
         return evalGamestateScore(playerBlack, layout);
     
@@ -37,10 +37,10 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
     if (maximizing) {
         // simulate black placing a piece that puts them at the largest advantage
         layout->getPlayableTiles(playerBlack, possibleMoves);
-        unsigned int maxEval = 0;
+        int maxEval = INT_MIN;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
             shared_ptr<Tile> thisMove = possibleMoves[i];
-            unsigned int eval = applyMinimaxMove_(maximizing, depth, thisMove, thisBoard, alpha, beta);
+            int eval = applyMinimaxMove_(maximizing, depth, thisMove, thisBoard, alpha, beta);
             maxEval = std::max(maxEval, eval);
             alpha = std::max(alpha, eval);
             if (beta <= alpha) {
@@ -51,10 +51,10 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
     } else {
         // simulate white placing the piece which puts black at the largest disadvantage
         layout->getPlayableTiles(playerWhite, possibleMoves);
-        unsigned int minEval = INT_MAX;
+        int minEval = INT_MAX;
         for (unsigned int i = 0; i < possibleMoves.size(); i++) {
             shared_ptr<Tile> thisMove = possibleMoves[i];
-            unsigned int eval = applyMinimaxMove_(maximizing, depth, thisMove, thisBoard, alpha, beta);
+            int eval = applyMinimaxMove_(maximizing, depth, thisMove, thisBoard, alpha, beta);
             minEval = std::min(minEval, eval);
             beta = std::min(beta, eval);
             if (beta <= alpha) {
@@ -65,7 +65,7 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
     }
 }
 
-unsigned int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_ptr<Tile>& thisMove, shared_ptr<Board>& oldBoard, unsigned int alpha, unsigned int beta) {
+int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_ptr<Tile>& thisMove, shared_ptr<Board>& oldBoard, unsigned int alpha, unsigned int beta) {
     // each hypothetical move needs a new board object, thus also needs a new gamestate obj and new player objs
     shared_ptr<Player> tempWhite = make_shared<Player>(WHITE, "white");
     shared_ptr<Player> tempBlack = make_shared<Player>(BLACK, "black");
@@ -99,7 +99,7 @@ unsigned int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_p
 }
 
 
-unsigned int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout) {
+int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout) {
     int mobility, stability, cornerPieces;
     GamestateScore curScore;
     
@@ -162,7 +162,8 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
         tempGamestate->placePiece(tempBlack, hypMove);
         
         // applying minimax to this hypothetical move will give us the overall score for this move
-        curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, 0, INT_MAX);
+        curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
+        std::cout << "cur (" << i << "): " << curMoveScore << std::endl;
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
             bestMoveScore = curMoveScore;

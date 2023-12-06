@@ -49,13 +49,13 @@ namespace othello {
         
         static RGBColor WHITE, BLACK;
         
-        unsigned int applyMinimaxMove_(bool maxing, unsigned int depth, std::shared_ptr<Tile>& thisMove, std::shared_ptr<Board>& oldBoard, unsigned int alpha, unsigned int beta);
+        int applyMinimaxMove_(bool maxing, unsigned int depth, std::shared_ptr<Tile>& thisMove, std::shared_ptr<Board>& oldBoard, unsigned int alpha, unsigned int beta);
         
     public:
         AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, unsigned int powerWeight, RGBColor defaultTileCol);
         
         
-        unsigned int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, unsigned int alpha, unsigned int beta);
+        unsigned int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
         
         /// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
         /// @param forWho The player for whom to compute the best next move for.
@@ -68,7 +68,7 @@ namespace othello {
         /// Called after a player places a piece on the board, this evaluates their gamestate advantage score.
         /// @param forWho The player for whom to calculate the gamestate advantage score (after they've placed a new piece).
         /// @param layout The gamestate from which to calculate the advantage score from.
-        unsigned int evalGamestateScore(std::shared_ptr<Player>& forWho, std::shared_ptr<GameState>& layout);
+        int evalGamestateScore(std::shared_ptr<Player>& forWho, std::shared_ptr<GameState>& layout);
         
         //disabled constructors & operators
         AiMind(AiMind&& obj) = delete;        // move
