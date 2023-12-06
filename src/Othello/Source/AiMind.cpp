@@ -193,7 +193,6 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& aiPlayer, shared_ptr<Bo
         */
         
         curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
-        std::cout << "cur (" << thisMoveLoc.x << ", " << thisMoveLoc.y << "), "<< i <<": " << curMoveScore << ", num blank adjs: " << tempGamestate->numFrontierTiles(thisMove) << std::endl;
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
             bestMoveScore = curMoveScore;
