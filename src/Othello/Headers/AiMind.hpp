@@ -47,23 +47,41 @@ namespace othello {
     private:
         // weights for each factor based on their importance
         // used in computing Gamestate Advantage Score (measures how "good" a player's current gamestate is)
+        
+        const unsigned int NUM_DISC_WEIGHT_;
+        
         const unsigned int MOBILITY_WEIGHT_;
         const unsigned int STABILITY_WEIGHT_;
         const unsigned int CORNER_WEIGHT_;
         const int NUM_FRONTIER_WEIGHT_;
         const int CORNER_ADJ_WEIGHT_;
-        const unsigned int NUM_DISC_WEIGHT_;
         
         RGBColor DEFAULT_TILE_COLOR_;
         
         static RGBColor WHITE, BLACK;
         
+        /// Helper function for minimax used to create a new gamestate object and place each hypothetical piece
+        /// @param maxing Which mode minimax is currently in (maximizing or not).
+        /// @param depth The current depth of the minimax tree
+        /// @param thisMove The location of the new hypothetical move.
+        /// @param oldBoard The board as it was before placing the new hypothetical move.
+        /// @param alpha The current value for alpha (max) for minimax's alpha-beta pruning.
+        /// @param beta The current value for beta (min) for minimax's alpha-beta pruning.
         int applyMinimaxMove_(bool maxing, unsigned int depth, std::shared_ptr<Tile>& thisMove, std::shared_ptr<Board>& oldBoard, int alpha, int beta);
         
     public:
+        /// Creates a new AI object.
+        /// Can compute best moves for either the black or white player.
+        /// @param discWeight Weight for number of discs a player controls.
+        /// @param mobilityWeight Weight for player mobility.
+        /// @param stabilityWeight Weight for the number of stable tiles a player has.
+        /// @param cornerWeight Weight for number of corner pieces a player has.
+        /// @param cornerAdjWeight Weight for number of corner-adjacent tiles a player has.
+        /// @param frontierWeight Weight for the number of blank tiles next to a player's tiles.
+        /// @param defaultTileCol The default 'green' color of the game board.
         AiMind(unsigned int discWeight, unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol);
         
-        
+        /// MiniMax search algorithm implimentation, used as a general heuristic for measuring a player's position as a score.
         int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& aiPlayer, std::shared_ptr<Player>& opponent, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
         
         unsigned int bestMoveMinimax(std::shared_ptr<Player>& aiPlayer, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves, unsigned int depth);
