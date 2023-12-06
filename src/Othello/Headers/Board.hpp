@@ -75,14 +75,17 @@ namespace othello
             /// @param at the location of the Tile to return
             std::shared_ptr<Tile> getBoardTile(TilePoint& at);
         
-            /// If there's a disc placed at the given point, return its owner
+            /// Returns the player who controls the given tile. If no disc is placed on the given tile, returns the null player.
+            /// @param at the TilePoint location to return the owner of.
             std::shared_ptr<Player> getTileOwner(TilePoint& at);
             
-            /// Returns a tile's neighbors including diagonals
-            /// @param tile the original tile to get the neighbors of
-            /// @param neighbors the vector to populate with neighboring tiles
+            /// Populates the 'neighbors' vector with the given tile's neighbors (including diagonals).
+            /// @param tile The original tile to get the neighbors of.
+            /// @param neighbors The vector to populate with its neighboring tiles.
             void getNeighbors(TilePoint& tile, std::vector<std::shared_ptr<Tile>>& neighbors);
             
+            /// Returns whether the given TilePoint is a valid game board position.
+            /// @param at The coords to check is a valid tile location.
             inline bool isValidPosition(TilePoint& at) {
                 return ((at.x >= ROWS_MIN_) & (at.x <= ROWS_MAX_) & (at.y >= COLS_MIN_) & (at.y <= COLS_MAX_));
             }
