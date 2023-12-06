@@ -62,22 +62,21 @@ namespace othello {
         /// @param curPlayer the player whose placing a piece (whose turn it is)
         bool tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
      
-        /// Given a tile with a disc on it, returns if that disc can be flipped (currently) by the opponent of curPlayer
-        /// @param tile the tile in question
-        /// @param curPlayer the player whose turn it currently is
-        bool discIsStable(std::shared_ptr<Tile>& tile, std::shared_ptr<Player>& curPlayer);
+        /// Given a tile with a disc on it, returns whether that disc can be flipped (currently) by the opponent of 'curPlayer'.
+        /// @param tile The tile in question.
+        bool discIsStable(std::shared_ptr<Tile>& tile);
         
-        /// GIven a screen x and y coord, translates it into a Board Tile
-        /// @param ix the screen x coord
-        /// @param iy the screen y coord
-        /// @param movableTiles instead of searching on ALL board tiles, narrow down the tiles that are allowed to be clicked on to this vector
+        /// GIven a screen x and y coord, translates it into a Board Tile.
+        /// @param ix The screen x coord.
+        /// @param iy The screen y coord.
+        /// @param movableTiles Instead of searching on ALL board tiles, narrow down the tiles that are allowed to be clicked on to this vector of Tile references.
         std::shared_ptr<Tile> computeTileClicked(float ix, float iy, std::vector<std::shared_ptr<Tile>>& movableTiles);
         
-        /// Place a new piece (disc) on the given tile
-        /// @param forWho which player should own the new piece
-        /// @param on the tile to place the new piece
+        /// Place a new piece (disc) on the given tile. Per Othello rules, also flips all opposing tiles which are flanked by the given player.
+        /// @param forWho Reference to the player who should own the new piece.
+        /// @param on Reference to the tile to place the new piece on.
         std::shared_ptr<Disc> placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on);
-        /// @param returnInt if a boolean is given to placePiece as the final param, the function will return how many opposing pieces this move flipped instead of a pointer to the new Disc it placed
+        /// @param returnInt If a boolean is given to placePiece as the final param, the function will return how many opposing pieces this move flipped instead of a pointer to the new Disc it placed.
         unsigned int placePiece(std::shared_ptr<Player>& forWho, std::shared_ptr<Tile>& on, bool returnInt);
         
         /// Populates 'playerTiles' with all tiles owned by the player (their pieces/discs), and returns how many are owned in total.

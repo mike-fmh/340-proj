@@ -113,12 +113,21 @@ bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Playe
     return false;
 }
 
-bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
+bool GameState::discIsStable(std::shared_ptr<Tile>& tile) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();
-    std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white
-    if (curPlayer->getMyColor().isEqualTo(whiteColor)) { // is it white's turn?
-        opponent = playerBlack_; // then opponent is black
+    RGBColor blackColor = playerBlack_->getMyColor();
+    shared_ptr<Player> tileOwner = tile->getPieceOwner();
+    
+    std::shared_ptr<Player> opponent;
+    if (tileOwner->getMyColor().isEqualTo(whiteColor)) { // does white control this tile?
+         opponent = playerBlack_; // then opponent is black
+    }
+    else if (tileOwner->getMyColor().isEqualTo(blackColor)) { // does black control this tile?
+        opponent = playerWhite_; // then opponent is white
+    }
+    else { // tile is blank (owned by null player)
+        return false;
     }
     
     TilePoint tileLoc = tile->getPos();
