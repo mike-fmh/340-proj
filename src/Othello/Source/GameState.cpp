@@ -115,6 +115,30 @@ bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Playe
     return false;
 }
 
+bool GameState::gameIsOver() {
+    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
+    getPlayableTiles(playerBlack_, blackMoves);
+    getPlayableTiles(playerWhite_, whiteMoves);
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
+/// provided with either whitemoves or blackmoves
+bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& playerMoves, bool isWhite) {
+    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
+    if (isWhite) {
+        getPlayableTiles(playerBlack_, blackMoves);
+        whiteMoves = playerMoves;
+    } else {
+        getPlayableTiles(playerBlack_, whiteMoves);
+        blackMoves = playerMoves;
+    }
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
+bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& blackMoves, std::vector<std::shared_ptr<Tile>>& whiteMoves) {
+    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
+}
+
 bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();
@@ -266,4 +290,45 @@ bool GameState::isCornerTile(std::shared_ptr<Tile>& tile) {
     bool bottomRight = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMin();
     bool bottomLeft = tile->getCol() == board_->getColsMin() && tile->getRow() == board_->getRowsMax();
     return topRight || topLeft || bottomLeft || bottomRight;
+}
+
+bool GameState::isCornerTile(TilePoint& tile) {
+    bool topRight = tile.x == board_->getColsMax() && tile.y == board_->getRowsMin();
+    bool topLeft = tile.x == board_->getColsMax() && tile.y == board_->getRowsMax();
+    bool bottomRight = tile.x == board_->getColsMin() && tile.y == board_->getRowsMin();
+    bool bottomLeft = tile.x == board_->getColsMin() && tile.y == board_->getRowsMax();
+    return topRight || topLeft || bottomLeft || bottomRight;
+}
+
+
+bool GameState::isCornerAdj(std::shared_ptr<Tile>& tile) {
+    std::vector<TilePoint> nextDir = {
+        {0, -1}, {0, 1}, {-1, 0}, {1, 0}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
+    };
+    TilePoint thisLoc;
+    for (auto dir: nextDir) {
+        thisLoc = TilePoint{tile->getRow() + dir.x, tile->getCol() + dir.y};
+        if (isCornerTile(thisLoc))
+            return true;
+    }
+    return false;
+}
+
+
+unsigned int GameState::numFrontierTiles(std::shared_ptr<Tile>& tile) {
+    std::vector<TilePoint> nextDir = {
+        {0, -1}, {0, 1}, {-1, 0}, {1, 0}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
+    };
+    TilePoint thisLoc;
+    shared_ptr<Player> thisOwner;
+    unsigned int numBlank = 0;
+    for (auto dir: nextDir) {
+        thisLoc = TilePoint{tile->getRow() + dir.x, tile->getCol() + dir.y};
+        if (board_->isValidPosition(thisLoc)) {
+            thisOwner = board_->getTileOwner(thisLoc);
+            if (thisOwner == board_->getNullPlayer())
+                numBlank++;
+        }
+    }
+    return numBlank;
 }
