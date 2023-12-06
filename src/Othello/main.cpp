@@ -30,6 +30,8 @@ bool showingWhiteMoves = false;
 bool showingBlackMoves = false;
 bool turnStarted = false;
 
+const unsigned int MINIMAX_DEPTH = 4;
+
 /// Was the last turn ended because the player had no valid moves?
 /// In othello, the game can end early (before the board is filled) if neither player has a valid move.
 bool lastMoveInvalid = false;
@@ -346,14 +348,31 @@ void myTimerFunc(int value)
         if (currentTurn) { // white's turn
             if (!turnStarted)
                 startTurn(playerWhite);
-               // white's turn logic is handled in the mouse function
+            
+            // white's (AI) turn logic
+            if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
+                // compute white's best move and play it
+                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, gameBoard, gameState, whitePlayableTiles, MINIMAX_DEPTH);
+                
+                // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
+                currentTime = chrono::high_resolution_clock::now();
+                cout << "chose: " << bestMoveIndex << endl;
+                TilePoint bestMoveLoc = whitePlayableTiles[bestMoveIndex]->getPos();
+                shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
+                shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, bestMove);
+                allObjects.push_back(newPiece);
+                cur_ai_turn_wait = 0;
+                passTurn(playerBlack);
+            } else {
+                cur_ai_turn_wait += dt;
+            }
         } else {
             if (!turnStarted)
                 startTurn(playerBlack);
             // black's (AI) turn logic
             if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
                 // compute black's best move and play it
-                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, playerWhite, gameBoard, gameState, blackPlayableTiles, 4);
+                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, gameBoard, gameState, blackPlayableTiles, MINIMAX_DEPTH);
                 
                 // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
                 currentTime = chrono::high_resolution_clock::now();
@@ -392,15 +411,7 @@ void myMouseHandler(int button, int state, int ix, int iy)
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_DOWN)
             {
-                if ((currentTurn) && (!gameOver)) { // white's turn
-                    shared_ptr<Tile> clickedTile = gameState->computeTileClicked(ix, iy, whitePlayableTiles);
-                    if (clickedTile != nullptr) {  // nullptr means an invalid tile was clicked on
-                        shared_ptr<Disc> newPiece = gameState->placePiece(playerWhite, clickedTile);
-                        allObjects.push_back(newPiece);
-                        passTurn(playerBlack);
-                    }
-                    
-                }
+                // mouse down
             }
             else if (state == GLUT_UP)
             {
