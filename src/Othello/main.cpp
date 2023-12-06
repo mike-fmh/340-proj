@@ -42,6 +42,7 @@ const float SECS_BETWEEN_AI_MOVES = 1.0;
 const unsigned int MOBILITY_WEIGHT = 1;
 const unsigned int STABILITY_WEIGHT = 2;
 const unsigned int CORNER_WEIGHT = 4;
+const int NUM_FRONTIER_WEIGHT = -1;
 const int CORNER_ADJ_WEIGHT = -2;
 
 
@@ -426,7 +427,7 @@ void applicationInit()
     
     gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
     
-    AI_MIND = make_shared<AiMind>(MOBILITY_WEIGHT, STABILITY_WEIGHT, CORNER_WEIGHT, CORNER_ADJ_WEIGHT, DEFAULT_TILE_COLOR);
+    AI_MIND = make_shared<AiMind>(MOBILITY_WEIGHT, STABILITY_WEIGHT, CORNER_WEIGHT, CORNER_ADJ_WEIGHT, NUM_FRONTIER_WEIGHT, DEFAULT_TILE_COLOR);
     
     // 4 starting pieces (discs)
     gameState->addGamePiece(TilePoint{4, 4}, playerBlack, allObjects);

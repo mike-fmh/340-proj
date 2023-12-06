@@ -29,11 +29,15 @@ namespace othello {
         /// Tiles adjacent to corners should result in lower scores, since they can allow the opponent to place on the corners
         int cornerAdjScore;
         
+        /// Score based on the number of blank tiles that surround this tile.
+        /// We want to avoid placing pieces on tiles with too many blank tiles surrounding it, since it's more likely to be flipped by the opponent
+        int frontierScore;
+        
         /// The full gamestate score, computed by multiplying each score value by its corresponding weight and summing them together.
         int totalScore;
         
         int sum() {
-            return cornerControlScore + stabilityScore + mobilityScore + cornerAdjScore;
+            return cornerControlScore + stabilityScore + mobilityScore + cornerAdjScore + frontierScore;
         }
     };
 
@@ -44,6 +48,7 @@ namespace othello {
         const unsigned int MOBILITY_WEIGHT_;
         const unsigned int STABILITY_WEIGHT_;
         const unsigned int CORNER_WEIGHT_;
+        const int NUM_FRONTIER_WEIGHT_;
         const int CORNER_ADJ_WEIGHT_;
         
         RGBColor DEFAULT_TILE_COLOR_;
@@ -53,17 +58,11 @@ namespace othello {
         int applyMinimaxMove_(bool maxing, unsigned int depth, std::shared_ptr<Tile>& thisMove, std::shared_ptr<Board>& oldBoard, int alpha, int beta);
         
     public:
-        AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, RGBColor defaultTileCol);
+        AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol);
         
         
-        unsigned int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
+        int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
         
-        /// Run the AI's heuristic on all of its possible moves, and return the index of the best one in possibleMoves.
-        /// @param forWho The player for whom to compute the best next move for.
-        /// @param possibleMoves List of possible tiles that the player can choose as their next move.
-        unsigned int bestMoveHeuristic(std::shared_ptr<Player>& forWho, std::shared_ptr<Board>& mainGameBoard, std::vector<std::shared_ptr<Tile>>& possibleMoves);
-        unsigned int bestMoveHeuristic(std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves);
-
         unsigned int bestMoveMinimax(std::shared_ptr<Player>& playerBlack, std::shared_ptr<Player>& playerWhite, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves, unsigned int depth);
         
         /// Called after a player places a piece on the board, this evaluates their gamestate advantage score.

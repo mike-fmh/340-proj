@@ -16,19 +16,20 @@ RGBColor AiMind::WHITE = RGBColor{1, 1, 1};
 RGBColor AiMind::BLACK = RGBColor{0, 0, 0};
 
 
-AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, RGBColor defaultTileCol)
+AiMind::AiMind(unsigned int mobilityWeight, unsigned int stabilityWeight, unsigned int cornerWeight, int cornerAdjWeight, int frontierWeight, RGBColor defaultTileCol)
     :
     MOBILITY_WEIGHT_(mobilityWeight),
     STABILITY_WEIGHT_(stabilityWeight),
     CORNER_WEIGHT_(cornerWeight),
     CORNER_ADJ_WEIGHT_(cornerAdjWeight),
+    NUM_FRONTIER_WEIGHT_(frontierWeight),
     DEFAULT_TILE_COLOR_(defaultTileCol)
 {
     
 }
 
 
-unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& thisBoard, shared_ptr<GameState>& layout, int alpha, int beta) {
+int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& thisBoard, shared_ptr<GameState>& layout, int alpha, int beta) {
     if (depth == 0) //or game is over // base case
         return evalGamestateScore(playerBlack, layout);
     
@@ -100,7 +101,7 @@ int AiMind::applyMinimaxMove_(bool maxing, unsigned int depth, shared_ptr<Tile>&
 
 
 int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>& layout) {
-    int mobility, stability, cornerPieces, cornerAdj;
+    int mobility, stability, cornerPieces, cornerAdj, frontiers;
     GamestateScore curScore;
     
     /// Find mobility (number of possible moves)
@@ -114,6 +115,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     cornerPieces = 0;
     cornerAdj = 0;
     stability = 0;
+    frontiers = 0;
     for (unsigned int r = 0; r < allMyPieces.size(); r++) {
         for (unsigned int c = 0; c < allMyPieces[r].size(); c++) {
             std::shared_ptr<Tile> thisTile = allMyPieces[r][c];
@@ -123,6 +125,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
                 cornerAdj++;
             if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
                 stability++;
+            frontiers = layout->numFrontierTiles(thisTile);
         }
     }
     
@@ -131,6 +134,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     curScore.cornerControlScore = cornerPieces * CORNER_WEIGHT_;
     curScore.stabilityScore = stability * STABILITY_WEIGHT_;
     curScore.cornerAdjScore = cornerAdj * CORNER_ADJ_WEIGHT_;
+    curScore.frontierScore = frontiers * NUM_FRONTIER_WEIGHT_;
     curScore.totalScore = curScore.sum();
     
     return curScore.totalScore; // totalScore represents the overall positional score for the AI for currentGamestate
@@ -139,8 +143,8 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
 
 unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr<Player>& playerWhite, shared_ptr<Board>& mainGameBoard, shared_ptr<GameState>& mainGameState, vector<shared_ptr<Tile>>& possibleMoves, unsigned int depth) {
     unsigned int bestMoveInd = 0;
-    unsigned int bestMoveScore = 0;
-    unsigned int curMoveScore = 0;
+    int bestMoveScore = 0;
+    int curMoveScore = 0;
     for (unsigned int i = 0; i < possibleMoves.size(); i++) {
         shared_ptr<Tile> thisMove = possibleMoves[i];
         
