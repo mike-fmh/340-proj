@@ -353,7 +353,7 @@ void myTimerFunc(int value)
             // white's (AI) turn logic
             if (cur_ai_turn_wait >= SECS_BETWEEN_AI_MOVES) {
                 // compute white's best move and play it
-                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerBlack, gameBoard, gameState, whitePlayableTiles, MINIMAX_DEPTH);
+                unsigned int bestMoveIndex = AI_MIND->bestMoveMinimax(playerWhite, gameBoard, gameState, whitePlayableTiles, MINIMAX_DEPTH);
                 
                 // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
                 currentTime = chrono::high_resolution_clock::now();
