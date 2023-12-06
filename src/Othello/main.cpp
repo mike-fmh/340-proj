@@ -41,9 +41,9 @@ const float SECS_BETWEEN_AI_MOVES = 1.0;
 
 // weights for each factor based on their importance
 // used in computing Gamestate Advantage Score (measures how "good" a player's current gamestate is)
-const unsigned int NUM_DISC_WEIGHT = 3;
-const unsigned int MOBILITY_WEIGHT = 1;
-const unsigned int STABILITY_WEIGHT = 2;
+const unsigned int NUM_DISC_WEIGHT = 2;
+const unsigned int MOBILITY_WEIGHT = 2;
+const unsigned int STABILITY_WEIGHT = 1;
 const unsigned int CORNER_WEIGHT = 4;
 const int NUM_FRONTIER_WEIGHT = -1;
 const int CORNER_ADJ_WEIGHT = -2;
@@ -377,7 +377,7 @@ void myTimerFunc(int value)
                 
                 // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
                 currentTime = chrono::high_resolution_clock::now();
-                cout << "chose: " << bestMoveIndex << endl;
+                //cout << "chose: " << bestMoveIndex << endl;
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
                 shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
