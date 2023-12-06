@@ -40,7 +40,6 @@ int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& aiP
         // simulate black placing a piece that puts them at the largest advantage
         layout->getPlayableTiles(aiPlayer, possibleMoves);
         if (possibleMoves.size() == 0) { // no more moves for black
-            std::cout << "no more moves in this branch(black)\n";
             return evalGamestateScore(aiPlayer, layout);
         }
         int maxEval = INT_MIN;
@@ -58,7 +57,6 @@ int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& aiP
         // simulate white placing the piece which puts black at the largest disadvantage
         layout->getPlayableTiles(opponent, possibleMoves);
         if (possibleMoves.size() == 0) { // no more moves for white
-            std::cout << "no more moves in this branch(white)\n";
             return evalGamestateScore(aiPlayer, layout);
         }
         int minEval = INT_MAX;
@@ -113,9 +111,11 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
     int mobility, stability, cornerPieces, cornerAdj, frontiers;
     GamestateScore curScore;
     
+    /// Find number of discs I control
     std::vector<std::vector<std::shared_ptr<Tile>>> myTiles;
+    layout->getPlayerTiles(forWho, myTiles);
     
-    /// Find mobility (number of possible moves)
+    /// Find my mobility (number of possible moves)
     std::vector<std::shared_ptr<Tile>> possibleMoves;
     layout->getPlayableTiles(forWho, possibleMoves);
     mobility = (int)possibleMoves.size();
@@ -136,8 +136,7 @@ int AiMind::evalGamestateScore(shared_ptr<Player>& forWho, shared_ptr<GameState>
                 cornerAdj++;
             if (layout->discIsStable(thisTile, forWho)) // if the tile isn't flankable by the opponent
                 stability++;
-            frontiers = layout->numFrontierTiles(thisTile);
-            layout->getPlayerTiles(forWho, myTiles);
+            frontiers += layout->numFrontierTiles(thisTile);
         }
     }
     
@@ -183,16 +182,14 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& aiPlayer, shared_ptr<Bo
         tempGamestate->placePiece(tempBlack, hypMove);
         
         // applying minimax to this hypothetical move will give us the overall score for this move
-        
-        /*
         if (aiPlayer->getMyColor().isEqualTo(BLACK)) {
+            // AI is in black's perspective, white is the opponent
             curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
         } else {
+            // AI is in white's perspective, black is the opponent
             curMoveScore = minimax(false, depth, tempWhite, tempBlack, tempBoard, tempGamestate, INT_MIN, INT_MAX);
         }
-        */
         
-        curMoveScore = minimax(false, depth, tempBlack, tempWhite, tempBoard, tempGamestate, INT_MIN, INT_MAX);
         if (curMoveScore > bestMoveScore) {
             bestMoveInd = i;
             bestMoveScore = curMoveScore;
