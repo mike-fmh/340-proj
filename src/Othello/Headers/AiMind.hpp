@@ -33,7 +33,7 @@ namespace othello {
         int totalScore;
         
         int sum() {
-            return cornerControlScore + stabilityScore + mobilityScore;
+            return cornerControlScore + stabilityScore + mobilityScore + cornerAdjScore;
         }
     };
 
