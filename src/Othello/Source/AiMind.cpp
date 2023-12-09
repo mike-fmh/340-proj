@@ -47,7 +47,7 @@ unsigned int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Pla
             
             TilePoint loc = thisMove->getPos();
             
-            std::cout << "Considering Move: (" << loc.x << ", " << loc.y << ") by Player " << (maximizing ? "Black" : "White") << std::endl;
+            std::cout << "Considering Move: (" << loc.x << ", " << loc.y << ") by Player Black" << std::endl;
 
             
             // each hypothetical move needs a new board object, thus also needs a new gamestate obj and new player objs
@@ -212,14 +212,17 @@ unsigned int AiMind::bestMoveMinimax(shared_ptr<Player>& playerBlack, shared_ptr
         }
         TilePoint thisMoveLoc = thisMove->getPos();
         shared_ptr<Tile> hypMove = tempBoard->getBoardTile(thisMoveLoc);
-        tempGamestate->placePiece(tempWhite, hypMove, true);
+        tempGamestate->placePiece(tempBlack, hypMove, true);
         
         curMoveScore = minimax(true, depth, tempBlack, tempWhite, tempBoard, tempGamestate, 0, INT_MAX);
         if (curMoveScore > bestMoveScore) {
+            // TODO: add randomly choose between all moves of the same top score
+            std::cout<< "move best (" << thisMoveLoc.x << ", " << thisMoveLoc.y << "): " << curMoveScore << std::endl;
             bestMoveInd = i;
             bestMoveScore = curMoveScore;
         }
-    
+        std::cout<< "move (" << thisMoveLoc.x << ", " << thisMoveLoc.y << "): " << curMoveScore << std::endl;
+
     }
     return bestMoveInd;
 }
