@@ -341,8 +341,7 @@ void myTimerFunc(int value)
     
     chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
     float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
-    
-    /*
+        
     if (!gameOver) { // turn logic
         if (currentTurn) { // white's turn
             if (!turnStarted)
@@ -371,7 +370,6 @@ void myTimerFunc(int value)
             
         }
     }
-    */
     
     // update all discs (game pieces)
     for (auto disc : gameBoard->getAllPieces()) {
@@ -435,16 +433,8 @@ void applicationInit()
     gameState->addGamePiece(TilePoint{4, 4}, playerBlack, allObjects);
     gameState->addGamePiece(TilePoint{5, 5}, playerBlack, allObjects);
     
-    gameState->addGamePiece(TilePoint{6, 4}, playerBlack, allObjects);
     gameState->addGamePiece(TilePoint{5, 4}, playerWhite, allObjects);
-    gameState->addGamePiece(TilePoint{6, 3}, playerWhite, allObjects);
-    gameState->addGamePiece(TilePoint{6, 2}, playerBlack, allObjects);
-    gameState->addGamePiece(TilePoint{7, 2}, playerBlack, allObjects);
-    gameState->addGamePiece(TilePoint{8, 2}, playerBlack, allObjects);
     gameState->addGamePiece(TilePoint{4, 5}, playerWhite, allObjects);
-    
-    TilePoint highlightloc = TilePoint{8, 0};
-    gameBoard->getBoardTile(highlightloc)->setColor(0.8, 1, 1);
   
 
     //    time really starts now
