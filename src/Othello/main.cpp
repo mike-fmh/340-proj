@@ -35,7 +35,7 @@ bool turnStarted = false;
 bool lastMoveInvalid = false;
 
 float cur_ai_turn_wait = 0;
-const float SECS_BETWEEN_AI_MOVES = 1.0;
+const float SECS_BETWEEN_AI_MOVES = 10.0;
 
 // weights for each factor based on their importance
 // used in computing Gamestate Advantage Score (measures how "good" a player's current gamestate is)
