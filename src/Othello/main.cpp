@@ -361,7 +361,6 @@ void myTimerFunc(int value)
                 
                 // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
                 currentTime = chrono::high_resolution_clock::now();
-                // cout << "chose: " << bestMoveIndex << endl;
                 
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
