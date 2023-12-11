@@ -16,20 +16,33 @@
 namespace othello {
     class Tile: public GraphicObject, public AnimatedObject {
         private:
-            /// if this tile has a disc on it, which player controls this disc?
+            /// If this tile has a disc on it, which player controls this disc?
             std::shared_ptr<Player> owner_;
             
-            /// reference to the disc (piece) that's been placed on this tile
+            /// Reference to the disc (piece) that's been placed on this tile.
             std::shared_ptr<Disc> disc_;
         
-            float red_, blue_, green_; // false = white, true = black
+            /// Values representing the actual color of the tile as rendered in the game window.
+            float red_, blue_, green_;
             
         public:
+            /// Create a new Tile at a TilePoint location.
+            /// @param loc Location where the tile should be located on the game board.
+            /// @param red Red value for the tile's color.
+            /// @param blue Blue value for the tile's color.
+            /// @param green Green value for the tile's color.
+            /// @param owner Reference to the player that controls the disc placed on this tile (null player if the tile is blank).
             Tile(TilePoint& loc, float red, float blue, float green, std::shared_ptr<Player> owner);
         
+            /// The draw function is called every frame,
             void draw() const;
+        
+            /// The update function is called multiple times between every frame.
+            /// @param dt Time since the last update function ran.
             void update(float dt);
             
+            /// Set the owner of the Tile (the player who controls the Disc that's placed on it).
+            /// @param player Reference to the player who owns the tile's disc.
             inline void setOwner(std::shared_ptr<Player>& player) {
                 owner_ = player;
             }
@@ -39,10 +52,13 @@ namespace othello {
                 return owner_;
             }
             
+            /// Return a reference to the Disc placed on this Tile.
             inline std::shared_ptr<Disc> getPiece() {
                 return disc_;
             }
         
+            /// Sets the piece placed on this tile to the given Disc reference.
+            /// @param piece The reference to the Disc that should be placed on this Tile.
             inline void setPiece(std::shared_ptr<Disc>& piece) {
                 disc_ = piece;
             }
@@ -52,15 +68,23 @@ namespace othello {
             inline bool posIsEqual(std::shared_ptr<Tile>& other) {
                 return ((other->getRow() == getRow()) && (other->getCol() == getCol()));
             }
+        
+            /// Returns the row on the game board where this Tile is located.
             inline int getRow() const {
                 return (int)getX();
             }
+        
+            /// Returns the column on the game board where this Tile is located.
             inline int getCol() const {
                 return (int)getY();
             }
+        
+            /// Returns the TilePoint location on the game board where thiis Tile is located.
             inline TilePoint getPos() const {
                 return TilePoint{getRow(), getCol()};
             }
+        
+            /// Set the Tile's color as rendered in the game window (does not interact with the tile's Disc color).
             inline void setColor(RGBColor color) {
                 red_ = color.red;
                 green_ = color.green;
