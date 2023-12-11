@@ -1,6 +1,5 @@
 //
 //  common.h
-//  Week 08 - Earshooter
 //
 //  Template file created by Jean-Yves Hervé on 11/9/22.
 //  Project file created by Michael Felix on 11/13/23.
@@ -13,6 +12,8 @@
 
 namespace othello
 {
+    /// This file was written by Professor Jean-Yves Hervé (provided in template code from CSC406).
+
     /**	A set of predefined color labels
 	 */
 	enum class ColorIndex

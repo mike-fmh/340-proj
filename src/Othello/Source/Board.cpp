@@ -21,7 +21,7 @@ const float Board::WIDTH_ = (ROWS_MAX_ + PADDING_) - (ROWS_MIN_ - PADDING_);
 const float Board::HEIGHT_ = (COLS_MAX_ + PADDING_) - (COLS_MIN_ - PADDING_);
 
 
-Board::Board(RGBColor tileColor, std::shared_ptr<Player> nullplayerRef)
+Board::Board(RGBColor tileColor, std::shared_ptr<Player>& nullplayerRef)
     :   Object(0, 0, 0),
         GraphicObject(0, 0, 0),
         DEFAULT_TILE_COLOR_(tileColor),

@@ -9,7 +9,7 @@
 
 using namespace othello;
 
-const int Disc::_numCirPoints = 18;
+const unsigned int Disc::_numCirPoints = 18;
 float** Disc::_circlePoints;
 
 Disc::Disc(TilePoint& loc, RGBColor color)
@@ -20,7 +20,7 @@ Disc::Disc(TilePoint& loc, RGBColor color)
         size_(0.37),
         switchColorAfter_(-1),
         curSwitchTimer_(0),
-        colorToSwitch_(RGBColor{-1, -1, -1})
+        colorToSwitchTo_(RGBColor{-1, -1, -1})
 {
     _circlePoints = new float*[_numCirPoints];
     for (int k=0; k < _numCirPoints; k++) {
@@ -66,11 +66,11 @@ void Disc::update(float dt) {
     if (switchColorAfter_ > -1) {
         curSwitchTimer_ += dt;
         if (curSwitchTimer_ >= switchColorAfter_) {
-            color_ = colorToSwitch_;
+            color_ = colorToSwitchTo_;
             switchColorAfter_ = -1;
         }
     } else {
-        colorToSwitch_ = RGBColor{-1, -1, -1};
+        colorToSwitchTo_ = RGBColor{-1, -1, -1};
         curSwitchTimer_ = 0;
     }
 }

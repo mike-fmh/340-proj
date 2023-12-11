@@ -14,6 +14,7 @@ namespace othello
 {
 	class AnimatedObject : public virtual Object
 	{
+        /// This class was written by Professor Jean-Yves Hervé (provided in template code from CSC406).
 		private:
 		
 			float vx_, vy_, spin_;

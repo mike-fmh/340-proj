@@ -60,7 +60,7 @@ namespace othello {
         
         /// Helper function for minimax used to create a new gamestate object and place each hypothetical piece
         /// @param maxing Which mode minimax is currently in (maximizing or not).
-        /// @param depth The current depth of the minimax tree
+        /// @param depth The current depth of the minimax tree, where 0 is a leaf node.
         /// @param thisMove The location of the new hypothetical move.
         /// @param oldBoard The board as it was before placing the new hypothetical move.
         /// @param alpha The current value for alpha (max) for minimax's alpha-beta pruning.
@@ -81,8 +81,22 @@ namespace othello {
         
         
         /// MiniMax search algorithm implimentation, used as a general heuristic for measuring a player's position as a score.
+        /// @param maximizing Which mode minimax is currently in (maximizing or minimizing).
+        /// @param depth The current depth of the minimax tree, where 0 is a leaf node.
+        /// @param aiPlayer Reference to the player object who we're computing the best move for.
+        /// @param opponent The opposing player.
+        /// @param thisBoard The current board we're computing the best next move on.
+        /// @param layout The reference to the board and gamestate.
+        /// @param alpha Max value kept for alpha-beta pruning.
+        /// @param beta Min value for alpha-beta pruning.
         int minimax(bool maximizing, unsigned int depth, std::shared_ptr<Player>& aiPlayer, std::shared_ptr<Player>& opponent, std::shared_ptr<Board>& thisBoard, std::shared_ptr<GameState>& layout, int alpha, int beta);
         
+        /// Computes the best move using minimax
+        /// @param aiPlayer Reference to the player we're computing the best next move for.
+        /// @param mainGameBoard Reference to the game board we're finding the best next move on.
+        /// @param mainGameState Reference to the board's gamestate.
+        /// @param possibleMoves List of all moves the aiPlayer could make.
+        /// @param depth The depth we want for minimax (how many tree nodes to build).
         unsigned int bestMoveMinimax(std::shared_ptr<Player>& aiPlayer, std::shared_ptr<Board>& mainGameBoard, std::shared_ptr<GameState>& mainGameState, std::vector<std::shared_ptr<Tile>>& possibleMoves, unsigned int depth);
         
         /// Called after a player places a piece on the board, this evaluates their gamestate advantage score.

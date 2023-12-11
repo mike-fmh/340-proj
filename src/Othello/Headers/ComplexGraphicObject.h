@@ -9,13 +9,13 @@
 
 #include <memory>
 #include <vector>
-//
 #include "GraphicObject.h"
 
 namespace othello
 {
 	class ComplexGraphicObject : public GraphicObject
 	{
+        /// This class was written by Professor Jean-Yves Hervé (provided in template code from CSC406).
 		private:
 		
 			std::vector< std::shared_ptr<GraphicObject> > partList_;

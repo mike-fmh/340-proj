@@ -14,6 +14,7 @@ namespace othello
 {
 	class Object
 	{
+        /// This class was written by Professor Jean-Yves Hervé (provided in template code from CSC406).
 		private:
 		
 			float x_ , y_, angle_;

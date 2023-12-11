@@ -16,13 +16,10 @@ const int GameState::NUM_GAME_PLAYERS = 2;
 
 const float GameState::flip_interval_secs_ = 0.1;
 
-GameState::GameState(shared_ptr<Player> playerWhite, shared_ptr<Player> playerBlack, shared_ptr<Board> board)
-    :   startingPlayer_(playerWhite), // white always starts in othello
-        currentPlayerTurn_(playerWhite),
-        playerBlack_(playerBlack),
+GameState::GameState(shared_ptr<Player>& playerWhite, shared_ptr<Player>& playerBlack, shared_ptr<Board>& board)
+    :   playerBlack_(playerBlack),
         playerWhite_(playerWhite),
-        board_(board),
-        boardTiles_(board->getBoardTiles())
+        board_(board)
 {
     
 }
@@ -89,10 +86,11 @@ void GameState::getFlankingTiles(std::shared_ptr<Tile>& tile, std::shared_ptr<Pl
 unsigned int GameState::getPlayerTiles(shared_ptr<Player>& whose, std::vector<std::vector<std::shared_ptr<Tile>>>& playerTiles) {
     unsigned int numPlayerTiles = 0;
     RGBColor playerColor = whose->getMyColor();
-    for (unsigned int r = 0; r < boardTiles_.size(); r++) {
+    std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_ = board_->getBoardTiles();
+    for (unsigned int r = 0; r < boardTiles_->size(); r++) {
         playerTiles.push_back(std::vector<std::shared_ptr<Tile>>());
-        for (unsigned int c = 0; c < boardTiles_[r].size(); c++) {
-            std::shared_ptr<Tile> thisTile = boardTiles_[r][c];
+        for (unsigned int c = 0; c < boardTiles_->at(r).size(); c++) {
+            std::shared_ptr<Tile> thisTile = boardTiles_->at(r)[c];
             if (thisTile->getPieceOwner()->getMyColor().isEqualTo(playerColor)) {
                 playerTiles[r].push_back(thisTile);
                 numPlayerTiles++;
@@ -115,36 +113,21 @@ bool GameState::tileIsFlanked(std::shared_ptr<Tile>& tile, std::shared_ptr<Playe
     return false;
 }
 
-bool GameState::gameIsOver() {
-    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
-    getPlayableTiles(playerBlack_, blackMoves);
-    getPlayableTiles(playerWhite_, whiteMoves);
-    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
-}
-
-/// provided with either whitemoves or blackmoves
-bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& playerMoves, bool isWhite) {
-    vector<shared_ptr<Tile>> whiteMoves, blackMoves;
-    if (isWhite) {
-        getPlayableTiles(playerBlack_, blackMoves);
-        whiteMoves = playerMoves;
-    } else {
-        getPlayableTiles(playerBlack_, whiteMoves);
-        blackMoves = playerMoves;
-    }
-    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
-}
-
-bool GameState::gameIsOver(std::vector<std::shared_ptr<Tile>>& blackMoves, std::vector<std::shared_ptr<Tile>>& whiteMoves) {
-    return ((whiteMoves.size() == 0) && (blackMoves.size() == 0));
-}
-
-bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& curPlayer) {
+bool GameState::discIsStable(std::shared_ptr<Tile>& tile) {
     // to see if a disc is stable, we need to check tileIsFlanked on all the tiles around it
     RGBColor whiteColor = playerWhite_->getMyColor();
-    std::shared_ptr<Player> opponent = playerWhite_; // default to opponent is white
-    if (curPlayer->getMyColor().isEqualTo(whiteColor)) { // is it white's turn?
-        opponent = playerBlack_; // then opponent is black
+    RGBColor blackColor = playerBlack_->getMyColor();
+    shared_ptr<Player> tileOwner = tile->getPieceOwner();
+    
+    std::shared_ptr<Player> opponent;
+    if (tileOwner->getMyColor().isEqualTo(whiteColor)) { // does white control this tile?
+         opponent = playerBlack_; // then opponent is black
+    }
+    else if (tileOwner->getMyColor().isEqualTo(blackColor)) { // does black control this tile?
+        opponent = playerWhite_; // then opponent is white
+    }
+    else { // tile is blank (owned by null player)
+        return false;
     }
     
     TilePoint tileLoc = tile->getPos();
@@ -161,9 +144,10 @@ bool GameState::discIsStable(std::shared_ptr<Tile>& tile, shared_ptr<Player>& cu
 
 void GameState::getPlayableTiles(std::shared_ptr<Player>& forWho, std::vector<std::shared_ptr<Tile>>& movableTiles) {
     // go over all the board tiles, finding all tiles owned by the opposing player
-    for (int c = 0; c < boardTiles_.size(); c++) {
-        for (int r = 0; r < boardTiles_[c].size(); r++) {
-            std::shared_ptr<Tile> currentTile = boardTiles_[c][r];
+    std::vector<std::vector<std::shared_ptr<Tile>>>* boardTiles_ = board_->getBoardTiles();
+    for (int r = 0; r < boardTiles_->size(); r++) {
+        for (int c = 0; c < boardTiles_->at(r).size(); c++) {
+            std::shared_ptr<Tile> currentTile = boardTiles_->at(r)[c];
             
             // check if the tile is owned by the opposing player (if it has an opponent's piece on it)
             if ((currentTile->getPieceOwner() != forWho) && (currentTile->getPieceOwner() != board_->getNullPlayer() ))
@@ -292,11 +276,11 @@ bool GameState::isCornerTile(std::shared_ptr<Tile>& tile) {
     return topRight || topLeft || bottomLeft || bottomRight;
 }
 
-bool GameState::isCornerTile(TilePoint& tile) {
-    bool topRight = tile.x == board_->getColsMax() && tile.y == board_->getRowsMin();
-    bool topLeft = tile.x == board_->getColsMax() && tile.y == board_->getRowsMax();
-    bool bottomRight = tile.x == board_->getColsMin() && tile.y == board_->getRowsMin();
-    bool bottomLeft = tile.x == board_->getColsMin() && tile.y == board_->getRowsMax();
+bool GameState::isCornerTile(TilePoint& tileLoc) {
+    bool topRight = tileLoc.x == board_->getColsMax() && tileLoc.y == board_->getRowsMin();
+    bool topLeft = tileLoc.x == board_->getColsMax() && tileLoc.y == board_->getRowsMax();
+    bool bottomRight = tileLoc.x == board_->getColsMin() && tileLoc.y == board_->getRowsMin();
+    bool bottomLeft = tileLoc.x == board_->getColsMin() && tileLoc.y == board_->getRowsMax();
     return topRight || topLeft || bottomLeft || bottomRight;
 }
 
