@@ -344,7 +344,7 @@ void myTimerFunc(int value)
     glutTimerFunc(1, myTimerFunc, value);
     
     chrono::high_resolution_clock::time_point currentTime = chrono::high_resolution_clock::now();
-    float dt = chrono::duration_cast<chrono::duration<float> >(currentTime - lastTime).count();
+    float dt = chrono::duration_cast<chrono::duration<float>>(currentTime - lastTime).count();
         
     if (!gameOver) { // turn logic
         if (currentTurn) { // white's turn
@@ -361,7 +361,8 @@ void myTimerFunc(int value)
                 
                 // for the tile flip animation to show, we need to reset currenttime after picking the move, because it can take a few seconds
                 currentTime = chrono::high_resolution_clock::now();
-                cout << "chose: " << bestMoveIndex << endl;
+                // cout << "chose: " << bestMoveIndex << endl;
+                
                 TilePoint bestMoveLoc = blackPlayableTiles[bestMoveIndex]->getPos();
                 shared_ptr<Tile> bestMove = gameBoard->getBoardTile(bestMoveLoc);
                 shared_ptr<Disc> newPiece = gameState->placePiece(playerBlack, bestMove);
@@ -421,16 +422,22 @@ void myMouseHandler(int button, int state, int ix, int iy)
 
 void applicationInit()
 {
-    playerNull = make_shared<Player>(RGBColor{-1, -1, -1}); // owns tiles with nothing placed on them
+    // Application init for GLUT
     
+    playerNull = make_shared<Player>(RGBColor{-1, -1, -1}); // null player -> owns tiles with nothing placed on them
+    
+    // Main game board
     gameBoard = make_shared<Board>(DEFAULT_TILE_COLOR, playerNull);
     allObjects.push_back(gameBoard);
     
+    // Game players
     playerWhite = make_shared<Player>(RGBColor{1, 1, 1});
     playerBlack = make_shared<Player>(RGBColor{0, 0, 0});
     
+    // Main game state, used in conjunction with the Board class to perform/retrieve game-related functions
     gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
     
+    // AiMind implements Minimax and Game Score Heuristic
     AI_MIND = make_shared<AiMind>(NUM_DISC_WEIGHT, MOBILITY_WEIGHT, STABILITY_WEIGHT, CORNER_WEIGHT, CORNER_ADJ_WEIGHT, NUM_FRONTIER_WEIGHT, DEFAULT_TILE_COLOR);
     
     // 4 starting pieces (discs)
