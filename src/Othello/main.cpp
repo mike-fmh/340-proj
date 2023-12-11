@@ -310,6 +310,7 @@ void myKeyHandler(unsigned char c, int x, int y)
         
     switch (c)
     {
+            // press esc or 'q' to quit the game
         case 'q':
         case 'Q':
         case 27:
