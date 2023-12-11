@@ -37,7 +37,7 @@ const unsigned int MINIMAX_DEPTH = 2;
 bool lastMoveInvalid = false;
 
 float cur_ai_turn_wait = 0;
-const float SECS_BETWEEN_AI_MOVES = 1.0;
+const float SECS_BETWEEN_AI_MOVES = 0.5;
 
 // weights for each factor based on their importance
 // used in computing Gamestate Advantage Score (measures how "good" a player's current gamestate is)
