@@ -36,7 +36,7 @@ namespace othello {
             /// @param color The color of the disc.
             Disc(TilePoint& loc, RGBColor color);
         
-            /// The draw function is called every frame,
+            /// The draw function is called every frame.
             void draw() const;
         
             /// The update function is called multiple times between every frame.

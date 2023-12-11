@@ -11,16 +11,7 @@ using namespace std;
 using namespace othello;
 
 Player::Player(RGBColor color)
-    :   DiscColor_(color),
-        name_("none")
-{
-    
-}
-
-
-Player::Player(RGBColor color, std::string name)
-    :   DiscColor_(color),
-        name_(name)
+    :   DiscColor_(color)
 {
     
 }

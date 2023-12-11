@@ -11,20 +11,15 @@
 #include <vector>
 #include <memory>
 #include "Disc.hpp"
-#include <string>
-
 
 namespace othello {
     class Player {
     private:
-        /// color of this player's discs (pieces)
+        /// Color of this player's discs (pieces)
         const RGBColor DiscColor_;
-        const std::string name_;
 
     public:
-        
         Player(RGBColor myColor);
-        Player(RGBColor myColor, std::string name);
         
         //disabled constructors & operators
         Player(Player&& obj) = delete;        // move
@@ -32,12 +27,9 @@ namespace othello {
         Player& operator = (const Player& obj) = delete;    // copy operator
         Player& operator = (Player&& obj) = delete;        // move operator
         
+        /// Return the color of the pieces that the player owns
         inline RGBColor getMyColor() {
             return DiscColor_;
-        }
-        
-        inline std::string getName() {
-            return name_;
         }
     };
 }
