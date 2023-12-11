@@ -426,8 +426,8 @@ void applicationInit()
     gameBoard = make_shared<Board>(DEFAULT_TILE_COLOR, playerNull);
     allObjects.push_back(gameBoard);
     
-    playerWhite = make_shared<Player>(RGBColor{1, 1, 1}, "black");
-    playerBlack = make_shared<Player>(RGBColor{0, 0, 0}, "white");
+    playerWhite = make_shared<Player>(RGBColor{1, 1, 1});
+    playerBlack = make_shared<Player>(RGBColor{0, 0, 0});
     
     gameState = make_shared<GameState>(playerWhite, playerBlack, gameBoard);
     
