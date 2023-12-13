@@ -1,0 +1,378 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA56D1F02B02A56E006651D1 /* Disc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA56D1EE2B02A56E006651D1 /* Disc.cpp */; };
+		AA6C28F02B0285FD00EC93F7 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA6C28EF2B0285FD00EC93F7 /* Object.cpp */; };
+		AA7D4A7F2B06C9D4005436B8 /* GameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA7D4A7D2B06C9D4005436B8 /* GameState.cpp */; };
+		AA7D4A822B06CCD6005436B8 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA7D4A802B06CCD6005436B8 /* Player.cpp */; };
+		AAAD48902B1F81CB00B73099 /* AiMind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAD488E2B1F81CB00B73099 /* AiMind.cpp */; };
+		AACA75BC2B02876C00EB7A6A /* GraphicObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACA75BB2B02876C00EB7A6A /* GraphicObject.cpp */; };
+		AACA75C22B02897700EB7A6A /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACA75C12B02897700EB7A6A /* AnimatedObject.cpp */; };
+		AACA75C62B0289B000EB7A6A /* ComplexGraphicObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACA75C52B0289B000EB7A6A /* ComplexGraphicObject.cpp */; };
+		AAEAC7462B0281A800C4386C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAEAC7452B0281A800C4386C /* main.cpp */; };
+		AAEAC74D2B0281F200C4386C /* Board.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAEAC74C2B0281F200C4386C /* Board.cpp */; };
+		AAEAC7502B02820F00C4386C /* Tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAEAC74F2B02820F00C4386C /* Tile.cpp */; };
+		AAEAC7582B02829B00C4386C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAEAC7572B02829B00C4386C /* OpenGL.framework */; };
+		AAEAC75A2B02829F00C4386C /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAEAC7592B02829F00C4386C /* GLUT.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AAEAC7402B0281A800C4386C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		AA56D1EE2B02A56E006651D1 /* Disc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Disc.cpp; sourceTree = "<group>"; };
+		AA56D1EF2B02A56E006651D1 /* Disc.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Disc.hpp; sourceTree = "<group>"; };
+		AA6C28EF2B0285FD00EC93F7 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
+		AA6C28F12B02860500EC93F7 /* Object.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Object.h; sourceTree = "<group>"; };
+		AA7D4A7D2B06C9D4005436B8 /* GameState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GameState.cpp; sourceTree = "<group>"; };
+		AA7D4A7E2B06C9D4005436B8 /* GameState.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GameState.hpp; sourceTree = "<group>"; };
+		AA7D4A802B06CCD6005436B8 /* Player.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Player.cpp; sourceTree = "<group>"; };
+		AA7D4A812B06CCD6005436B8 /* Player.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Player.hpp; sourceTree = "<group>"; };
+		AAAD488E2B1F81CB00B73099 /* AiMind.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AiMind.cpp; sourceTree = "<group>"; };
+		AAAD488F2B1F81CB00B73099 /* AiMind.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AiMind.hpp; sourceTree = "<group>"; };
+		AACA75BB2B02876C00EB7A6A /* GraphicObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicObject.cpp; sourceTree = "<group>"; };
+		AACA75BD2B02877900EB7A6A /* GraphicObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphicObject.h; sourceTree = "<group>"; };
+		AACA75C12B02897700EB7A6A /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
+		AACA75C32B02898200EB7A6A /* AnimatedObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
+		AACA75C42B0289AA00EB7A6A /* ComplexGraphicObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ComplexGraphicObject.h; sourceTree = "<group>"; };
+		AACA75C52B0289B000EB7A6A /* ComplexGraphicObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComplexGraphicObject.cpp; sourceTree = "<group>"; };
+		AAEAC7422B0281A800C4386C /* Othello */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Othello; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAEAC7452B0281A800C4386C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		AAEAC74C2B0281F200C4386C /* Board.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Board.cpp; sourceTree = "<group>"; };
+		AAEAC74F2B02820F00C4386C /* Tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tile.cpp; sourceTree = "<group>"; };
+		AAEAC7512B02822E00C4386C /* Board.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Board.hpp; sourceTree = "<group>"; };
+		AAEAC7522B02822E00C4386C /* glPlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glPlatform.h; sourceTree = "<group>"; };
+		AAEAC7532B02822E00C4386C /* commonTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = commonTypes.h; sourceTree = "<group>"; };
+		AAEAC7542B02823400C4386C /* Tile.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Tile.hpp; sourceTree = "<group>"; };
+		AAEAC7572B02829B00C4386C /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		AAEAC7592B02829F00C4386C /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AAEAC73F2B0281A800C4386C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAEAC75A2B02829F00C4386C /* GLUT.framework in Frameworks */,
+				AAEAC7582B02829B00C4386C /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AAEAC7392B0281A800C4386C = {
+			isa = PBXGroup;
+			children = (
+				AAEAC7442B0281A800C4386C /* Othello */,
+				AAEAC7432B0281A800C4386C /* Products */,
+				AAEAC7562B02829A00C4386C /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		AAEAC7432B0281A800C4386C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AAEAC7422B0281A800C4386C /* Othello */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AAEAC7442B0281A800C4386C /* Othello */ = {
+			isa = PBXGroup;
+			children = (
+				AAEAC7452B0281A800C4386C /* main.cpp */,
+				AAEAC7552B02823700C4386C /* Headers */,
+				AAEAC74E2B0281F600C4386C /* Source */,
+			);
+			path = Othello;
+			sourceTree = "<group>";
+		};
+		AAEAC74E2B0281F600C4386C /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				AAAD488E2B1F81CB00B73099 /* AiMind.cpp */,
+				AA7D4A802B06CCD6005436B8 /* Player.cpp */,
+				AA7D4A7D2B06C9D4005436B8 /* GameState.cpp */,
+				AACA75BB2B02876C00EB7A6A /* GraphicObject.cpp */,
+				AA6C28EF2B0285FD00EC93F7 /* Object.cpp */,
+				AACA75C52B0289B000EB7A6A /* ComplexGraphicObject.cpp */,
+				AACA75C12B02897700EB7A6A /* AnimatedObject.cpp */,
+				AA56D1EE2B02A56E006651D1 /* Disc.cpp */,
+				AAEAC74C2B0281F200C4386C /* Board.cpp */,
+				AAEAC74F2B02820F00C4386C /* Tile.cpp */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		AAEAC7552B02823700C4386C /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				AAEAC7522B02822E00C4386C /* glPlatform.h */,
+				AACA75C42B0289AA00EB7A6A /* ComplexGraphicObject.h */,
+				AAEAC7512B02822E00C4386C /* Board.hpp */,
+				AACA75C32B02898200EB7A6A /* AnimatedObject.h */,
+				AA6C28F12B02860500EC93F7 /* Object.h */,
+				AAEAC7532B02822E00C4386C /* commonTypes.h */,
+				AACA75BD2B02877900EB7A6A /* GraphicObject.h */,
+				AA56D1EF2B02A56E006651D1 /* Disc.hpp */,
+				AAEAC7542B02823400C4386C /* Tile.hpp */,
+				AA7D4A7E2B06C9D4005436B8 /* GameState.hpp */,
+				AA7D4A812B06CCD6005436B8 /* Player.hpp */,
+				AAAD488F2B1F81CB00B73099 /* AiMind.hpp */,
+			);
+			path = Headers;
+			sourceTree = "<group>";
+		};
+		AAEAC7562B02829A00C4386C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AAEAC7592B02829F00C4386C /* GLUT.framework */,
+				AAEAC7572B02829B00C4386C /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AAEAC7412B0281A800C4386C /* Othello */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AAEAC7492B0281A800C4386C /* Build configuration list for PBXNativeTarget "Othello" */;
+			buildPhases = (
+				AAEAC73E2B0281A800C4386C /* Sources */,
+				AAEAC73F2B0281A800C4386C /* Frameworks */,
+				AAEAC7402B0281A800C4386C /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Othello;
+			productName = Othello;
+			productReference = AAEAC7422B0281A800C4386C /* Othello */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AAEAC73A2B0281A800C4386C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					AAEAC7412B0281A800C4386C = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+				};
+			};
+			buildConfigurationList = AAEAC73D2B0281A800C4386C /* Build configuration list for PBXProject "Othello" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AAEAC7392B0281A800C4386C;
+			productRefGroup = AAEAC7432B0281A800C4386C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AAEAC7412B0281A800C4386C /* Othello */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AAEAC73E2B0281A800C4386C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAEAC7502B02820F00C4386C /* Tile.cpp in Sources */,
+				AACA75C22B02897700EB7A6A /* AnimatedObject.cpp in Sources */,
+				AAEAC74D2B0281F200C4386C /* Board.cpp in Sources */,
+				AA6C28F02B0285FD00EC93F7 /* Object.cpp in Sources */,
+				AA7D4A822B06CCD6005436B8 /* Player.cpp in Sources */,
+				AA56D1F02B02A56E006651D1 /* Disc.cpp in Sources */,
+				AAAD48902B1F81CB00B73099 /* AiMind.cpp in Sources */,
+				AACA75C62B0289B000EB7A6A /* ComplexGraphicObject.cpp in Sources */,
+				AAEAC7462B0281A800C4386C /* main.cpp in Sources */,
+				AA7D4A7F2B06C9D4005436B8 /* GameState.cpp in Sources */,
+				AACA75BC2B02876C00EB7A6A /* GraphicObject.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AAEAC7472B0281A800C4386C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		AAEAC7482B0281A800C4386C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		AAEAC74A2B0281A800C4386C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 926B47NP6S;
+				ENABLE_HARDENED_RUNTIME = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AAEAC74B2B0281A800C4386C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 926B47NP6S;
+				ENABLE_HARDENED_RUNTIME = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AAEAC73D2B0281A800C4386C /* Build configuration list for PBXProject "Othello" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AAEAC7472B0281A800C4386C /* Debug */,
+				AAEAC7482B0281A800C4386C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AAEAC7492B0281A800C4386C /* Build configuration list for PBXNativeTarget "Othello" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AAEAC74A2B0281A800C4386C /* Debug */,
+				AAEAC74B2B0281A800C4386C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AAEAC73A2B0281A800C4386C /* Project object */;
+}
