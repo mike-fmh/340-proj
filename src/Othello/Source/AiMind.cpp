@@ -40,7 +40,6 @@ int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& pla
         // simulate black placing a piece that puts them at the largest advantage
         layout->getPlayableTiles(playerBlack, possibleMoves);
         if (possibleMoves.size() == 0) { // no more moves for black
-            std::cout << "no more moves in this branch(black)\n";
             return evalGamestateScore(playerBlack, layout);
         }
         int maxEval = INT_MIN;
@@ -58,7 +57,6 @@ int AiMind::minimax(bool maximizing, unsigned int depth, shared_ptr<Player>& pla
         // simulate white placing the piece which puts black at the largest disadvantage
         layout->getPlayableTiles(playerWhite, possibleMoves);
         if (possibleMoves.size() == 0) { // no more moves for white
-            std::cout << "no more moves in this branch(white)\n";
             return evalGamestateScore(playerBlack, layout);
         }
         int minEval = INT_MAX;
